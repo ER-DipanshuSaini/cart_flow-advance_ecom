@@ -1,17 +1,19 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import AppRoutes from './routes/AppRoutes';
 
 /**
  * Root Application Entry
- * Kept ultra-clean and minimal following production architectural standards.
- * Routes and Global Context Providers live here.
+ * Kept ultra-clean with Theme and Router Providers.
  */
 function App() {
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <ThemeProvider defaultTheme="dark">
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

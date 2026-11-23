@@ -1,8 +1,8 @@
 .cf-ui-modal-overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(5, 6, 8, 0.75);
-  backdrop-filter: blur(6px);
+  background-color: rgba(5, 6, 8, 0.65);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,10 +13,10 @@
 
 .cf-ui-modal-container {
   width: 100%;
-  background-color: #111317;
-  border: 1px solid #242933;
-  border-radius: 10px;
-  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  border-radius: var(--cf-radius-lg);
+  box-shadow: var(--cf-shadow-float);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -25,7 +25,7 @@
 
 .cf-ui-modal-header {
   padding: 1.15rem 1.25rem;
-  border-bottom: 1px solid #1a1d24;
+  border-bottom: 1px solid var(--cf-border-subtle);
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -34,18 +34,18 @@
 .cf-ui-modal-title {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #f3f4f6;
+  color: var(--cf-text-main);
   letter-spacing: -0.01em;
 }
 
 .cf-ui-modal-subtitle {
   font-size: 0.75rem;
-  color: #8b929e;
+  color: var(--cf-text-muted);
   margin-top: 2px;
 }
 
 .cf-ui-modal-close {
-  color: #8b929e;
+  color: var(--cf-text-dim);
   padding: 4px;
   border-radius: 4px;
   display: flex;
@@ -55,23 +55,23 @@
 }
 
 .cf-ui-modal-close:hover {
-  color: #ffffff;
-  background-color: #1a1e26;
+  color: var(--cf-text-main);
+  background-color: var(--cf-bg-elevated);
 }
 
 .cf-ui-modal-body {
   padding: 1.25rem;
   overflow-y: auto;
   max-height: 75vh;
-  color: #d1d5db;
+  color: var(--cf-text-main);
   font-size: 0.85rem;
   line-height: 1.6;
 }
 
 .cf-ui-modal-footer {
   padding: 0.85rem 1.25rem;
-  border-top: 1px solid #1a1d24;
-  background-color: #0d0f13;
+  border-top: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-elevated);
   display: flex;
   align-items: center;
   justify-content: flex-end;

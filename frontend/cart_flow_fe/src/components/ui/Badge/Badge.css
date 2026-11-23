@@ -3,7 +3,7 @@
   align-items: center;
   gap: 5px;
   font-weight: 600;
-  border-radius: 9999px;
+  border-radius: var(--cf-radius-pill);
   line-height: 1.4;
   white-space: nowrap;
   user-select: none;
@@ -24,42 +24,42 @@
   line-height: 1;
 }
 
-/* Variants */
+/* Variants with Fluid Theme Support */
 .cf-ui-badge-completed {
-  background-color: #132719;
-  color: #4ade80;
-  border: 1px solid #1f3d28;
+  background-color: var(--cf-accent-primary-tint);
+  color: var(--cf-accent-primary);
+  border: 1px solid var(--cf-accent-primary);
 }
 
 .cf-ui-badge-warning {
-  background-color: #271f13;
-  color: #fbbf24;
-  border: 1px solid #3d301b;
+  background-color: var(--cf-accent-warning-tint);
+  color: var(--cf-accent-warning);
+  border: 1px solid var(--cf-accent-warning);
 }
 
 .cf-ui-badge-failed {
-  background-color: #2b1414;
-  color: #f87171;
-  border: 1px solid #421a1a;
+  background-color: var(--cf-accent-danger-tint);
+  color: var(--cf-accent-danger);
+  border: 1px solid var(--cf-accent-danger);
 }
 
 .cf-ui-badge-processing {
-  background-color: #122131;
-  color: #38bdf8;
-  border: 1px solid #1c354e;
+  background-color: var(--cf-accent-info-tint);
+  color: var(--cf-accent-info);
+  border: 1px solid var(--cf-accent-info);
 }
 
 .cf-ui-badge-neutral {
-  background-color: #161920;
-  color: #9ca3af;
-  border: 1px solid #232833;
+  background-color: var(--cf-bg-elevated);
+  color: var(--cf-text-muted);
+  border: 1px solid var(--cf-border-subtle);
 }
 
 .cf-ui-badge-mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  background-color: #131b15;
-  color: #86efac;
-  border: 1px solid #203525;
+  font-family: var(--cf-font-mono);
+  background-color: var(--cf-accent-primary-tint);
+  color: var(--cf-accent-primary);
+  border: 1px solid var(--cf-accent-primary);
   border-radius: 4px;
   font-weight: 500;
   letter-spacing: 0.04em;

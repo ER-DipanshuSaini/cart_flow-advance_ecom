@@ -1,0 +1,87 @@
+.cf-ui-datepicker-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.cf-datepicker-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--cf-text-muted);
+}
+
+.cf-datepicker-required {
+  color: var(--cf-accent-danger);
+}
+
+.cf-datepicker-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.cf-datepicker-left-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--cf-text-dim);
+  pointer-events: none;
+}
+
+.cf-datepicker-native-input {
+  width: 100%;
+  background-color: var(--cf-bg-input);
+  border: 1px solid var(--cf-border-subtle);
+  border-radius: var(--cf-radius-md);
+  color: var(--cf-text-main);
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.55rem 0.8rem 0.55rem 2.25rem;
+  outline: none;
+  cursor: pointer;
+  transition: var(--cf-transition);
+}
+
+.cf-datepicker-native-input:hover:not(:disabled) {
+  border-color: var(--cf-border-hover);
+}
+
+.cf-datepicker-native-input:focus {
+  border-color: var(--cf-border-focus);
+  box-shadow: 0 0 0 2px var(--cf-accent-primary-glow);
+}
+
+.cf-datepicker-native-input.has-error {
+  border-color: var(--cf-accent-danger);
+}
+
+.cf-datepicker-native-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Custom Calendar Icon inside Native Date Input for Dark/Light mode */
+.cf-datepicker-native-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+[data-theme="dark"] .cf-datepicker-native-input::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(0.8);
+}
+
+.cf-datepicker-native-input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+.cf-datepicker-error {
+  font-size: 0.72rem;
+  color: var(--cf-accent-danger);
+}
+
+.cf-datepicker-helper {
+  font-size: 0.72rem;
+  color: var(--cf-text-dim);
+}

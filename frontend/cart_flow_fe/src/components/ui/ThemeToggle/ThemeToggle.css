@@ -1,0 +1,60 @@
+.cf-ui-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  border-radius: var(--cf-radius-pill);
+  padding: 4px 10px 4px 4px;
+  cursor: pointer;
+  color: var(--cf-text-main);
+  transition: var(--cf-transition);
+  user-select: none;
+}
+
+.cf-ui-theme-toggle:hover {
+  border-color: var(--cf-border-hover);
+  background-color: var(--cf-bg-elevated);
+}
+
+.cf-toggle-thumb {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cf-bg-elevated);
+  border: 1px solid var(--cf-border-subtle);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
+}
+
+.cf-ui-theme-toggle.is-dark .cf-toggle-thumb {
+  background: #182219;
+  border-color: #243826;
+  color: #86efac;
+}
+
+.cf-ui-theme-toggle.is-light .cf-toggle-thumb {
+  background: #fef3c7;
+  border-color: #fde68a;
+  color: #d97706;
+}
+
+.cf-toggle-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cf-toggle-sm {
+  padding: 3px 8px 3px 3px;
+}
+.cf-toggle-sm .cf-toggle-thumb {
+  width: 20px;
+  height: 20px;
+}
+.cf-toggle-sm .cf-toggle-label {
+  font-size: 0.68rem;
+}

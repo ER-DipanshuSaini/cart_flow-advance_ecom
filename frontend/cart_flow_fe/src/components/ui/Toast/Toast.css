@@ -15,12 +15,12 @@
   align-items: flex-start;
   gap: 12px;
   padding: 12px 14px;
-  border-radius: 8px;
-  background-color: #121418;
-  border: 1px solid #1f242d;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border-radius: var(--cf-radius-md);
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  box-shadow: var(--cf-shadow-float);
   animation: cf-toast-slide 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  color: #f3f4f6;
+  color: var(--cf-text-main);
 }
 
 .cf-ui-toast-icon-wrap {
@@ -40,49 +40,49 @@
 
 .cf-ui-toast-msg {
   font-size: 0.76rem;
-  color: #9ca3af;
+  color: var(--cf-text-muted);
   margin-top: 3px;
   line-height: 1.4;
 }
 
 .cf-ui-toast-close {
-  color: #646c7a;
+  color: var(--cf-text-dim);
   padding: 2px;
   cursor: pointer;
   transition: color 0.15s ease;
 }
 
 .cf-ui-toast-close:hover {
-  color: #ffffff;
+  color: var(--cf-text-main);
 }
 
 /* Types */
 .cf-ui-toast-success {
-  border-left: 3px solid #22c55e;
+  border-left: 3px solid var(--cf-accent-primary);
 }
 .cf-ui-toast-success .cf-ui-toast-icon-wrap {
-  color: #4ade80;
+  color: var(--cf-accent-primary);
 }
 
 .cf-ui-toast-error {
-  border-left: 3px solid #ef4444;
+  border-left: 3px solid var(--cf-accent-danger);
 }
 .cf-ui-toast-error .cf-ui-toast-icon-wrap {
-  color: #f87171;
+  color: var(--cf-accent-danger);
 }
 
 .cf-ui-toast-warning {
-  border-left: 3px solid #f59e0b;
+  border-left: 3px solid var(--cf-accent-warning);
 }
 .cf-ui-toast-warning .cf-ui-toast-icon-wrap {
-  color: #fbbf24;
+  color: var(--cf-accent-warning);
 }
 
 .cf-ui-toast-info {
-  border-left: 3px solid #38bdf8;
+  border-left: 3px solid var(--cf-accent-info);
 }
 .cf-ui-toast-info .cf-ui-toast-icon-wrap {
-  color: #38bdf8;
+  color: var(--cf-accent-info);
 }
 
 @keyframes cf-toast-slide {

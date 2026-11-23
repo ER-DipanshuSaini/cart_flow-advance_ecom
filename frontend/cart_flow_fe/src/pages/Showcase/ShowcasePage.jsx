@@ -3,13 +3,21 @@ import {
   Button,
   Badge,
   Tabs,
+  ThemeToggle,
   Input,
   Select,
   Toggle,
   Textarea,
+  Dropdown,
+  DatePicker,
   Card,
   MetricCard,
   Table,
+  Pagination,
+  WaveLoader,
+  OverlayLoader,
+  Skeleton,
+  Drawer,
   Modal,
   Toast,
   ToastContainer,
@@ -25,40 +33,67 @@ import {
   Lock,
   Mail,
   Zap,
-  CheckCircle2,
-  AlertTriangle,
+  Globe,
+  Sparkles,
+  Server,
+  Database,
   ShoppingBag,
-  Bell,
-  Code2,
+  ArrowRight,
 } from 'lucide-react';
 import './ShowcasePage.css';
 
 const SHOWCASE_TABS = [
-  { id: 'buttons', label: 'Buttons & Badges', count: 9 },
-  { id: 'forms', label: 'Forms & Inputs', count: 6 },
+  { id: 'loaders', label: 'Wave Loader', count: 1 },
+  { id: 'forms', label: 'Forms, Dropdown & DatePicker', count: 6 },
+  { id: 'tables', label: 'Paginated Tables', count: 1 },
+  { id: 'buttons', label: 'Buttons & Badges', count: 8 },
   { id: 'cards', label: 'Cards & Metrics', count: 5 },
-  { id: 'tables', label: 'Data Tables', count: 1 },
-  { id: 'feedback', label: 'Modals & Toasters', count: 2 },
-  { id: 'ecommerce', label: 'Cart & Checkout', count: 2 },
+  { id: 'feedback', label: 'Modals, Toasters & Drawer', count: 3 },
+  { id: 'ecommerce', label: 'Cart Drawer & Checkout', count: 3 },
+];
+
+const REGION_OPTIONS = [
+  { label: 'FastAPI AI Cluster (US-East)', sublabel: 'Low latency GPU inference', value: 'us-east', icon: Server },
+  { label: 'DRF Core Backend (EU-Central)', sublabel: 'PostgreSQL & Redis cache', value: 'eu-central', icon: Database },
+  { label: 'Global Edge CDN (Singapore)', sublabel: 'Static asset delivery', value: 'sg-edge', icon: Globe },
+  { label: 'Virtual Try-On Engine (Beta)', sublabel: 'Diffusers & ONNX runtime', value: 'tryon-ai', icon: Sparkles },
+];
+
+const FULL_PROCESS_DATA = [
+  { sr: 1, id: 'TRY-0067', product: 'Black Cable Knit Crop Sweater – Mock Neck', status: 'Quota exceeded', user: 'USR-0441', tokens: 0, time: '12:13 AM' },
+  { sr: 2, id: 'TRY-0066', product: 'Sky Blue Cable Knit Crop Sweater – Crew Neck', status: 'Completed', user: 'USR-0441', tokens: '3,151', time: '12:11 AM' },
+  { sr: 3, id: 'TRY-0065', product: "Men's Sky Blue & White Micro-Check Shirt", status: 'Quota exceeded', user: 'USR-0212', tokens: 0, time: '10:18 PM' },
+  { sr: 4, id: 'TRY-0064', product: "Men's Sky Blue & White Micro-Check Shirt", status: 'Completed', user: 'USR-0212', tokens: '3,150', time: '10:15 PM' },
+  { sr: 5, id: 'TRY-0063', product: 'Forest Green Oversized Zip-Up Hoodie', status: 'Completed', user: 'USR-0176', tokens: '3,150', time: '10:43 AM' },
+  { sr: 6, id: 'TRY-0062', product: 'Charcoal Minimalist Wool Overcoat', status: 'Completed', user: 'USR-0922', tokens: '3,200', time: '09:20 AM' },
+  { sr: 7, id: 'TRY-0061', product: 'Relaxed Fit Tailored Pleated Trousers', status: 'Failed', user: 'USR-0811', tokens: 0, time: '08:45 AM' },
+  { sr: 8, id: 'TRY-0060', product: 'Raw Indigo Selvedge Denim Jacket', status: 'Completed', user: 'USR-0554', tokens: '3,145', time: '07:12 AM' },
+  { sr: 9, id: 'TRY-0059', product: 'Italian Leather Derby Brogues', status: 'Processing', user: 'USR-0310', tokens: '1,500', time: '06:50 AM' },
+  { sr: 10, id: 'TRY-0058', product: 'Textured Waffle Knit Beanie', status: 'Completed', user: 'USR-0102', tokens: '2,900', time: '05:30 AM' },
+  { sr: 11, id: 'TRY-0057', product: 'Cashmere Ribbed Turtleneck Sweater', status: 'Completed', user: 'USR-0441', tokens: '3,180', time: '04:15 AM' },
+  { sr: 12, id: 'TRY-0056', product: 'Water-Resistant Technical Parka', status: 'Quota exceeded', user: 'USR-0789', tokens: 0, time: '03:00 AM' },
 ];
 
 export default function ShowcasePage() {
-  const [activeTab, setActiveTab] = useState('buttons');
+  const [activeTab, setActiveTab] = useState('loaders');
 
-  // Interactive Form States
-  const [inputValue, setInputValue] = useState('');
-  const [selectValue, setSelectValue] = useState('us');
+  // Form states
+  const [selectedRegion, setSelectedRegion] = useState('us-east');
+  const [selectedDate, setSelectedDate] = useState('2026-11-24');
   const [toggleActive, setToggleActive] = useState(true);
-  const [textareaValue, setTextareaValue] = useState('');
 
-  // Interactive Modal State
+  // Overlay Loader State
+  const [isSimulatingAI, setIsSimulatingAI] = useState(false);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(4);
+
+  // Overlays / Drawer states
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // Interactive Toast State
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [toasts, setToasts] = useState([]);
-
-  // Interactive Cart State
-  const [cartQuantity, setCartQuantity] = useState(2);
+  const [cartQuantity, setCartQuantity] = useState(1);
 
   const addToast = (type, title, message) => {
     const id = Date.now();
@@ -72,9 +107,13 @@ export default function ShowcasePage() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  // Demo Table Columns & Data (Atomic & Reusable)
+  const paginatedRows = FULL_PROCESS_DATA.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   const tableColumns = [
-    { label: 'Sr. No.', key: 'sr', width: '70px', cellClassName: 'cf-table-cell-muted' },
+    { label: 'Sr.', key: 'sr', width: '50px', cellClassName: 'cf-table-cell-muted' },
     { label: 'Process ID', key: 'id', width: '130px', cellClassName: 'cf-table-cell-mono' },
     { label: 'Product Name', key: 'product' },
     {
@@ -83,7 +122,15 @@ export default function ShowcasePage() {
       width: '160px',
       render: (status) => (
         <Badge
-          variant={status === 'Completed' ? 'completed' : status === 'Quota exceeded' ? 'warning' : 'failed'}
+          variant={
+            status === 'Completed'
+              ? 'completed'
+              : status === 'Quota exceeded'
+              ? 'warning'
+              : status === 'Processing'
+              ? 'processing'
+              : 'failed'
+          }
           dot={true}
         >
           {status}
@@ -92,34 +139,31 @@ export default function ShowcasePage() {
     },
     { label: 'User ID', key: 'user', width: '120px', cellClassName: 'cf-table-cell-muted' },
     { label: 'Tokens', key: 'tokens', width: '100px' },
-  ];
-
-  const tableData = [
-    { sr: 1, id: 'TRY-0067', product: 'Black Cable Knit Crop Sweater – Mock Neck', status: 'Quota exceeded', user: 'USR-0441', tokens: 0 },
-    { sr: 2, id: 'TRY-0066', product: 'Sky Blue Cable Knit Crop Sweater – Crew Neck', status: 'Completed', user: 'USR-0441', tokens: '3,151' },
-    { sr: 3, id: 'TRY-0065', product: "Men's Sky Blue & White Micro-Check Shirt", status: 'Quota exceeded', user: 'USR-0212', tokens: 0 },
-    { sr: 4, id: 'TRY-0064', product: "Men's Sky Blue & White Micro-Check Shirt", status: 'Completed', user: 'USR-0212', tokens: '3,150' },
+    { label: 'Time', key: 'time', width: '100px', cellClassName: 'cf-table-cell-muted' },
   ];
 
   return (
     <div className="cf-showcase-container">
-      {/* Toast Notification Mount */}
       <ToastContainer toasts={toasts} onClose={removeToast} />
 
-      {/* Header Banner */}
+      {/* Header Banner with Live Theme Toggle */}
       <header className="cf-showcase-header">
-        <div className="cf-showcase-badge-row">
-          <Badge variant="mono">• ATOMIC COMPONENT LIBRARY</Badge>
-          <Badge variant="completed">DARK THEME PRIMITIVES</Badge>
+        <div className="cf-showcase-top-bar">
+          <div className="cf-showcase-badge-row">
+            <Badge variant="mono">• ATOMIC COMPONENT LIBRARY</Badge>
+            <Badge variant="completed">THEME-READY</Badge>
+          </div>
+          <ThemeToggle size="md" />
         </div>
+
         <h1 className="cf-showcase-title">
           CartFlow <span>UI Kit</span>
         </h1>
         <p className="cf-showcase-desc">
-          Pure, unstyled-data atomic components designed in Obsidian & Neon Green palette. Ready for custom layout placement.
+          Clean, decoupled component primitives in Dark & Light modes. Ready for custom placement across your application.
         </p>
 
-        {/* Navigation Tabs */}
+        {/* Tab Navigation */}
         <div className="cf-showcase-tabs-wrapper">
           <Tabs tabs={SHOWCASE_TABS} activeTab={activeTab} onChange={setActiveTab} />
         </div>
@@ -127,45 +171,181 @@ export default function ShowcasePage() {
 
       {/* Main Tab Content */}
       <main className="cf-showcase-body">
-        {/* 1. Buttons & Badges */}
-        {activeTab === 'buttons' && (
+        {/* 1. Wave Loader */}
+        {activeTab === 'loaders' && (
           <section className="cf-showcase-section">
-            <h3 className="cf-section-heading">Button Variants & Sizes</h3>
+            <h3 className="cf-section-heading">Modern Wave Equalizer Loader</h3>
             <div className="cf-component-grid">
               <Card>
-                <Card.Header title="Button Styles" subtitle="All standardized action variants" />
+                <Card.Header title="Wave Equalizer Indicator" subtitle="Clean cybernetic wave bars matching reference" />
                 <Card.Body>
-                  <div className="cf-flex-wrap">
-                    <Button variant="primary" icon={Zap}>Primary Action</Button>
-                    <Button variant="secondary">Secondary Dark</Button>
-                    <Button variant="outline">Outline Border</Button>
-                    <Button variant="danger">Danger / Delete</Button>
-                    <Button variant="ghost">Ghost Plain</Button>
-                    <Button variant="primary" loading={true}>Processing</Button>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', padding: '1rem 0' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                      <WaveLoader />
+                      <span style={{ fontSize: '0.85rem', color: 'var(--cf-text-muted)' }}>
+                        Active Wave Equalizer (5 Animated Bars)
+                      </span>
+                    </div>
+
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <Button
+                        size="md"
+                        variant="primary"
+                        onClick={() => {
+                          setIsSimulatingAI(true);
+                          setTimeout(() => setIsSimulatingAI(false), 2500);
+                        }}
+                      >
+                        {isSimulatingAI ? 'Simulating...' : 'Test Full Card Overlay (2.5s)'}
+                      </Button>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+
+              {/* Shimmer Skeletons */}
+              <Card>
+                <Card.Header title="Placeholder Skeletons" subtitle="Smooth placeholder loading animations" />
+                <Card.Body>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <Skeleton.Circle size={44} />
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <Skeleton width="45%" height="14px" />
+                        <Skeleton width="80%" height="12px" />
+                      </div>
+                    </div>
+                    <Skeleton height="18px" />
+                    <Skeleton width="70%" height="14px" />
+                  </div>
+                </Card.Body>
+              </Card>
+
+              {/* Card with Overlay Loader Simulator */}
+              <Card style={{ gridColumn: '1 / -1', position: 'relative' }}>
+                <Card.Header
+                  title="Card Loading State"
+                  subtitle="Overlay loader with Wave Equalizer animation"
+                />
+                <Card.Body>
+                  <p style={{ color: 'var(--cf-text-muted)', fontSize: '0.88rem', lineHeight: '1.6' }}>
+                    When users initiate an AI try-on generation or heavy background process, this overlay loader blurs the container and presents the animated wave indicator.
+                  </p>
+                </Card.Body>
+
+                {isSimulatingAI && (
+                  <OverlayLoader
+                    message="Processing Try-On Generation..."
+                    subtext="Running diffusion model inference"
+                  />
+                )}
+              </Card>
+            </div>
+          </section>
+        )}
+
+        {/* 2. Forms, Rich Dropdown & DatePicker */}
+        {activeTab === 'forms' && (
+          <section className="cf-showcase-section">
+            <h3 className="cf-section-heading">Form Controls, Searchable Dropdown & DatePicker</h3>
+            <div className="cf-component-grid">
+              <Card>
+                <Card.Header title="Searchable Rich Dropdown" subtitle="Custom options with icons, subtext & search filter" />
+                <Card.Body>
+                  <Dropdown
+                    label="Target Service Microservice"
+                    options={REGION_OPTIONS}
+                    value={selectedRegion}
+                    onChange={setSelectedRegion}
+                    searchable={true}
+                    helperText="Custom searchable dropdown component"
+                  />
+
+                  <div style={{ marginTop: '1.5rem' }}>
+                    <Input
+                      label="API Gateway Endpoint"
+                      placeholder="https://api.cartflow.internal/v1/"
+                      icon={Globe}
+                    />
                   </div>
                 </Card.Body>
               </Card>
 
               <Card>
-                <Card.Header title="Button Sizes" subtitle="sm, md, lg options" />
+                <Card.Header title="Standard Native DatePicker" subtitle="Reliable browser native calendar with custom look & feel" />
                 <Card.Body>
-                  <div className="cf-flex-wrap" style={{ alignItems: 'center' }}>
-                    <Button size="sm" variant="outline">Small Button</Button>
-                    <Button size="md" variant="primary">Medium (Default)</Button>
-                    <Button size="lg" variant="secondary">Large Action</Button>
+                  <DatePicker
+                    label="Process Generation Date"
+                    value={selectedDate}
+                    onChange={setSelectedDate}
+                    helperText="Click to open standard calendar picker (never clipped, fully responsive)"
+                  />
+
+                  <div style={{ marginTop: '1.5rem' }}>
+                    <Toggle
+                      label="Auto-archive logs older than selected date"
+                      sublabel="Exports completed try-on sessions to cloud storage"
+                      checked={toggleActive}
+                      onChange={setToggleActive}
+                    />
+                  </div>
+                </Card.Body>
+              </Card>
+            </div>
+          </section>
+        )}
+
+        {/* 3. Paginated Tables */}
+        {activeTab === 'tables' && (
+          <section className="cf-showcase-section">
+            <h3 className="cf-section-heading">Data Table with Interactive Pagination</h3>
+            <Table
+              columns={tableColumns}
+              data={paginatedRows}
+              keyField="id"
+              onRowClick={(row) => addToast('info', 'Row Inspected', `Process ${row.id} - ${row.product}`)}
+              pagination={{
+                currentPage,
+                pageSize,
+                totalItems: FULL_PROCESS_DATA.length,
+                pageSizeOptions: [3, 4, 6, 12],
+                onPageChange: setCurrentPage,
+                onPageSizeChange: (newSize) => {
+                  setPageSize(newSize);
+                  setCurrentPage(1);
+                },
+              }}
+            />
+          </section>
+        )}
+
+        {/* 4. Buttons & Badges */}
+        {activeTab === 'buttons' && (
+          <section className="cf-showcase-section">
+            <h3 className="cf-section-heading">Action Buttons & Status Badges</h3>
+            <div className="cf-component-grid">
+              <Card>
+                <Card.Header title="Button Variants" subtitle="Adapts seamlessly to Dark & Light themes" />
+                <Card.Body>
+                  <div className="cf-flex-wrap">
+                    <Button variant="primary" icon={Zap}>Primary Button</Button>
+                    <Button variant="secondary">Secondary Button</Button>
+                    <Button variant="outline">Outline</Button>
+                    <Button variant="danger">Danger</Button>
+                    <Button variant="ghost">Ghost</Button>
                   </div>
                 </Card.Body>
               </Card>
 
-              <Card style={{ gridColumn: '1 / -1' }}>
-                <Card.Header title="Status Badges & Monospace Tags" subtitle="State indicators matching screenshot" />
+              <Card>
+                <Card.Header title="Status Badges" subtitle="Bullet dots and monospace identifiers" />
                 <Card.Body>
                   <div className="cf-flex-wrap" style={{ alignItems: 'center' }}>
                     <Badge variant="completed" dot={true}>Completed</Badge>
                     <Badge variant="warning" dot={true}>Quota exceeded</Badge>
-                    <Badge variant="failed" dot={true}>Failed / Error</Badge>
+                    <Badge variant="failed" dot={true}>Failed</Badge>
                     <Badge variant="processing" dot={true}>Processing</Badge>
-                    <Badge variant="neutral">Neutral Tag</Badge>
+                    <Badge variant="neutral">Neutral</Badge>
                     <Badge variant="mono">TRY-0067</Badge>
                     <Badge variant="mono">USR-0441</Badge>
                   </div>
@@ -175,82 +355,10 @@ export default function ShowcasePage() {
           </section>
         )}
 
-        {/* 2. Form Inputs */}
-        {activeTab === 'forms' && (
-          <section className="cf-showcase-section">
-            <h3 className="cf-section-heading">Form Input Controls</h3>
-            <div className="cf-component-grid">
-              <Card>
-                <Card.Header title="Text & Password Inputs" subtitle="Icons, validation, and states" />
-                <Card.Body>
-                  <div className="cf-form-stack">
-                    <Input
-                      label="Search Query"
-                      placeholder="Search processes, users..."
-                      icon={Search}
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      helperText="Type to test live reactive input"
-                    />
-                    <Input
-                      label="Email Address"
-                      type="email"
-                      required={true}
-                      placeholder="admin@cartflow.com"
-                      icon={Mail}
-                    />
-                    <Input
-                      label="Secure Key"
-                      type="password"
-                      placeholder="••••••••••••"
-                      icon={Lock}
-                      error={inputValue.length > 0 && inputValue.length < 3 ? 'Query must be at least 3 chars' : undefined}
-                    />
-                  </div>
-                </Card.Body>
-              </Card>
-
-              <Card>
-                <Card.Header title="Select, Textarea & Toggles" subtitle="Dropdown and switch controls" />
-                <Card.Body>
-                  <div className="cf-form-stack">
-                    <Select
-                      label="AI Model Service Region"
-                      value={selectValue}
-                      onChange={(e) => setSelectValue(e.target.value)}
-                      options={[
-                        { label: 'US East (FastAPI Cluster)', value: 'us' },
-                        { label: 'EU Central (GPU Accelerated)', value: 'eu' },
-                        { label: 'Asia Pacific (Edge Low-Latency)', value: 'ap' },
-                      ]}
-                    />
-
-                    <Textarea
-                      label="System Prompt / Configuration"
-                      placeholder="Enter AI model inference parameters..."
-                      value={textareaValue}
-                      onChange={(e) => setTextareaValue(e.target.value)}
-                    />
-
-                    <div style={{ paddingTop: '0.5rem' }}>
-                      <Toggle
-                        label="Enable FastAPI Try-On Webhooks"
-                        sublabel="Stream live frame generation outcomes to DRF backend"
-                        checked={toggleActive}
-                        onChange={setToggleActive}
-                      />
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-            </div>
-          </section>
-        )}
-
-        {/* 3. Cards & Metric Cards */}
+        {/* 5. Cards & Metrics */}
         {activeTab === 'cards' && (
           <section className="cf-showcase-section">
-            <h3 className="cf-section-heading">Cards & Metric Primitives</h3>
+            <h3 className="cf-section-heading">Metrics & Compound Cards</h3>
             <div className="cf-metrics-grid">
               <MetricCard
                 title="Try-on processes"
@@ -279,98 +387,56 @@ export default function ShowcasePage() {
                 icon={Clock}
               />
             </div>
-
-            <div style={{ marginTop: '1.5rem' }}>
-              <Card hoverable={true}>
-                <Card.Header
-                  title="Generic Compound Card"
-                  subtitle="Card.Header, Card.Body, and Card.Footer"
-                  action={<Badge variant="completed">Active</Badge>}
-                />
-                <Card.Body>
-                  <p style={{ color: '#9ca3af', fontSize: '0.85rem', lineHeight: '1.6' }}>
-                    This card component is completely flexible. You can place tables, charts, forms, or media inside it. It supports hoverable lift transitions, highlighted bottom borders, and custom action slots.
-                  </p>
-                </Card.Body>
-                <Card.Footer>
-                  <Button variant="ghost">Cancel</Button>
-                  <Button variant="primary">Save Configuration</Button>
-                </Card.Footer>
-              </Card>
-            </div>
           </section>
         )}
 
-        {/* 4. Data Tables */}
-        {activeTab === 'tables' && (
-          <section className="cf-showcase-section">
-            <h3 className="cf-section-heading">Reusable Data Table Primitive</h3>
-            <Card>
-              <Card.Header
-                title="Process & Inventory Table"
-                subtitle="Configurable columns with custom cell rendering and status tags"
-              />
-              <Table
-                columns={tableColumns}
-                data={tableData}
-                keyField="id"
-                onRowClick={(row) => addToast('info', 'Row Clicked', `Selected process ${row.id}`)}
-              />
-            </Card>
-          </section>
-        )}
-
-        {/* 5. Modals & Toasters */}
+        {/* 6. Modals, Toasters & Right-Side Drawer */}
         {activeTab === 'feedback' && (
           <section className="cf-showcase-section">
-            <h3 className="cf-section-heading">Interactive Modals & Message Toasters</h3>
+            <h3 className="cf-section-heading">Feedback, Dialogs & Right-Side Drawer</h3>
             <div className="cf-component-grid">
               <Card>
-                <Card.Header title="Message Toasters" subtitle="Click buttons to trigger floating notification toasts" />
+                <Card.Header title="Toast Alerts" subtitle="Trigger live floating notifications" />
                 <Card.Body>
                   <div className="cf-flex-wrap">
                     <Button
                       variant="primary"
-                      onClick={() => addToast('success', 'Generation Completed', 'Try-On process TRY-0068 finished in 14.2s')}
+                      onClick={() => addToast('success', 'Generation Completed', 'Process TRY-0068 finished in 14.2s')}
                     >
-                      Trigger Success Toast
+                      Trigger Success
                     </Button>
                     <Button
                       variant="secondary"
-                      onClick={() => addToast('warning', 'Quota Limit Warning', 'Your workspace has consumed 85% of monthly tokens')}
+                      onClick={() => addToast('warning', 'Quota Limit Warning', '85% of monthly tokens consumed')}
                     >
-                      Trigger Warning Toast
+                      Trigger Warning
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => addToast('error', 'Inference Failure', 'FastAPI microservice returned 504 Gateway Timeout')}
+                      onClick={() => addToast('error', 'Microservice Error', 'FastAPI 504 Gateway Timeout')}
                     >
-                      Trigger Error Toast
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => addToast('info', 'System Update', 'Database schema migration complete')}
-                    >
-                      Trigger Info Toast
+                      Trigger Error
                     </Button>
                   </div>
                 </Card.Body>
               </Card>
 
               <Card>
-                <Card.Header title="Modal Dialog" subtitle="Backdrop blur, animated entrance & actions" />
+                <Card.Header title="Modal & Drawer Triggers" subtitle="Center Dialog or Right-Side Slide-Over" />
                 <Card.Body>
-                  <p style={{ color: '#9ca3af', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                    Click below to open the reusable Modal component. Supports keyboard ESC close, outside click dismiss, and custom footers.
-                  </p>
-                  <Button variant="secondary" icon={Layers} onClick={() => setIsModalOpen(true)}>
-                    Open Demo Modal
-                  </Button>
+                  <div className="cf-flex-wrap">
+                    <Button variant="secondary" icon={Layers} onClick={() => setIsModalOpen(true)}>
+                      Open Centered Modal
+                    </Button>
+                    <Button variant="primary" icon={ShoppingBag} onClick={() => setIsDrawerOpen(true)}>
+                      Open Right Sidebar Drawer
+                    </Button>
+                  </div>
                 </Card.Body>
               </Card>
             </div>
 
-            {/* The Actual Modal Component */}
+            {/* Modal Component */}
             <Modal
               isOpen={isModalOpen}
               onClose={() => setIsModalOpen(false)}
@@ -379,50 +445,62 @@ export default function ShowcasePage() {
               footer={
                 <>
                   <Button variant="ghost" onClick={() => setIsModalOpen(false)}>Close</Button>
-                  <Button variant="primary" onClick={() => {
-                    setIsModalOpen(false);
-                    addToast('success', 'Changes Saved', 'Process parameters updated');
-                  }}>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      setIsModalOpen(false);
+                      addToast('success', 'Changes Saved', 'Process parameters updated');
+                    }}
+                  >
                     Confirm & Apply
                   </Button>
                 </>
               }
             >
               <div>
-                <p style={{ marginBottom: '1rem' }}>
-                  This modal is completely decoupled. You can pass any children (form fields, confirmation prompts, JSON inspectors).
+                <p style={{ marginBottom: '1rem', color: 'var(--cf-text-muted)', fontSize: '0.85rem' }}>
+                  Decoupled modal component accepting custom inputs and action footers.
                 </p>
-                <Input label="Process Name" placeholder="Overcoat Autumn Inference" />
+                <Input label="Process Tag" placeholder="e.g. Autumn Trench Fitting" />
               </div>
             </Modal>
           </section>
         )}
 
-        {/* 6. Cart & Checkout */}
+        {/* 7. Cart & Checkout */}
         {activeTab === 'ecommerce' && (
           <section className="cf-showcase-section">
-            <h3 className="cf-section-heading">Cart & Checkout Primitives</h3>
+            <h3 className="cf-section-heading">Cart Items, Order Summary & Right Cart Drawer</h3>
             <div className="cf-component-grid">
-              {/* Cart Item Primitive */}
               <Card>
-                <Card.Header title="Cart Item Component" subtitle="Quantity controls, image thumbnail & price total" />
+                <Card.Header
+                  title="Cart Item Component"
+                  subtitle="Quantity controls, image thumbnail & price total"
+                  action={
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      icon={ShoppingBag}
+                      onClick={() => setIsDrawerOpen(true)}
+                    >
+                      Open Cart Drawer
+                    </Button>
+                  }
+                />
                 <Card.Body>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                    <CartItem
-                      id="item-1"
-                      title="Black Cable Knit Crop Sweater"
-                      variant="Size: M • Color: Obsidian Black"
-                      price={120.0}
-                      quantity={cartQuantity}
-                      imageUrl="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80"
-                      onQuantityChange={(_, qty) => setCartQuantity(qty)}
-                      onRemove={() => addToast('warning', 'Item Removed', 'Product removed from cart')}
-                    />
-                  </div>
+                  <CartItem
+                    id="item-1"
+                    title="Black Cable Knit Crop Sweater"
+                    variant="Size: M • Color: Obsidian Black"
+                    price={120.0}
+                    quantity={cartQuantity}
+                    imageUrl="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80"
+                    onQuantityChange={(_, qty) => setCartQuantity(qty)}
+                    onRemove={() => addToast('warning', 'Item Removed', 'Product removed from cart')}
+                  />
                 </Card.Body>
               </Card>
 
-              {/* Order Summary Primitive */}
               <OrderSummary
                 subtotal={120.0 * cartQuantity}
                 shipping={0}
@@ -433,6 +511,55 @@ export default function ShowcasePage() {
             </div>
           </section>
         )}
+
+        {/* The Right-Side Drawer Component (Tested Live) */}
+        <Drawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          title={
+            <>
+              <ShoppingBag size={18} />
+              <span>Your Shopping Cart</span>
+              <Badge variant="completed" size="sm">1</Badge>
+            </>
+          }
+          subtitle="Review selected items before proceeding to checkout"
+          footer={
+            <>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', fontWeight: '600', marginBottom: '4px' }}>
+                <span style={{ color: 'var(--cf-text-muted)' }}>Subtotal:</span>
+                <span style={{ color: 'var(--cf-accent-primary)', fontSize: '1.1rem', fontWeight: '700' }}>
+                  ${(120.0 * cartQuantity).toFixed(2)}
+                </span>
+              </div>
+              <Button
+                variant="primary"
+                size="lg"
+                iconRight={ArrowRight}
+                onClick={() => {
+                  setIsDrawerOpen(false);
+                  addToast('success', 'Checkout Started', 'Proceeding to secure checkout...');
+                }}
+              >
+                Proceed to Checkout
+              </Button>
+            </>
+          }
+        >
+          <CartItem
+            id="drawer-item-1"
+            title="Black Cable Knit Crop Sweater"
+            variant="Size: M • Color: Obsidian Black"
+            price={120.0}
+            quantity={cartQuantity}
+            imageUrl="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=300&q=80"
+            onQuantityChange={(_, qty) => setCartQuantity(qty)}
+            onRemove={() => {
+              setIsDrawerOpen(false);
+              addToast('warning', 'Item Removed', 'Product removed from cart');
+            }}
+          />
+        </Drawer>
       </main>
     </div>
   );
