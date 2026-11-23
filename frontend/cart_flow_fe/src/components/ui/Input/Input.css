@@ -1,0 +1,200 @@
+/* Dark Form Controls */
+.cf-ui-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.cf-ui-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.cf-ui-required {
+  color: #ef4444;
+}
+
+.cf-ui-input-wrapper,
+.cf-ui-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.cf-ui-input-icon-left {
+  position: absolute;
+  left: 0.75rem;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.cf-ui-input-icon-right {
+  position: absolute;
+  right: 0.75rem;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+.cf-ui-input,
+.cf-ui-select,
+.cf-ui-textarea {
+  width: 100%;
+  background-color: #0e1014;
+  border: 1px solid #1f242d;
+  border-radius: 6px;
+  color: #f3f4f6;
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.55rem 0.8rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cf-ui-input::placeholder,
+.cf-ui-textarea::placeholder {
+  color: #525a66;
+}
+
+.cf-ui-input.has-left-icon {
+  padding-left: 2.25rem;
+}
+
+.cf-ui-input.has-right-icon {
+  padding-right: 2.25rem;
+}
+
+.cf-ui-input:focus,
+.cf-ui-select:focus,
+.cf-ui-textarea:focus {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.15);
+}
+
+.cf-ui-input.has-error,
+.cf-ui-select.has-error,
+.cf-ui-textarea.has-error {
+  border-color: #ef4444;
+}
+
+.cf-ui-input.has-error:focus,
+.cf-ui-select.has-error:focus,
+.cf-ui-textarea.has-error:focus {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15);
+}
+
+.cf-ui-input:disabled,
+.cf-ui-select:disabled,
+.cf-ui-textarea:disabled {
+  background-color: #16181d;
+  border-color: #262930;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Select */
+.cf-ui-select {
+  appearance: none;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+
+.cf-ui-select option {
+  background-color: #111317;
+  color: #f3f4f6;
+}
+
+.cf-ui-select-arrow {
+  position: absolute;
+  right: 0.75rem;
+  color: #6b7280;
+  pointer-events: none;
+}
+
+/* Textarea */
+.cf-ui-textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.cf-ui-field-error {
+  font-size: 0.72rem;
+  color: #ef4444;
+}
+
+.cf-ui-field-helper {
+  font-size: 0.72rem;
+  color: #646c7a;
+}
+
+/* Toggle Switch */
+.cf-ui-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.cf-ui-toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.cf-ui-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cf-ui-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #1e2430;
+  border: 1px solid #2d3340;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cf-ui-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #9ca3af;
+  border-radius: 50%;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cf-ui-toggle-switch input:checked + .cf-ui-toggle-slider {
+  background-color: #14291e;
+  border-color: #22c55e;
+}
+
+.cf-ui-toggle-switch input:checked + .cf-ui-toggle-slider:before {
+  transform: translateX(16px);
+  background-color: #4ade80;
+}
+
+.cf-ui-toggle-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.cf-ui-toggle-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #f3f4f6;
+}
+
+.cf-ui-toggle-subtext {
+  font-size: 0.72rem;
+  color: #646c7a;
+}

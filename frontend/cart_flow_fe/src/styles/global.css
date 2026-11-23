@@ -1,0 +1,52 @@
+@import './variables.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--cf-font-sans);
+  background-color: var(--cf-white);
+  color: var(--cf-black);
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+
+    /* Base Responsive Container */
+    .cf-container {
+      width: 100%;
+      max-width: var(--cf-max-width);
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+        @media (min-width: 1024px) {
+          .cf-container {
+            padding: 0 2.5rem;
+          }
+        }

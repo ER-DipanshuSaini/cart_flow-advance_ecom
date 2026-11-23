@@ -1,0 +1,91 @@
+.cf-admin-topnav {
+  height: 58px;
+  background-color: #0b0c0e;
+  border-bottom: 1px solid #1a1d24;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Breadcrumbs */
+.cf-admin-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.cf-crumb-parent {
+  color: #6b7280;
+}
+
+.cf-crumb-separator {
+  color: #4b5563;
+}
+
+.cf-crumb-current {
+  color: #e5e7eb;
+  font-weight: 500;
+}
+
+/* Actions */
+.cf-admin-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cf-storefront-switch-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  background-color: #12151a;
+  border: 1px solid #202633;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.cf-storefront-switch-btn:hover {
+  color: #ffffff;
+  border-color: #374151;
+  background-color: #181d24;
+}
+
+.cf-top-icon-btn {
+  color: #8b929e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.cf-top-icon-btn:hover {
+  color: #f3f4f6;
+  background-color: #161920;
+}
+
+.cf-top-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1f2937, #374151);
+  color: #f3f4f6;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #4b5563;
+  cursor: pointer;
+}
+
+.cf-exit-btn:hover {
+  color: #ef4444;
+}

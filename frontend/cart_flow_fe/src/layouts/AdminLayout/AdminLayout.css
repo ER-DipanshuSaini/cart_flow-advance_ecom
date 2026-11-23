@@ -1,0 +1,38 @@
+.cf-admin-app-root {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #0b0c0e;
+  color: #f3f4f6;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.cf-admin-main-viewport {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.cf-admin-content-area {
+  flex: 1;
+  overflow-y: auto;
+  background-color: #0b0c0e;
+}
+
+/* Custom Sleek Scrollbar for Admin Area */
+.cf-admin-content-area::-webkit-scrollbar {
+  width: 6px;
+}
+.cf-admin-content-area::-webkit-scrollbar-track {
+  background: #0b0c0e;
+}
+.cf-admin-content-area::-webkit-scrollbar-thumb {
+  background: #1f242d;
+  border-radius: 3px;
+}
+.cf-admin-content-area::-webkit-scrollbar-thumb:hover {
+  background: #2d3340;
+}

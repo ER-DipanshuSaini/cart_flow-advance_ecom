@@ -1,0 +1,66 @@
+.cf-ui-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  border-radius: 9999px;
+  line-height: 1.4;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.cf-ui-badge-sm {
+  padding: 1px 7px;
+  font-size: 0.7rem;
+}
+
+.cf-ui-badge-md {
+  padding: 2px 9px;
+  font-size: 0.74rem;
+}
+
+.cf-ui-badge-dot {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* Variants */
+.cf-ui-badge-completed {
+  background-color: #132719;
+  color: #4ade80;
+  border: 1px solid #1f3d28;
+}
+
+.cf-ui-badge-warning {
+  background-color: #271f13;
+  color: #fbbf24;
+  border: 1px solid #3d301b;
+}
+
+.cf-ui-badge-failed {
+  background-color: #2b1414;
+  color: #f87171;
+  border: 1px solid #421a1a;
+}
+
+.cf-ui-badge-processing {
+  background-color: #122131;
+  color: #38bdf8;
+  border: 1px solid #1c354e;
+}
+
+.cf-ui-badge-neutral {
+  background-color: #161920;
+  color: #9ca3af;
+  border: 1px solid #232833;
+}
+
+.cf-ui-badge-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background-color: #131b15;
+  color: #86efac;
+  border: 1px solid #203525;
+  border-radius: 4px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}

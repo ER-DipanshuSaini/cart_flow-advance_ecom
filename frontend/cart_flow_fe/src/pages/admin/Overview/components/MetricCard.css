@@ -1,0 +1,71 @@
+.cf-metric-card {
+  background-color: #111317;
+  border: 1px solid #1c2027;
+  border-radius: 8px;
+  padding: 1.25rem 1.25rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.cf-metric-card:hover {
+  border-color: #272d37;
+}
+
+.cf-metric-card.is-highlighted {
+  background-color: #131b15;
+  border-color: #203525;
+}
+
+.cf-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.cf-metric-title {
+  font-size: 0.78rem;
+  color: #8b929e;
+  font-weight: 500;
+}
+
+.cf-metric-icon {
+  color: #6b7280;
+}
+
+.cf-metric-body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+}
+
+.cf-metric-value {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #f3f4f6;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.cf-metric-corner-arrow {
+  color: #8b929e;
+}
+
+.cf-metric-subtext {
+  font-size: 0.73rem;
+  color: #646c7a;
+}
+
+/* Subtle gradient bottom accent for the primary card */
+.cf-metric-gradient-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #22c55e 0%, #a855f7 50%, #ec4899 100%);
+}

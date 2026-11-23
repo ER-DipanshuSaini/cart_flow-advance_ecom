@@ -1,0 +1,49 @@
+.cf-ui-tabs {
+  display: inline-flex;
+  align-items: center;
+  background-color: #111317;
+  border: 1px solid #1c2027;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 3px;
+}
+
+.cf-ui-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #8b929e;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cf-ui-tab-btn:hover {
+  color: #f3f4f6;
+  background-color: #161920;
+}
+
+.cf-ui-tab-btn.is-active {
+  background-color: #182219;
+  border-color: #243826;
+  color: #86efac;
+  font-weight: 600;
+}
+
+.cf-ui-tab-count {
+  font-size: 0.68rem;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background-color: #202633;
+  color: #9ca3af;
+}
+
+.cf-ui-tab-btn.is-active .cf-ui-tab-count {
+  background-color: #203525;
+  color: #86efac;
+}

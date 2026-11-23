@@ -1,0 +1,129 @@
+.cf-overview-page {
+  padding: 1.75rem 2rem 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Page Header */
+.cf-overview-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+
+.cf-overview-title {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #f3f4f6;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.cf-overview-subtitle {
+  font-size: 0.83rem;
+  color: #8b929e;
+  margin-top: 3px;
+}
+
+.cf-overview-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.cf-perf-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #8b929e;
+}
+
+.cf-perf-icon {
+  color: #6b7280;
+}
+
+.cf-refresh-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #121418;
+  border: 1px solid #242933;
+  color: #d1d5db;
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.cf-refresh-btn:hover {
+  background-color: #191c22;
+  color: #ffffff;
+  border-color: #374151;
+}
+
+.cf-refresh-btn.is-spinning svg {
+  animation: cf-spin 0.6s linear infinite;
+}
+
+/* KPI Cards Grid */
+.cf-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .cf-metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cf-metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Analytics Breakdown Grid */
+.cf-analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .cf-analytics-grid {
+    grid-template-columns: 1.15fr 1fr 1fr;
+  }
+}
+
+/* Console Footer Badge */
+.cf-console-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+}
+
+.cf-powered-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.73rem;
+  color: #8b929e;
+  background-color: #111317;
+  border: 1px solid #1c2027;
+  padding: 5px 12px;
+  border-radius: 9999px;
+}
+
+.cf-powered-icon {
+  color: #86efac;
+}
+
+.cf-powered-badge strong {
+  color: #e5e7eb;
+}

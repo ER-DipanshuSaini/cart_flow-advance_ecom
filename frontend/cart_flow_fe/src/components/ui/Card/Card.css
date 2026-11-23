@@ -1,0 +1,115 @@
+.cf-ui-card {
+  background-color: #111317;
+  border: 1px solid #1c2027;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.cf-ui-card.is-hoverable:hover {
+  border-color: #2b323e;
+  transform: translateY(-1px);
+}
+
+.cf-ui-card.is-highlighted {
+  background-color: #131b15;
+  border-color: #203525;
+}
+
+.cf-card-gradient-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #22c55e 0%, #a855f7 50%, #ec4899 100%);
+}
+
+.cf-ui-card-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #181b22;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cf-card-title-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.cf-card-heading {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #f3f4f6;
+}
+
+.cf-card-subheading {
+  font-size: 0.72rem;
+  color: #646c7a;
+  margin-top: 2px;
+}
+
+.cf-ui-card-body {
+  padding: 1.25rem;
+  flex: 1;
+}
+
+.cf-ui-card-footer {
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid #181b22;
+  background-color: #0e1014;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+/* Metric Card Specifics */
+.cf-metric-card-primitive {
+  padding: 1.25rem;
+}
+
+.cf-metric-primitive-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+}
+
+.cf-metric-primitive-title {
+  font-size: 0.78rem;
+  color: #8b929e;
+  font-weight: 500;
+}
+
+.cf-metric-primitive-icon {
+  color: #646c7a;
+}
+
+.cf-metric-primitive-mid {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+}
+
+.cf-metric-primitive-val {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #f3f4f6;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.cf-metric-primitive-arrow {
+  color: #8b929e;
+}
+
+.cf-metric-primitive-sub {
+  font-size: 0.73rem;
+  color: #646c7a;
+}

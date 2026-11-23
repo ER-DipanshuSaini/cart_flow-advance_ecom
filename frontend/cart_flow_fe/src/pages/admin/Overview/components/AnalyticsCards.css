@@ -1,0 +1,208 @@
+.cf-analytics-card {
+  background-color: #111317;
+  border: 1px solid #1c2027;
+  border-radius: 8px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.cf-card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.cf-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cf-check-icon,
+.cf-gear-icon,
+.cf-users-icon {
+  font-size: 0.85rem;
+  color: #8b929e;
+}
+
+.cf-analytics-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.cf-analytics-attempts {
+  font-size: 0.72rem;
+  color: #646c7a;
+}
+
+.cf-corner-top-arrow {
+  color: #646c7a;
+}
+
+/* Outcomes Content */
+.cf-outcomes-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.5rem 0;
+}
+
+.cf-donut-wrapper {
+  position: relative;
+  width: 105px;
+  height: 105px;
+  flex-shrink: 0;
+}
+
+.cf-donut-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.cf-donut-bg {
+  fill: none;
+  stroke: #1e2430;
+  stroke-width: 9;
+}
+
+.cf-donut-progress {
+  fill: none;
+  stroke: #a3e635;
+  stroke-width: 9;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.cf-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cf-donut-percent {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f3f4f6;
+  line-height: 1;
+}
+
+.cf-donut-sub {
+  font-size: 0.65rem;
+  color: #8b929e;
+  margin-top: 2px;
+}
+
+/* Legend */
+.cf-outcomes-legend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cf-legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+}
+
+.cf-legend-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #9ca3af;
+}
+
+.cf-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.cf-dot.is-green { background-color: #22c55e; }
+.cf-dot.is-blue { background-color: #38bdf8; }
+.cf-dot.is-red { background-color: #ef4444; }
+.cf-dot.is-amber { background-color: #f59e0b; }
+
+.cf-legend-val {
+  font-weight: 600;
+  color: #f3f4f6;
+}
+
+/* Distribution Body */
+.cf-distribution-body {
+  display: flex;
+  flex-direction: column;
+  padding: 0.25rem 0;
+}
+
+.cf-token-main-val {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #f3f4f6;
+  line-height: 1.1;
+}
+
+.cf-token-subtext {
+  font-size: 0.72rem;
+  color: #646c7a;
+  margin-top: 2px;
+  margin-bottom: 1.25rem;
+}
+
+.cf-split-progress-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #1e2430;
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
+}
+
+.cf-split-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #84cc16, #a3e635);
+  border-radius: 9999px;
+}
+
+.cf-split-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cf-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cf-meta-item.is-right {
+  align-items: flex-end;
+}
+
+.cf-meta-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: #8b929e;
+}
+
+.cf-meta-arrow {
+  color: #646c7a;
+}
+
+.cf-meta-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f3f4f6;
+}

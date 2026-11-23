@@ -1,0 +1,61 @@
+.cf-ui-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  background-color: #111317;
+  border: 1px solid #1c2027;
+}
+
+.cf-ui-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.8rem;
+}
+
+.cf-ui-table th {
+  padding: 0.85rem 1rem;
+  color: #646c7a;
+  font-weight: 500;
+  font-size: 0.74rem;
+  border-bottom: 1px solid #1c2027;
+  background-color: #0e1014;
+  white-space: nowrap;
+}
+
+.cf-ui-table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #161920;
+  color: #d1d5db;
+  vertical-align: middle;
+}
+
+.cf-ui-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cf-ui-table tbody tr:hover td {
+  background-color: #15181e;
+}
+
+.cf-ui-table tbody tr.is-clickable {
+  cursor: pointer;
+}
+
+.cf-ui-table-empty {
+  text-align: center !important;
+  padding: 2.5rem 1rem !important;
+  color: #646c7a !important;
+}
+
+/* Monospace cell utility */
+.cf-table-cell-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #86efac;
+  font-size: 0.76rem;
+}
+
+.cf-table-cell-muted {
+  color: #8b929e;
+  font-size: 0.74rem;
+}
