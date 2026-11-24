@@ -1,40 +1,40 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Truck, RotateCcw, Sparkles, ArrowRight } from 'lucide-react';
+import { Award, Feather, Sparkles, Compass, ArrowRight } from 'lucide-react';
 import './Storefront.css';
 
 export function Footer() {
   return (
     <footer className="cf-store-footer">
-      {/* Brand Perks Strip */}
+      {/* Brand Craftsmanship & Garment Pillars Strip */}
       <div className="cf-footer-perks-strip">
         <div className="cf-store-container cf-perks-row">
           <div className="cf-perk-block">
-            <Truck size={20} className="cf-perk-icon" />
+            <Award size={20} className="cf-perk-icon" />
             <div>
-              <span className="cf-perk-heading">Complimentary Express Shipping</span>
-              <span className="cf-perk-sub">On orders exceeding ₹1,999</span>
+              <span className="cf-perk-heading">Master Atelier Tailoring</span>
+              <span className="cf-perk-sub">Handcrafted seams & structured Italian cut</span>
             </div>
           </div>
           <div className="cf-perk-block">
-            <RotateCcw size={20} className="cf-perk-icon" />
+            <Feather size={20} className="cf-perk-icon" />
             <div>
-              <span className="cf-perk-heading">30-Day Flawless Returns</span>
-              <span className="cf-perk-sub">Pre-paid labels included</span>
-            </div>
-          </div>
-          <div className="cf-perk-block">
-            <ShieldCheck size={20} className="cf-perk-icon" />
-            <div>
-              <span className="cf-perk-heading">Secure SSL Checkout</span>
-              <span className="cf-perk-sub">256-bit encrypted transactions</span>
+              <span className="cf-perk-heading">100% Pure Natural Fibres</span>
+              <span className="cf-perk-sub">Normandy flax linen & Egyptian long-staple cotton</span>
             </div>
           </div>
           <div className="cf-perk-block">
             <Sparkles size={20} className="cf-perk-icon" />
             <div>
-              <span className="cf-perk-heading">Express Pan-India Delivery</span>
-              <span className="cf-perk-sub">Dispatched within 24 hours</span>
+              <span className="cf-perk-heading">Limited Small-Batch Runs</span>
+              <span className="cf-perk-sub">Zero mass overproduction, exclusive curated drops</span>
+            </div>
+          </div>
+          <div className="cf-perk-block">
+            <Compass size={20} className="cf-perk-icon" />
+            <div>
+              <span className="cf-perk-heading">Engineered Silhouette</span>
+              <span className="cf-perk-sub">Preshrunk & sculpted for modern proportions</span>
             </div>
           </div>
         </div>
