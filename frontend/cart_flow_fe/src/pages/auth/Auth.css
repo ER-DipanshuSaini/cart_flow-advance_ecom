@@ -1,84 +1,279 @@
-/* Auth Pages Styling */
-.cf-auth-page-wrapper {
-  min-height: calc(100vh - 120px);
+/* Full-Page Split Screen Auth Styling with Royal Navy #003f7f Branding */
+.cf-auth-fullscreen-layout {
+  min-height: 100vh;
+  display: flex;
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-text-main);
+  font-family: var(--cf-font-sans);
+}
+
+/* Left Column: Atmospheric Brand Visual Banner */
+.cf-auth-side-banner {
+  display: none;
+  position: relative;
+  width: 48%;
+  background-color: #002d5c;
+  overflow: hidden;
+}
+
+@media (min-width: 960px) {
+  .cf-auth-side-banner {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.cf-side-banner-media {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.cf-side-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.cf-side-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 45, 92, 0.82) 0%,
+    rgba(0, 63, 127, 0.75) 50%,
+    rgba(5, 10, 20, 0.92) 100%
+  );
+}
+
+.cf-side-banner-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 3rem 3.5rem;
+  color: #ffffff;
+}
+
+.cf-side-banner-logo {
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: #ffffff;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.cf-side-banner-logo span {
+  font-weight: 300;
+  color: #60a5fa;
+}
+
+.cf-side-banner-quote-box {
+  max-width: 480px;
+}
+
+.cf-side-banner-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  margin: 1.25rem 0 0.5rem;
+  color: #f8fafc;
+}
+
+.cf-side-banner-author {
+  font-size: 0.85rem;
+  color: #93c5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+.cf-side-perks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cf-side-perk-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: #e2e8f0;
+}
+
+.cf-side-perk-item svg {
+  color: #60a5fa;
+}
+
+.cf-side-banner-footer {
+  font-size: 0.76rem;
+  color: #94a3b8;
+}
+
+/* Right Column: Clean Centered Auth Form */
+.cf-auth-form-column {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1.5rem;
+  padding: 3rem 2rem;
+  background-color: var(--cf-bg-surface);
+  overflow-y: auto;
 }
 
-.cf-auth-box {
+.cf-auth-form-card {
   width: 100%;
   max-width: 440px;
   display: flex;
   flex-direction: column;
 }
 
-.cf-auth-badge-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 0.75rem;
+.cf-auth-card-top-nav {
+  margin-bottom: 2rem;
 }
 
-.cf-auth-title {
-  font-size: 1.85rem;
+.cf-back-store-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cf-text-muted);
+  text-decoration: none;
+  transition: color var(--cf-transition);
+}
+
+.cf-back-store-link:hover {
+  color: var(--cf-accent-primary);
+}
+
+.cf-auth-card-header {
+  margin-bottom: 2rem;
+}
+
+.cf-auth-page-heading {
+  font-size: 2.1rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--cf-text-main);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 
-.cf-auth-subtitle {
-  font-size: 0.85rem;
+.cf-auth-page-subheading {
+  font-size: 0.9rem;
   color: var(--cf-text-muted);
   line-height: 1.5;
-  margin-bottom: 1.75rem;
 }
 
-.cf-auth-card {
-  box-shadow: var(--cf-shadow-float);
-}
-
-.cf-auth-form {
+.cf-auth-inputs-stack {
   display: flex;
   flex-direction: column;
-  gap: 1.15rem;
+  gap: 1.25rem;
 }
 
-.cf-auth-form-row {
+.cf-auth-meta-options {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.cf-forgot-link {
-  font-size: 0.78rem;
+.cf-forgot-pass-link {
+  font-size: 0.8rem;
   color: var(--cf-accent-primary);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.cf-forgot-link:hover {
+.cf-forgot-pass-link:hover {
   text-decoration: underline;
 }
 
-.cf-auth-submit-btn {
+.cf-auth-primary-btn {
   width: 100%;
   margin-top: 0.5rem;
 }
 
 .cf-auth-error-banner {
-  padding: 0.6rem 0.8rem;
+  padding: 0.65rem 0.85rem;
   border-radius: var(--cf-radius-sm);
   background-color: var(--cf-accent-danger-tint);
   border: 1px solid var(--cf-accent-danger);
   color: var(--cf-accent-danger);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 500;
 }
 
-/* Admin Gate Variant */
-.cf-admin-gate-theme .cf-auth-box {
-  max-width: 460px;
+/* Social Login */
+.cf-auth-social-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.75rem 0 1.25rem;
+}
+
+.cf-auth-social-divider::before,
+.cf-auth-social-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--cf-border-subtle);
+}
+
+.cf-auth-social-divider span {
+  padding: 0 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--cf-text-dim);
+  letter-spacing: 0.08em;
+}
+
+.cf-social-btns-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cf-social-login-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.65rem 1rem;
+  background-color: var(--cf-bg-input);
+  border: 1px solid var(--cf-border-subtle);
+  border-radius: var(--cf-radius-md);
+  color: var(--cf-text-main);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--cf-transition);
+}
+
+.cf-social-login-btn:hover {
+  border-color: var(--cf-border-hover);
+  background-color: var(--cf-bg-elevated);
+}
+
+.cf-auth-switch-footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--cf-text-muted);
+}
+
+.cf-switch-auth-link {
+  color: var(--cf-accent-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cf-switch-auth-link:hover {
+  text-decoration: underline;
 }

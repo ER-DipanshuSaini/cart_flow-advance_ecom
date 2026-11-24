@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, Star, ShoppingBag, Eye } from 'lucide-react';
+import { ArrowRight, Sparkles, Star, ShoppingBag, Eye, ShieldCheck, Flame, Compass, Award } from 'lucide-react';
 import { PRODUCTS } from '../../data/products';
 import { useCart } from '../../context/CartContext';
-import { Button, Badge, Card } from '../../components/ui';
+import { Button, Badge } from '../../components/ui';
 import './StorePages.css';
 
 export default function HomePage() {
@@ -11,12 +11,12 @@ export default function HomePage() {
 
   return (
     <div className="cf-store-page">
-      {/* Hero Banner */}
+      {/* 1. High-Impact Editorial Hero Section */}
       <section className="cf-store-hero">
         <div className="cf-hero-media">
           <img
-            src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1920&q=85"
-            alt="Autumn Collection"
+            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1920&q=85"
+            alt="CartFlow Autumn Editorial"
             className="cf-hero-cover-img"
           />
           <div className="cf-hero-gradient-overlay" />
@@ -24,135 +24,182 @@ export default function HomePage() {
 
         <div className="cf-store-container cf-hero-inner">
           <div className="cf-hero-text-block">
-            <Badge variant="mono">• AUTUMN / WINTER 2026 CAPSULE</Badge>
+            <div className="cf-hero-badge-tag">
+              <span className="cf-pulse-dot" />
+              <span>THE OLD MONEY & FORMAL CAPSULE 2026</span>
+            </div>
+
             <h1 className="cf-hero-main-title">
-              ARCHITECTURAL<br />MINIMALISM
+              OLD MONEY LUXURY.<br />MODERN TAILORING.
             </h1>
+
             <p className="cf-hero-main-desc">
-              Engineered wardrobe essentials featuring virgin wools, bespoke tailoring, and precision AI virtual try-on fitting.
+              Curated for the modern tastemaker. Signature Gurkha trousers, textured Cuban knit polos, and structured Italian blazers engineered with precision.
             </p>
+
             <div className="cf-hero-btn-row">
               <Link to="/shop">
                 <Button variant="primary" size="lg" iconRight={ArrowRight}>
-                  Explore Full Catalog
+                  Explore The Collection
                 </Button>
               </Link>
-              <Link to="/shop?cat=Outerwear">
+              <Link to="/shop?cat=Old Money">
                 <Button variant="secondary" size="lg" icon={Sparkles}>
-                  Virtual Try-On Picks
+                  The Old Money Edit
                 </Button>
               </Link>
+            </div>
+
+            {/* Quick Proof Pills */}
+            <div className="cf-hero-proof-pills">
+              <div className="cf-proof-pill">
+                <Flame size={14} className="cf-proof-icon" />
+                <span>Snitch-Tier Fresh Drops Weekly</span>
+              </div>
+              <div className="cf-proof-pill">
+                <Star size={14} className="cf-proof-icon" fill="currentColor" />
+                <span>4.9/5 Rating (12,000+ Reviews)</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Silhouette Categories */}
+      {/* 2. Snitch-Inspired Ticker Strip */}
+      <div className="cf-snitch-ticker">
+        <div className="cf-ticker-track">
+          <span>OLD MONEY CLASSICS • BESPOKE ITALIAN CUT • 100% FRENCH LINEN • AI VIRTUAL FITTING ROOM • FREE EXPRESS SHIPPING • LIMITED BATCH DROPS • OLD MONEY CLASSICS • BESPOKE ITALIAN CUT •</span>
+        </div>
+      </div>
+
+      {/* 3. Curated Aesthetic Categories Grid (Snitch Style Lookbook) */}
       <section className="cf-store-section cf-store-container">
         <div className="cf-section-title-row">
           <div>
-            <span className="cf-section-pretitle">Curated Silhouettes</span>
-            <h2 className="cf-section-headline">Shop by Category</h2>
+            <span className="cf-section-pretitle">Aesthetic Playlists</span>
+            <h2 className="cf-section-headline">Shop by Aesthetic</h2>
           </div>
           <Link to="/shop" className="cf-section-view-all">
-            All Products <ArrowRight size={14} />
+            Browse All Drops <ArrowRight size={14} />
           </Link>
         </div>
 
-        <div className="cf-categories-grid">
-          <Link to="/shop?cat=Outerwear" className="cf-category-tile">
+        <div className="cf-aesthetic-lookbook-grid">
+          <Link to="/shop?cat=Old Money" className="cf-lookbook-card">
             <img
-              src="https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80"
-              alt="Outerwear"
+              src="https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?auto=format&fit=crop&w=800&q=80"
+              alt="Old Money Styling"
             />
-            <div className="cf-cat-tile-overlay">
-              <h4>Outerwear</h4>
-              <p>Heavy coats & technical parkas</p>
+            <div className="cf-lookbook-overlay">
+              <span className="cf-lookbook-tag">SIGNATURE LOOK</span>
+              <h4>The Old Money Edit</h4>
+              <p>Textured knit polos, linen trousers & loafers</p>
+              <span className="cf-lookbook-cta">Shop Edit <ArrowRight size={13} /></span>
             </div>
           </Link>
 
-          <Link to="/shop?cat=Tailored" className="cf-category-tile">
+          <Link to="/shop?cat=Formal & Suiting" className="cf-lookbook-card">
             <img
-              src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80"
-              alt="Tailored"
+              src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
+              alt="Formal Tailoring"
             />
-            <div className="cf-cat-tile-overlay">
-              <h4>Tailored Suiting</h4>
-              <p>Boxy blazers & wide-leg trousers</p>
+            <div className="cf-lookbook-overlay">
+              <span className="cf-lookbook-tag">CONTEMPORARY SUITING</span>
+              <h4>Modern Formal</h4>
+              <p>Double-breasted blazers & tailored overcoats</p>
+              <span className="cf-lookbook-cta">Shop Suits <ArrowRight size={13} /></span>
             </div>
           </Link>
 
-          <Link to="/shop?cat=Footwear" className="cf-category-tile">
+          <Link to="/shop?cat=Linen & Resort" className="cf-lookbook-card">
             <img
-              src="https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=800&q=80"
-              alt="Footwear"
+              src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=800&q=80"
+              alt="Linen Resort"
             />
-            <div className="cf-cat-tile-overlay">
-              <h4>Artisanal Footwear</h4>
-              <p>Handcrafted Italian calfskin</p>
+            <div className="cf-lookbook-overlay">
+              <span className="cf-lookbook-tag">SUMMER LUXE</span>
+              <h4>Linen & Resort</h4>
+              <p>French Normandy linen & crochet Cuban shirts</p>
+              <span className="cf-lookbook-cta">Shop Resort <ArrowRight size={13} /></span>
+            </div>
+          </Link>
+
+          <Link to="/shop?cat=Co-Ords" className="cf-lookbook-card">
+            <img
+              src="https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=800&q=80"
+              alt="Co-Ords & Sets"
+            />
+            <div className="cf-lookbook-overlay">
+              <span className="cf-lookbook-tag">GEN-Z FAVORITE</span>
+              <h4>Tailored Co-Ords</h4>
+              <p>Effortless matched shackets & trousers</p>
+              <span className="cf-lookbook-cta">Shop Sets <ArrowRight size={13} /></span>
             </div>
           </Link>
         </div>
       </section>
 
-      {/* Trending Products Grid */}
+      {/* 4. Trending Drops: 4-Column Sleek Compact Grid */}
       <section className="cf-store-section cf-store-container">
         <div className="cf-section-title-row">
           <div>
-            <span className="cf-section-pretitle">Weekly Highlights</span>
+            <span className="cf-section-pretitle">The New Arrival Drop</span>
             <h2 className="cf-section-headline">Trending Essentials</h2>
           </div>
           <Link to="/shop" className="cf-section-view-all">
-            View Collection ({PRODUCTS.length}) <ArrowRight size={14} />
+            View All ({PRODUCTS.length}) <ArrowRight size={14} />
           </Link>
         </div>
 
-        <div className="cf-products-catalog-grid">
-          {PRODUCTS.slice(0, 4).map((product) => (
-            <div key={product.id} className="cf-store-product-card">
-              <div className="cf-product-media-wrap">
+        {/* 4 Cards in 1 Row (Compact & Modern) */}
+        <div className="cf-products-compact-grid">
+          {PRODUCTS.slice(0, 8).map((product) => (
+            <div key={product.id} className="cf-compact-product-card">
+              <div className="cf-compact-media-box">
                 {product.badge && (
-                  <span className={`cf-media-badge ${product.badge === 'SALE' ? 'is-sale' : ''}`}>
+                  <span className={`cf-compact-badge ${product.badge === 'OLD MONEY' ? 'is-oldmoney' : product.badge === 'VIRAL' ? 'is-viral' : ''}`}>
                     {product.badge}
                   </span>
                 )}
                 <Link to={`/product/${product.id}`}>
-                  <img src={product.imageUrl} alt={product.title} className="cf-product-cover" />
+                  <img src={product.imageUrl} alt={product.title} className="cf-compact-cover-img" loading="lazy" />
                 </Link>
-                <div className="cf-media-actions-hover">
+
+                <div className="cf-compact-hover-actions">
                   <Button
                     size="sm"
                     variant="primary"
                     icon={ShoppingBag}
                     onClick={() => addToCart(product, 1)}
+                    className="cf-compact-quick-add"
                   >
                     Quick Add
                   </Button>
                   <Link to={`/product/${product.id}`}>
-                    <Button size="sm" variant="secondary" icon={Eye}>
-                      Details
+                    <Button size="sm" variant="secondary" icon={Eye} className="cf-compact-view-btn">
+                      View
                     </Button>
                   </Link>
                 </div>
               </div>
 
-              <div className="cf-product-meta-block">
-                <div className="cf-meta-top-line">
-                  <span className="cf-product-category">{product.category}</span>
-                  <div className="cf-product-stars">
-                    <Star size={12} fill="var(--cf-accent-warning)" color="var(--cf-accent-warning)" />
+              <div className="cf-compact-details">
+                <div className="cf-compact-meta-row">
+                  <span className="cf-compact-cat">{product.category}</span>
+                  <div className="cf-compact-rating">
+                    <Star size={11} fill="var(--cf-accent-warning)" color="var(--cf-accent-warning)" />
                     <span>{product.rating}</span>
                   </div>
                 </div>
 
-                <h3 className="cf-product-title-text">
+                <h3 className="cf-compact-title">
                   <Link to={`/product/${product.id}`}>{product.title}</Link>
                 </h3>
 
-                <div className="cf-product-price-line">
-                  <span className="cf-price-current">${product.price.toFixed(2)}</span>
+                <div className="cf-compact-price-row">
+                  <span className="cf-compact-price">${product.price.toFixed(2)}</span>
                   {product.originalPrice && (
-                    <span className="cf-price-strikethrough">${product.originalPrice.toFixed(2)}</span>
+                    <span className="cf-compact-orig-price">${product.originalPrice.toFixed(2)}</span>
                   )}
                 </div>
               </div>
@@ -161,16 +208,32 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* AI Try-On Innovation Banner */}
+      {/* 5. Snitch-Inspired Promo Promo Banner */}
+      <section className="cf-store-container cf-promo-callout-wrap">
+        <div className="cf-promo-callout-box">
+          <div className="cf-promo-callout-content">
+            <span className="cf-promo-pill">LIMITED TIME OFFER</span>
+            <h3>CLAIM 15% OFF YOUR FIRST CAPSULE</h3>
+            <p>Use code <strong>ROYAL15</strong> at checkout. Valid on all Old Money & Tailored Drops.</p>
+          </div>
+          <Link to="/shop">
+            <Button variant="primary" size="lg" iconRight={ArrowRight}>
+              Claim Promo & Shop
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      {/* 6. AI Virtual Try-On Studio Banner */}
       <section className="cf-tryon-highlight-banner">
         <div className="cf-store-container cf-tryon-highlight-inner">
           <div className="cf-tryon-text-wrap">
             <Badge variant="mono">
-              <Sparkles size={13} /> POWERED BY FASTAPI MICROSERVICES
+              <Sparkles size={13} /> POWERED BY FASTAPI AI SERVICES
             </Badge>
             <h2 className="cf-tryon-banner-heading">Virtual Fitting Room Studio</h2>
             <p className="cf-tryon-banner-desc">
-              Experience zero-friction sizing and garment draping. Upload an avatar or picture to test fabrics and colors in real-time before making your purchase.
+              Zero sizing guesswork. Preview realistic drape, fabric texture, and shoulder structure on your personalized 3D avatar before you purchase.
             </p>
             <Link to="/shop">
               <Button variant="primary" size="lg" iconRight={ArrowRight}>
@@ -180,9 +243,30 @@ export default function HomePage() {
           </div>
           <div className="cf-tryon-media-wrap">
             <img
-              src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=900&q=80"
-              alt="AI Virtual Fitting Room"
+              src="https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&w=900&q=80"
+              alt="AI Virtual Try On Fitting"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Craftsmanship & Old Money Philosophy Pillars */}
+      <section className="cf-store-section cf-store-container">
+        <div className="cf-pillars-grid">
+          <div className="cf-pillar-item">
+            <Award size={28} className="cf-pillar-icon" />
+            <h4>Artisanal Fabric Selection</h4>
+            <p>100% Normandy flax linen, Egyptian cotton, and Grade-A Merino wool designed to age with elegance.</p>
+          </div>
+          <div className="cf-pillar-item">
+            <Compass size={28} className="cf-pillar-icon" />
+            <h4>Bespoke Architectural Cut</h4>
+            <p>Balanced silhouettes bridging heritage old-money proportions with modern Gen-Z smart-casual comfort.</p>
+          </div>
+          <div className="cf-pillar-item">
+            <ShieldCheck size={28} className="cf-pillar-icon" />
+            <h4>Sustainable Small-Batch Drops</h4>
+            <p>Zero deadstock overproduction. Every drop is crafted in limited batches to guarantee exclusive quality.</p>
           </div>
         </div>
       </section>

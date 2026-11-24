@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, User, ShoppingBag, Menu, X, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { ThemeToggle, Badge } from '../components/ui';
+import { ThemeToggle } from '../components/ui';
 import './Storefront.css';
 
 export function Navbar() {
@@ -11,7 +11,24 @@ export function Navbar() {
   const { user, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAnnouncement, setShowAnnouncement] = useState(() => {
+    try {
+      return sessionStorage.getItem('cf_announcement_closed') !== 'true';
+    } catch {
+      return true;
+    }
+  });
+
   const navigate = useNavigate();
+
+  const handleDismissAnnouncement = () => {
+    setShowAnnouncement(false);
+    try {
+      sessionStorage.setItem('cf_announcement_closed', 'true');
+    } catch {
+      // storage disabled
+    }
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -23,11 +40,27 @@ export function Navbar() {
 
   return (
     <header className="cf-store-header">
-      {/* Announcement Top Bar */}
-      <div className="cf-announcement-strip">
-        <span>Complimentary Express Shipping on orders over $150 &nbsp;•&nbsp; Free 30-Day Returns</span>
-      </div>
+      {/* 1. Dismissable Announcement Bar */}
+      {showAnnouncement && (
+        <div className="cf-announcement-strip">
+          <div className="cf-announcement-inner">
+            <span>
+              <strong>NEW DROP:</strong> The Old Money & Formal Capsule &nbsp;•&nbsp; Free Express Shipping on orders over $150
+            </span>
+            <button
+              type="button"
+              className="cf-announcement-close-btn"
+              onClick={handleDismissAnnouncement}
+              title="Dismiss announcement"
+              aria-label="Dismiss banner"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+      )}
 
+      {/* 2. Main Navigation Bar */}
       <nav className="cf-store-navbar">
         <div className="cf-nav-container">
           {/* Mobile Menu Button */}
@@ -35,39 +68,42 @@ export function Navbar() {
             type="button"
             className="cf-mobile-menu-btn"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
 
-          {/* Brand Logo */}
+          {/* Brand Logo with Royal Navy Accent */}
           <Link to="/" className="cf-store-logo">
             CART<span>FLOW</span>
           </Link>
 
-          {/* Desktop Nav Links */}
+          {/* Desktop Navigation Links */}
           <div className="cf-desktop-nav">
             <Link to="/" className="cf-nav-link">Home</Link>
-            <Link to="/shop" className="cf-nav-link">Shop All</Link>
-            <Link to="/shop?cat=Outerwear" className="cf-nav-link">Outerwear</Link>
-            <Link to="/shop?cat=Tailored" className="cf-nav-link">Tailored</Link>
-            <Link to="/components" className="cf-nav-link cf-nav-uikit">UI Kit</Link>
+            <Link to="/shop" className="cf-nav-link">All Drops</Link>
+            <Link to="/shop?cat=Old Money" className="cf-nav-link">Old Money</Link>
+            <Link to="/shop?cat=Formal & Suiting" className="cf-nav-link">Formal & Suiting</Link>
+            <Link to="/shop?cat=Linen & Resort" className="cf-nav-link">Linen & Resort</Link>
+            <Link to="/shop?cat=Co-Ords" className="cf-nav-link">Co-Ords</Link>
           </div>
 
           {/* Search Bar */}
           <form className="cf-nav-search-form" onSubmit={handleSearchSubmit}>
-            <Search size={15} className="cf-search-input-icon" />
+            <Search size={14} className="cf-search-input-icon" />
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search Old Money, Shirts, Suits..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="cf-nav-search-input"
             />
           </form>
 
-          {/* Right Action Icons */}
+          {/* Right Action Icons (Discreet Theme Toggle, User, Cart) */}
           <div className="cf-nav-actions-group">
-            <ThemeToggle size="sm" />
+            {/* Subtle, non-intrusive theme toggle */}
+            <ThemeToggle />
 
             <Link
               to={isAuthenticated ? '/account' : '/login'}
@@ -94,11 +130,12 @@ export function Navbar() {
         {mobileMenuOpen && (
           <div className="cf-mobile-dropdown">
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-            <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>Shop All</Link>
-            <Link to="/shop?cat=Outerwear" onClick={() => setMobileMenuOpen(false)}>Outerwear</Link>
-            <Link to="/shop?cat=Tailored" onClick={() => setMobileMenuOpen(false)}>Tailored</Link>
-            <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>View Cart ({cartCount})</Link>
-            <Link to="/components" onClick={() => setMobileMenuOpen(false)}>UI Kit Showcase</Link>
+            <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>All Drops</Link>
+            <Link to="/shop?cat=Old Money" onClick={() => setMobileMenuOpen(false)}>Old Money Edit</Link>
+            <Link to="/shop?cat=Formal & Suiting" onClick={() => setMobileMenuOpen(false)}>Formal & Suiting</Link>
+            <Link to="/shop?cat=Linen & Resort" onClick={() => setMobileMenuOpen(false)}>Linen & Resort</Link>
+            <Link to="/shop?cat=Co-Ords" onClick={() => setMobileMenuOpen(false)}>Co-Ords</Link>
+            <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>Shopping Bag ({cartCount})</Link>
             <div className="cf-mobile-divider" />
             <Link to={isAuthenticated ? '/account' : '/login'} onClick={() => setMobileMenuOpen(false)}>
               {isAuthenticated ? `My Account (${user.name})` : 'Sign In / Register'} <ArrowRight size={14} />
