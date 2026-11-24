@@ -1,14 +1,37 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, Star, ShoppingBag, Eye, ShieldCheck, Flame, Compass, Award } from 'lucide-react';
+import {
+  ArrowRight,
+  Sparkles,
+  Star,
+  ShoppingBag,
+  Eye,
+  ShieldCheck,
+  Flame,
+  Compass,
+  Award,
+  Feather,
+  Scissors,
+  Check,
+  Mail,
+  HelpCircle,
+  Truck,
+  RefreshCw,
+  Layers,
+  Heart,
+  Camera,
+  CheckCircle2
+} from 'lucide-react';
 import { PRODUCTS } from '../../data/products';
 import { useCart } from '../../context/CartContext';
-import { Button, Badge, ProductCard } from '../../components/ui';
+import { Button, Badge, ProductCard, Input } from '../../components/ui';
 import './StorePages.css';
 
 export default function HomePage() {
   const { addToCart } = useCart();
   const [addedItemNotice, setAddedItemNotice] = useState(null);
+  const [vipEmail, setVipEmail] = useState('');
+  const [vipSubscribed, setVipSubscribed] = useState(false);
 
   const handleQuickAdd = (product) => {
     addToCart(product, 1);
@@ -17,6 +40,17 @@ export default function HomePage() {
       setAddedItemNotice(null);
     }, 1800);
   };
+
+  const handleVipSubmit = (e) => {
+    e.preventDefault();
+    if (vipEmail.trim()) {
+      setVipSubscribed(true);
+      setTimeout(() => setVipSubscribed(false), 5000);
+      setVipEmail('');
+    }
+  };
+
+  const spotlightProduct = PRODUCTS.find((p) => p.id === 6) || PRODUCTS[0];
 
   return (
     <div className="cf-store-page">
@@ -174,7 +208,146 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. Snitch-Inspired Promo Promo Banner */}
+      {/* 5. NEW: Architectural Spotlight Capsule Feature */}
+      <section className="cf-store-container cf-spotlight-section">
+        <div className="cf-spotlight-card">
+          <div className="cf-spotlight-media">
+            <img
+              src={spotlightProduct.imageUrl}
+              alt={spotlightProduct.title}
+              className="cf-spotlight-img"
+            />
+            <div className="cf-spotlight-badge-float">
+              <Badge variant="primary">CAPSULE HIGHLIGHT</Badge>
+            </div>
+          </div>
+
+          <div className="cf-spotlight-content">
+            <span className="cf-spotlight-tag">HERITAGE TAILORING 2026</span>
+            <h3 className="cf-spotlight-title">{spotlightProduct.title}</h3>
+            <p className="cf-spotlight-desc">
+              Precision-tailored from bespoke Italian high-twist wool with subtle roped shoulders and sharp peak lapels. Designed to drape effortlessly from board meetings to evening Galas.
+            </p>
+
+            <div className="cf-spotlight-specs">
+              <div className="cf-spec-item">
+                <span className="cf-spec-label">Material Weave</span>
+                <span className="cf-spec-value">100% Tropical Wool</span>
+              </div>
+              <div className="cf-spec-item">
+                <span className="cf-spec-label">Fit Profile</span>
+                <span className="cf-spec-value">Structured Architectural</span>
+              </div>
+              <div className="cf-spec-item">
+                <span className="cf-spec-label">Hardware</span>
+                <span className="cf-spec-value">Hand-Carved Horn Buttons</span>
+              </div>
+              <div className="cf-spec-item">
+                <span className="cf-spec-label">Origin</span>
+                <span className="cf-spec-value">Florence Atelier</span>
+              </div>
+            </div>
+
+            <div className="cf-spotlight-pricing-row">
+              <div>
+                <span className="cf-spotlight-price">₹{spotlightProduct.price.toLocaleString('en-IN')}</span>
+                {spotlightProduct.originalPrice && (
+                  <span className="cf-spotlight-orig">₹{spotlightProduct.originalPrice.toLocaleString('en-IN')}</span>
+                )}
+              </div>
+
+              <div className="cf-spotlight-actions">
+                <Button
+                  variant="primary"
+                  size="md"
+                  icon={addedItemNotice === spotlightProduct.id ? Check : ShoppingBag}
+                  onClick={() => handleQuickAdd(spotlightProduct)}
+                >
+                  {addedItemNotice === spotlightProduct.id ? 'Added to Bag' : 'Quick Add'}
+                </Button>
+                <Link to={`/product/${spotlightProduct.id}`}>
+                  <Button variant="outline" size="md" iconRight={Eye}>
+                    Details
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. NEW: Shop by Fabric / Textile Architecture */}
+      <section className="cf-store-section cf-store-container">
+        <div className="cf-section-title-row">
+          <div>
+            <span className="cf-section-pretitle">Tactile Materials</span>
+            <h2 className="cf-section-headline">Shop by Premium Textile</h2>
+          </div>
+          <Link to="/shop" className="cf-section-view-all">
+            Textile Guide <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        <div className="cf-fabrics-grid">
+          <Link to="/shop?cat=Linen & Resort" className="cf-fabric-card">
+            <div className="cf-fabric-icon-box">
+              <Feather size={22} />
+            </div>
+            <span className="cf-fabric-origin">NORMANDY, FRANCE</span>
+            <h4 className="cf-fabric-name">100% French Linen</h4>
+            <p className="cf-fabric-desc">
+              Stone-washed flax linen offering unmatched airy breathability and relaxed fluid draping.
+            </p>
+            <span className="cf-fabric-link-cta">
+              Explore Linen Drops <ArrowRight size={13} />
+            </span>
+          </Link>
+
+          <Link to="/shop?cat=Formal & Suiting" className="cf-fabric-card">
+            <div className="cf-fabric-icon-box">
+              <Scissors size={22} />
+            </div>
+            <span className="cf-fabric-origin">NAPLES, ITALY</span>
+            <h4 className="cf-fabric-name">High-Twist Tropical Wool</h4>
+            <p className="cf-fabric-desc">
+              Wrinkle-resistant fine fibers engineered for sharp suiting that maintains structure all day.
+            </p>
+            <span className="cf-fabric-link-cta">
+              Explore Suiting <ArrowRight size={13} />
+            </span>
+          </Link>
+
+          <Link to="/shop?cat=Old Money" className="cf-fabric-card">
+            <div className="cf-fabric-icon-box">
+              <Award size={22} />
+            </div>
+            <span className="cf-fabric-origin">NILE DELTA, EGYPT</span>
+            <h4 className="cf-fabric-name">Combed Egyptian Cotton</h4>
+            <p className="cf-fabric-desc">
+              Extra-long staple yarn offering silky handfeel, rich luster, and remarkable tactile durability.
+            </p>
+            <span className="cf-fabric-link-cta">
+              Explore Knit Polos <ArrowRight size={13} />
+            </span>
+          </Link>
+
+          <Link to="/shop?cat=Co-Ords" className="cf-fabric-card">
+            <div className="cf-fabric-icon-box">
+              <Layers size={22} />
+            </div>
+            <span className="cf-fabric-origin">LYON, FRANCE</span>
+            <h4 className="cf-fabric-name">450 GSM French Terry</h4>
+            <p className="cf-fabric-desc">
+              Heavyweight looped-back cotton for dense oversized hoodies and slouchy structural co-ords.
+            </p>
+            <span className="cf-fabric-link-cta">
+              Explore Heavy Terry <ArrowRight size={13} />
+            </span>
+          </Link>
+        </div>
+      </section>
+
+      {/* 7. Snitch-Inspired Promo Promo Banner */}
       <section className="cf-store-container cf-promo-callout-wrap">
         <div className="cf-promo-callout-box">
           <div className="cf-promo-callout-content">
@@ -190,7 +363,161 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. Craftsmanship & Old Money Philosophy Pillars */}
+      {/* 8. NEW: Verified Customer Testimonials & VIP Endorsements */}
+      <section className="cf-store-section cf-store-container">
+        <div className="cf-section-title-row">
+          <div>
+            <span className="cf-section-pretitle">Verified Community</span>
+            <h2 className="cf-section-headline">The Wall of VIP Endorsements</h2>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Badge variant="completed" dot>4.9/5 from 12,000+ Shoppers</Badge>
+          </div>
+        </div>
+
+        <div className="cf-testimonials-grid">
+          <div className="cf-testimonial-card">
+            <div>
+              <div className="cf-testi-top">
+                <div className="cf-testi-stars">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} fill="currentColor" />
+                  ))}
+                </div>
+                <Badge variant="completed" size="sm">Verified VIP</Badge>
+              </div>
+              <p className="cf-testi-quote">
+                "The cut on the Gurkha trousers is unmatched. High rise, double pleats that sit flush, and heavy fabric that falls straight without crumpling."
+              </p>
+              <div className="cf-testi-item-tag">Purchased: Pleated Gurkha Trousers (32)</div>
+            </div>
+            <div className="cf-testi-user-row">
+              <div className="cf-testi-avatar">AR</div>
+              <div className="cf-testi-info">
+                <span className="cf-testi-name">Aditya Rao</span>
+                <span className="cf-testi-city">Mumbai, Maharashtra</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="cf-testimonial-card">
+            <div>
+              <div className="cf-testi-top">
+                <div className="cf-testi-stars">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} fill="currentColor" />
+                  ))}
+                </div>
+                <Badge variant="completed" size="sm">Verified VIP</Badge>
+              </div>
+              <p className="cf-testi-quote">
+                "Far better textile quality than high-street fast fashion at one-third the designer price. The French Linen overshirt breathes remarkably well."
+              </p>
+              <div className="cf-testi-item-tag">Purchased: French Linen Overshirt (L)</div>
+            </div>
+            <div className="cf-testi-user-row">
+              <div className="cf-testi-avatar">VR</div>
+              <div className="cf-testi-info">
+                <span className="cf-testi-name">Vikramaditya Roy</span>
+                <span className="cf-testi-city">New Delhi, Delhi NCR</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="cf-testimonial-card">
+            <div>
+              <div className="cf-testi-top">
+                <div className="cf-testi-stars">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={14} fill="currentColor" />
+                  ))}
+                </div>
+                <Badge variant="completed" size="sm">Verified VIP</Badge>
+              </div>
+              <p className="cf-testi-quote">
+                "The textured knit Cuban polo arrived within 36 hours via BlueDart. The open-weave gauge feels like tailored Italian knitwear. Instant repeat buyer."
+              </p>
+              <div className="cf-testi-item-tag">Purchased: The Riviera Textured Knit (M)</div>
+            </div>
+            <div className="cf-testi-user-row">
+              <div className="cf-testi-avatar">SV</div>
+              <div className="cf-testi-info">
+                <span className="cf-testi-name">Sameer Varma</span>
+                <span className="cf-testi-city">Bengaluru, Karnataka</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. NEW: Lookbook Community Fits Gallery (@CartFlowClub) */}
+      <section className="cf-store-section cf-store-container">
+        <div className="cf-section-title-row">
+          <div>
+            <span className="cf-section-pretitle">Styled by You</span>
+            <h2 className="cf-section-headline">#CartFlowLookbook</h2>
+          </div>
+          <span style={{ fontSize: '0.82rem', color: 'var(--cf-text-dim)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Camera size={15} /> Tag @cartflow_official to be featured
+          </span>
+        </div>
+
+        <div className="cf-community-grid">
+          <Link to="/shop" className="cf-community-card">
+            <img
+              src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=600&q=80"
+              alt="Community Style 1"
+              className="cf-community-img"
+            />
+            <div className="cf-community-overlay">
+              <span className="cf-community-handle">@dev.kapur</span>
+              <span className="cf-community-piece">Structured Italian Blazer</span>
+              <span className="cf-community-tag">Shop Look <ArrowRight size={11} /></span>
+            </div>
+          </Link>
+
+          <Link to="/shop" className="cf-community-card">
+            <img
+              src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=600&q=80"
+              alt="Community Style 2"
+              className="cf-community-img"
+            />
+            <div className="cf-community-overlay">
+              <span className="cf-community-handle">@kabir.malhotra</span>
+              <span className="cf-community-piece">Riviera Textured Knit</span>
+              <span className="cf-community-tag">Shop Look <ArrowRight size={11} /></span>
+            </div>
+          </Link>
+
+          <Link to="/shop" className="cf-community-card">
+            <img
+              src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=600&q=80"
+              alt="Community Style 3"
+              className="cf-community-img"
+            />
+            <div className="cf-community-overlay">
+              <span className="cf-community-handle">@aarav.singh</span>
+              <span className="cf-community-piece">Normandy French Linen</span>
+              <span className="cf-community-tag">Shop Look <ArrowRight size={11} /></span>
+            </div>
+          </Link>
+
+          <Link to="/shop" className="cf-community-card">
+            <img
+              src="https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&w=600&q=80"
+              alt="Community Style 4"
+              className="cf-community-img"
+            />
+            <div className="cf-community-overlay">
+              <span className="cf-community-handle">@rohan.mehra</span>
+              <span className="cf-community-piece">Pleated Gurkha Trousers</span>
+              <span className="cf-community-tag">Shop Look <ArrowRight size={11} /></span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      {/* 10. Craftsmanship & Philosophy Pillars */}
       <section className="cf-store-section cf-store-container">
         <div className="cf-pillars-grid">
           <div className="cf-pillar-item">
@@ -208,6 +535,100 @@ export default function HomePage() {
             <h4>Sustainable Small-Batch Drops</h4>
             <p>Zero deadstock overproduction. Every drop is crafted in limited batches to guarantee exclusive quality.</p>
           </div>
+        </div>
+      </section>
+
+      {/* 11. NEW: Buying Confidence & Frequently Asked Questions */}
+      <section className="cf-store-section cf-store-container">
+        <div className="cf-section-title-row">
+          <div>
+            <span className="cf-section-pretitle">Buying Confidence</span>
+            <h2 className="cf-section-headline">Frequently Asked Questions</h2>
+          </div>
+          <Badge variant="neutral">Customer Help Hub</Badge>
+        </div>
+
+        <div className="cf-faq-grid">
+          <div className="cf-faq-item">
+            <div className="cf-faq-q">
+              <Truck size={18} className="cf-faq-icon" />
+              <span>How fast is pan-India delivery?</span>
+            </div>
+            <p className="cf-faq-a">
+              All orders are dispatched within 24 hours from our central warehouse via BlueDart Air Priority and Delhivery Express. Metro deliveries typically arrive in 24–48 hours.
+            </p>
+          </div>
+
+          <div className="cf-faq-item">
+            <div className="cf-faq-q">
+              <RefreshCw size={18} className="cf-faq-icon" />
+              <span>What is the return and exchange policy?</span>
+            </div>
+            <p className="cf-faq-a">
+              We offer a 7-day hassle-free doorstep exchange and return service. If the garment size or fit is not ideal, our courier will pick it up directly from your door with zero extra fees.
+            </p>
+          </div>
+
+          <div className="cf-faq-item">
+            <div className="cf-faq-q">
+              <ShieldCheck size={18} className="cf-faq-icon" />
+              <span>What payment methods are supported?</span>
+            </div>
+            <p className="cf-faq-a">
+              We support all major payment modes including UPI (Google Pay, PhonePe, Paytm), Credit & Debit Cards (Visa, Mastercard, RuPay), NetBanking, and Cash on Delivery (COD).
+            </p>
+          </div>
+
+          <div className="cf-faq-item">
+            <div className="cf-faq-q">
+              <Scissors size={18} className="cf-faq-icon" />
+              <span>How do I select the right size?</span>
+            </div>
+            <p className="cf-faq-a">
+              Every garment follows tailored modern proportions. We recommend picking your standard size for a tailored drape, or one size up for an oversized contemporary silhouette.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 12. NEW: VIP Drop Radar / Newsletter Box */}
+      <section className="cf-store-container">
+        <div className="cf-drop-radar-box">
+          <Badge variant="primary">EXCLUSIVE ACCESS</Badge>
+          <h3>Join The CartFlow Drop Radar</h3>
+          <p>
+            Gain 1-hour early access to limited weekly Friday drops, secret capsule releases, and invitations to private VIP events.
+          </p>
+
+          {vipSubscribed ? (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                color: 'var(--cf-accent-success)',
+                fontWeight: 700,
+                fontSize: '0.95rem',
+              }}
+            >
+              <CheckCircle2 size={18} />
+              <span>You're on the VIP Radar. Check your inbox for your 15% welcome code!</span>
+            </div>
+          ) : (
+            <form onSubmit={handleVipSubmit} className="cf-drop-radar-form">
+              <Input
+                type="email"
+                required
+                placeholder="Enter your VIP email address..."
+                icon={Mail}
+                value={vipEmail}
+                onChange={(e) => setVipEmail(e.target.value)}
+              />
+              <Button type="submit" variant="primary" size="md" iconRight={ArrowRight}>
+                Join Radar
+              </Button>
+            </form>
+          )}
         </div>
       </section>
     </div>
