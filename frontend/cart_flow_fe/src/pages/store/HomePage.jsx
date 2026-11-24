@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -27,11 +27,49 @@ import { useCart } from '../../context/CartContext';
 import { Button, Badge, ProductCard, Input } from '../../components/ui';
 import './StorePages.css';
 
+const HERO_SLIDES = [
+  {
+    id: 1,
+    kicker: 'SUMMER CAPSULE 2026',
+    title: 'THE OLD MONEY EDIT',
+    subtitle: 'Signature Gurkha trousers, textured Cuban knit polos, and bespoke Italian blazers.',
+    primaryBtn: { text: 'Shop Collection', link: '/shop' },
+    secondaryBtn: { text: 'Explore Drops', link: '/shop?cat=Old Money' },
+    image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=2000&q=85',
+  },
+  {
+    id: 2,
+    kicker: '100% FRENCH FLAX',
+    title: 'ARCHITECTURAL LINEN',
+    subtitle: 'Stone-washed Normandy linen overshirts engineered for effortless coastal drape.',
+    primaryBtn: { text: 'Shop Linen', link: '/shop?cat=Linen & Resort' },
+    secondaryBtn: { text: 'View Resort Edits', link: '/shop?cat=Linen & Resort' },
+    image: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=2000&q=85',
+  },
+  {
+    id: 3,
+    kicker: 'ITALIAN ATELIER',
+    title: 'QUIET LUXURY FOOTWEAR',
+    subtitle: 'Hand-burnished calf suede tassel loafers built on Goodyear-welted soles.',
+    primaryBtn: { text: 'Shop Footwear', link: '/shop?cat=Footwear' },
+    secondaryBtn: { text: 'All Collections', link: '/shop' },
+    image: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?auto=format&fit=crop&w=2000&q=85',
+  },
+];
+
 export default function HomePage() {
   const { addToCart } = useCart();
+  const [activeSlide, setActiveSlide] = useState(0);
   const [addedItemNotice, setAddedItemNotice] = useState(null);
   const [vipEmail, setVipEmail] = useState('');
   const [vipSubscribed, setVipSubscribed] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleQuickAdd = (product) => {
     addToCart(product, 1);
@@ -54,57 +92,52 @@ export default function HomePage() {
 
   return (
     <div className="cf-store-page">
-      {/* 1. High-Impact Editorial Hero Section */}
-      <section className="cf-store-hero">
-        <div className="cf-hero-media">
-          <img
-            src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1920&q=85"
-            alt="CartFlow Autumn Editorial"
-            className="cf-hero-cover-img"
-          />
-          <div className="cf-hero-gradient-overlay" />
+      {/* 1. Snitch / Shopify Minimal Luxury Hero Section */}
+      <section className="cf-snitch-hero">
+        <div className="cf-snitch-hero-media">
+          {HERO_SLIDES.map((slide, idx) => (
+            <img
+              key={slide.id}
+              src={slide.image}
+              alt={slide.title}
+              className={`cf-snitch-hero-img ${idx === activeSlide ? 'is-active' : ''}`}
+            />
+          ))}
+          <div className="cf-snitch-hero-overlay" />
         </div>
 
-        <div className="cf-store-container cf-hero-inner">
-          <div className="cf-hero-text-block">
-            <div className="cf-hero-badge-tag">
-              <span className="cf-pulse-dot" />
-              <span>THE OLD MONEY & FORMAL CAPSULE 2026</span>
-            </div>
+        <div className="cf-store-container cf-snitch-hero-content">
+          <div className="cf-snitch-hero-card">
+            <span className="cf-snitch-kicker">{HERO_SLIDES[activeSlide].kicker}</span>
+            <h1 className="cf-snitch-title">{HERO_SLIDES[activeSlide].title}</h1>
+            <p className="cf-snitch-subtitle">{HERO_SLIDES[activeSlide].subtitle}</p>
 
-            <h1 className="cf-hero-main-title">
-              OLD MONEY LUXURY.<br />MODERN TAILORING.
-            </h1>
-
-            <p className="cf-hero-main-desc">
-              Curated for the modern tastemaker. Signature Gurkha trousers, textured Cuban knit polos, and structured Italian blazers engineered with precision.
-            </p>
-
-            <div className="cf-hero-btn-row">
-              <Link to="/shop">
+            <div className="cf-snitch-btn-row">
+              <Link to={HERO_SLIDES[activeSlide].primaryBtn.link}>
                 <Button variant="primary" size="lg" iconRight={ArrowRight}>
-                  Explore The Collection
+                  {HERO_SLIDES[activeSlide].primaryBtn.text}
                 </Button>
               </Link>
-              <Link to="/shop?cat=Old Money">
-                <Button variant="secondary" size="lg" icon={Sparkles}>
-                  The Old Money Edit
+              <Link to={HERO_SLIDES[activeSlide].secondaryBtn.link}>
+                <Button variant="secondary" size="lg">
+                  {HERO_SLIDES[activeSlide].secondaryBtn.text}
                 </Button>
               </Link>
-            </div>
-
-            {/* Quick Proof Pills */}
-            <div className="cf-hero-proof-pills">
-              <div className="cf-proof-pill">
-                <Flame size={14} className="cf-proof-icon" />
-                <span>Snitch-Tier Fresh Drops Weekly</span>
-              </div>
-              <div className="cf-proof-pill">
-                <Star size={14} className="cf-proof-icon" fill="currentColor" />
-                <span>4.9/5 Rating (12,000+ Reviews)</span>
-              </div>
             </div>
           </div>
+        </div>
+
+        {/* Minimalist Slide Indicators */}
+        <div className="cf-snitch-indicators">
+          {HERO_SLIDES.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              className={`cf-snitch-dot ${idx === activeSlide ? 'is-active' : ''}`}
+              onClick={() => setActiveSlide(idx)}
+              aria-label={`Slide ${idx + 1}`}
+            />
+          ))}
         </div>
       </section>
 
