@@ -8,6 +8,11 @@
   flex-direction: column;
 }
 
+.cf-ui-table-container-card.is-embedded {
+  border: none;
+  border-radius: 0;
+}
+
 .cf-ui-table-wrapper {
   width: 100%;
   overflow-x: auto;

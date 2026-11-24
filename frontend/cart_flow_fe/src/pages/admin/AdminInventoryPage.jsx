@@ -54,6 +54,26 @@ const INVENTORY_DATA = [
     costPerUnit: '₹1,800',
     status: 'Healthy',
   },
+  {
+    sku: 'SKU-CRH-006',
+    title: 'Cuban Collar Resort Crochet Shirt',
+    supplier: 'Mediterranean Weavers',
+    available: 22,
+    reserved: 9,
+    reorderLevel: 20,
+    costPerUnit: '₹890',
+    status: 'Healthy',
+  },
+  {
+    sku: 'SKU-HOD-007',
+    title: 'Forest Green Oversized Zip Hoodie',
+    supplier: 'Alpine Knits Co.',
+    available: 11,
+    reserved: 7,
+    reorderLevel: 15,
+    costPerUnit: '₹1,200',
+    status: 'Low Stock',
+  },
 ];
 
 export default function AdminInventoryPage() {
@@ -61,6 +81,13 @@ export default function AdminInventoryPage() {
   const [poModalOpen, setPoModalOpen] = useState(false);
   const [selectedSku, setSelectedSku] = useState(null);
   const [replenishSuccess, setReplenishSuccess] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(4);
+
+  const paginatedItems = items.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const handleReplenish = (item) => {
     setSelectedSku(item);
@@ -87,8 +114,7 @@ export default function AdminInventoryPage() {
     {
       key: 'sku',
       label: 'SKU',
-      cellClassName: 'cf-table-cell-mono',
-      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+      render: (val) => <Badge variant="mono">{val}</Badge>,
     },
     {
       key: 'title',
@@ -103,19 +129,17 @@ export default function AdminInventoryPage() {
     {
       key: 'available',
       label: 'Available Units',
-      render: (val) => <span style={{ fontWeight: 800, color: 'var(--cf-text-main)' }}>{val}</span>,
+      render: (val) => <Badge variant="neutral">{val} units</Badge>,
     },
     {
       key: 'reserved',
       label: 'Reserved for Orders',
-      cellClassName: 'cf-table-cell-mono',
-      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+      render: (val) => <Badge variant="mono">{val}</Badge>,
     },
     {
       key: 'reorderLevel',
       label: 'Reorder Trigger',
-      cellClassName: 'cf-table-cell-mono',
-      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+      render: (val) => <Badge variant="neutral">{val}</Badge>,
     },
     {
       key: 'status',
@@ -174,9 +198,9 @@ export default function AdminInventoryPage() {
             marginBottom: '1.25rem',
             padding: '0.75rem 1rem',
             borderRadius: 'var(--cf-radius-md)',
-            backgroundColor: 'var(--cf-accent-primary-tint)',
-            border: '1px solid var(--cf-accent-primary)',
-            color: 'var(--cf-accent-primary)',
+            backgroundColor: 'var(--cf-accent-success-tint)',
+            border: '1px solid var(--cf-accent-success)',
+            color: 'var(--cf-accent-success)',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
@@ -218,18 +242,34 @@ export default function AdminInventoryPage() {
         />
       </div>
 
-      {/* Inventory Table inside Card */}
+      {/* Inventory Table with Interactive Pagination */}
       <Card>
         <Card.Header
           title="Warehouse Stock & Inward Pipeline"
-          subtitle="Real-time multi-vendor inventory ledger"
+          subtitle={`${items.length} total SKUs tracked`}
         />
         <Card.Body style={{ padding: 0 }}>
-          <Table columns={columns} data={items} keyField="sku" />
+          <Table
+            className="is-embedded"
+            columns={columns}
+            data={paginatedItems}
+            keyField="sku"
+            pagination={{
+              currentPage,
+              pageSize,
+              totalItems: items.length,
+              pageSizeOptions: [4, 8, 12],
+              onPageChange: setCurrentPage,
+              onPageSizeChange: (newSize) => {
+                setPageSize(newSize);
+                setCurrentPage(1);
+              },
+            }}
+          />
         </Card.Body>
       </Card>
 
-      {/* Styled PO Modal instead of native alert */}
+      {/* Styled PO Modal using Reusable Input labels */}
       <Modal
         isOpen={poModalOpen}
         onClose={() => setPoModalOpen(false)}

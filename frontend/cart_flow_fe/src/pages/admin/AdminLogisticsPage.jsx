@@ -34,15 +34,52 @@ const DISPATCH_SHIPMENTS = [
     status: 'Ready for Pickup',
     sla: 'Within 24 Hours',
   },
+  {
+    waybill: 'AWB-DEL-5510294811',
+    orderId: 'CF-99415',
+    destination: 'Indiranagar 100ft Rd, Bengaluru, KA - 560038',
+    carrier: 'Delhivery Express',
+    service: 'Express Air Cargo',
+    weight: '1.2 kg',
+    status: 'Delivered',
+    sla: 'Completed (Next Day)',
+  },
+  {
+    waybill: 'AWB-BLU-1192847291',
+    orderId: 'CF-99414',
+    destination: 'Vasant Vihar, New Delhi, DL - 110057',
+    carrier: 'BlueDart Express',
+    service: 'Priority Air',
+    weight: '3.1 kg',
+    status: 'Delivered',
+    sla: 'Completed (Same Day)',
+  },
+  {
+    waybill: 'AWB-DEL-9847291823',
+    orderId: 'CF-99413',
+    destination: 'Koregaon Park, Pune, MH - 411001',
+    carrier: 'Delhivery Surface',
+    service: 'Standard Surface',
+    weight: '1.5 kg',
+    status: 'Manifest Created',
+    sla: 'Within 48 Hours',
+  },
 ];
 
 export default function AdminLogisticsPage() {
   const [shipments] = useState(DISPATCH_SHIPMENTS);
   const [activeLabelModal, setActiveLabelModal] = useState(null);
   const [manifestBanner, setManifestBanner] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(3);
+
+  const paginatedShipments = shipments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const handlePrintDailyManifest = () => {
-    setManifestBanner('Daily Courier Manifest compiled (3 Shipments). Ready for Air Cargo handover.');
+    setManifestBanner('Daily Courier Manifest compiled (6 Shipments). Ready for Air Cargo handover.');
     setTimeout(() => setManifestBanner(''), 5000);
   };
 
@@ -50,19 +87,17 @@ export default function AdminLogisticsPage() {
     {
       key: 'waybill',
       label: 'Air Waybill (AWB)',
-      cellClassName: 'cf-table-cell-mono',
-      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+      render: (val) => <Badge variant="mono">{val}</Badge>,
     },
     {
       key: 'orderId',
       label: 'Order Ref',
-      cellClassName: 'cf-table-cell-mono',
-      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+      render: (val) => <Badge variant="neutral">{val}</Badge>,
     },
     {
       key: 'destination',
       label: 'Delivery Destination',
-      render: (val) => <span style={{ fontSize: '0.78rem', color: 'var(--cf-text-main)' }}>{val}</span>,
+      render: (val) => <span style={{ fontSize: '0.8rem', color: 'var(--cf-text-main)' }}>{val}</span>,
     },
     {
       key: 'carrier',
@@ -77,7 +112,7 @@ export default function AdminLogisticsPage() {
     {
       key: 'weight',
       label: 'Parcel Weight',
-      render: (val) => <span style={{ color: 'var(--cf-text-muted)' }}>{val}</span>,
+      render: (val) => <Badge variant="neutral">{val}</Badge>,
     },
     {
       key: 'status',
@@ -90,7 +125,9 @@ export default function AdminLogisticsPage() {
               ? 'processing'
               : val === 'Ready for Pickup'
               ? 'warning'
-              : 'completed'
+              : val === 'Delivered'
+              ? 'completed'
+              : 'neutral'
           }
         >
           {val}
@@ -100,7 +137,7 @@ export default function AdminLogisticsPage() {
     {
       key: 'sla',
       label: 'Delivery SLA',
-      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+      render: (val) => <Badge variant="mono">{val}</Badge>,
     },
     {
       key: 'actions',
@@ -129,7 +166,7 @@ export default function AdminLogisticsPage() {
         </div>
         <Button
           size="sm"
-          variant="outline"
+          variant="primary"
           icon={Printer}
           onClick={handlePrintDailyManifest}
         >
@@ -143,9 +180,9 @@ export default function AdminLogisticsPage() {
             marginBottom: '1.25rem',
             padding: '0.75rem 1rem',
             borderRadius: 'var(--cf-radius-md)',
-            backgroundColor: 'var(--cf-accent-primary-tint)',
-            border: '1px solid var(--cf-accent-primary)',
-            color: 'var(--cf-accent-primary)',
+            backgroundColor: 'var(--cf-accent-success-tint)',
+            border: '1px solid var(--cf-accent-success)',
+            color: 'var(--cf-accent-success)',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
@@ -187,14 +224,30 @@ export default function AdminLogisticsPage() {
         />
       </div>
 
-      {/* Manifest Table Card */}
+      {/* Manifest Table Card with Interactive Pagination */}
       <Card>
         <Card.Header
           title="Live Dispatch Manifest"
-          subtitle="Real-time multi-carrier tracking telemetry"
+          subtitle={`${shipments.length} total carrier manifests generated`}
         />
         <Card.Body style={{ padding: 0 }}>
-          <Table columns={columns} data={shipments} keyField="waybill" />
+          <Table
+            className="is-embedded"
+            columns={columns}
+            data={paginatedShipments}
+            keyField="waybill"
+            pagination={{
+              currentPage,
+              pageSize,
+              totalItems: shipments.length,
+              pageSizeOptions: [3, 6, 12],
+              onPageChange: setCurrentPage,
+              onPageSizeChange: (newSize) => {
+                setPageSize(newSize);
+                setCurrentPage(1);
+              },
+            }}
+          />
         </Card.Body>
       </Card>
 
@@ -229,7 +282,7 @@ export default function AdminLogisticsPage() {
               border: '2px dashed var(--cf-border-hover)',
               borderRadius: 'var(--cf-radius-md)',
               backgroundColor: 'var(--cf-bg-elevated)',
-              fontFamily: 'monospace',
+              fontFamily: 'var(--cf-font-mono)',
               fontSize: '0.82rem',
               display: 'flex',
               flexDirection: 'column',

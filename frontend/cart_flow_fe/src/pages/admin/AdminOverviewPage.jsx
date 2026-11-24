@@ -79,8 +79,7 @@ export default function AdminOverviewPage() {
     {
       key: 'orderId',
       label: 'Order Ref',
-      cellClassName: 'cf-table-cell-mono',
-      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+      render: (val) => <Badge variant="mono">{val}</Badge>,
     },
     {
       key: 'customer',
@@ -100,8 +99,7 @@ export default function AdminOverviewPage() {
     {
       key: 'payment',
       label: 'Payment Mode',
-      cellClassName: 'cf-table-cell-mono',
-      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+      render: (val) => <Badge variant="neutral">{val}</Badge>,
     },
     {
       key: 'total',
@@ -317,7 +315,17 @@ export default function AdminOverviewPage() {
           }
         />
         <Card.Body style={{ padding: 0 }}>
-          <Table columns={columns} data={RECENT_ORDERS} keyField="orderId" />
+          <Table
+            className="is-embedded"
+            columns={columns}
+            data={RECENT_ORDERS}
+            keyField="orderId"
+            pagination={{
+              currentPage: 1,
+              pageSize: 5,
+              totalItems: RECENT_ORDERS.length,
+            }}
+          />
         </Card.Body>
       </Card>
     </div>

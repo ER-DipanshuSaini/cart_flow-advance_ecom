@@ -26,8 +26,14 @@
 
 /* Variants with Fluid Theme Support */
 .cf-ui-badge-completed {
+  background-color: var(--cf-accent-success-tint);
+  color: var(--cf-accent-success);
+  border: 1px solid var(--cf-accent-success);
+}
+
+.cf-ui-badge-primary {
   background-color: var(--cf-accent-primary-tint);
-  color: var(--cf-accent-primary);
+  color: var(--cf-accent-primary-light, var(--cf-accent-primary));
   border: 1px solid var(--cf-accent-primary);
 }
 
