@@ -94,20 +94,20 @@ export default function AdminOrdersPage() {
       label: 'Client Name',
       render: (val, row) => (
         <div>
-          <span style={{ fontWeight: 600, color: 'var(--bo-text-main)' }}>{val}</span>
-          <div style={{ fontSize: '0.72rem', color: 'var(--bo-text-dim)' }}>{row.date}</div>
+          <span style={{ fontWeight: 600, color: 'var(--cf-text-main)' }}>{val}</span>
+          <div style={{ fontSize: '0.72rem', color: 'var(--cf-text-dim)' }}>{row.date}</div>
         </div>
       ),
     },
     {
       key: 'items',
       label: 'Purchased Garments',
-      render: (val) => <span style={{ color: 'var(--bo-text-muted)' }}>{val}</span>,
+      render: (val) => <span style={{ color: 'var(--cf-text-muted)' }}>{val}</span>,
     },
     {
       key: 'total',
       label: 'Total Value',
-      render: (val) => <span style={{ fontWeight: 800, color: 'var(--bo-text-main)' }}>{val}</span>,
+      render: (val) => <span style={{ fontWeight: 800, color: 'var(--cf-text-main)' }}>{val}</span>,
     },
     {
       key: 'payment',
@@ -138,7 +138,7 @@ export default function AdminOrdersPage() {
     {
       key: 'courier',
       label: 'Courier Partner',
-      render: (val) => <span style={{ fontSize: '0.78rem', color: 'var(--bo-text-muted)' }}>{val}</span>,
+      render: (val) => <span style={{ fontSize: '0.78rem', color: 'var(--cf-text-muted)' }}>{val}</span>,
     },
     {
       key: 'actions',

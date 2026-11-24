@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   IndianRupee,
   ShoppingBag,
@@ -65,6 +66,8 @@ const RECENT_ORDERS = [
 ];
 
 export default function AdminOverviewPage() {
+  const navigate = useNavigate();
+
   const columns = [
     {
       key: 'srNo',
@@ -84,15 +87,15 @@ export default function AdminOverviewPage() {
       label: 'Customer',
       render: (val, row) => (
         <div>
-          <span style={{ fontWeight: 600, color: 'var(--bo-text-main)' }}>{val}</span>
-          <div style={{ fontSize: '0.72rem', color: 'var(--bo-text-dim)' }}>{row.date}</div>
+          <span style={{ fontWeight: 600, color: 'var(--cf-text-main)' }}>{val}</span>
+          <div style={{ fontSize: '0.72rem', color: 'var(--cf-text-dim)' }}>{row.date}</div>
         </div>
       ),
     },
     {
       key: 'items',
       label: 'Purchased Garments',
-      render: (val) => <span style={{ color: 'var(--bo-text-muted)' }}>{val}</span>,
+      render: (val) => <span style={{ color: 'var(--cf-text-muted)' }}>{val}</span>,
     },
     {
       key: 'payment',
@@ -103,7 +106,7 @@ export default function AdminOverviewPage() {
     {
       key: 'total',
       label: 'Total Value',
-      render: (val) => <span style={{ fontWeight: 800, color: 'var(--bo-text-main)' }}>{val}</span>,
+      render: (val) => <span style={{ fontWeight: 800, color: 'var(--cf-text-main)' }}>{val}</span>,
     },
     {
       key: 'status',
@@ -135,9 +138,7 @@ export default function AdminOverviewPage() {
         </div>
 
         <div className="cf-bo-header-right">
-          <div className="cf-bo-perf-tag">
-            <span className="cf-bo-perf-icon">⚡</span> All-time performance
-          </div>
+          <Badge variant="completed" dot>All-time performance</Badge>
           <Button
             size="sm"
             variant="outline"
@@ -179,126 +180,127 @@ export default function AdminOverviewPage() {
         />
       </div>
 
-      {/* 3. Middle 3 Insight Cards */}
+      {/* 3. Middle 3 Insight Cards wrapped in UI Kit <Card> */}
       <div className="cf-bo-insights-grid">
         {/* Box 1: Fulfillment Outcomes */}
-        <div className="cf-bo-insight-card">
-          <div className="cf-bo-card-top">
-            <h4 className="cf-bo-card-heading">
-              <CheckCircle2 size={14} className="cf-bo-icon-check" /> Fulfillment Rate
-            </h4>
-            <span className="cf-bo-card-meta">348 orders</span>
-          </div>
+        <Card>
+          <Card.Header
+            title="Fulfillment Rate"
+            subtitle="348 total orders"
+            action={<Badge variant="completed" dot>88% Delivered</Badge>}
+          />
+          <Card.Body>
+            <div className="cf-bo-donut-content">
+              <div className="cf-bo-donut-svg-wrap">
+                <svg width="105" height="105" viewBox="0 0 100 100" className="cf-bo-donut-svg">
+                  <circle cx="50" cy="50" r="38" fill="transparent" stroke="var(--cf-border-subtle)" strokeWidth="8" />
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="38"
+                    fill="transparent"
+                    stroke="#22c55e"
+                    strokeWidth="8"
+                    strokeDasharray="238.7"
+                    strokeDashoffset="28.6"
+                    strokeLinecap="round"
+                    transform="rotate(-90 50 50)"
+                  />
+                </svg>
+                <div className="cf-bo-donut-center">
+                  <span className="cf-bo-donut-percent">88%</span>
+                  <span className="cf-bo-donut-label">delivered</span>
+                </div>
+              </div>
 
-          <div className="cf-bo-donut-content">
-            <div className="cf-bo-donut-svg-wrap">
-              <svg width="105" height="105" viewBox="0 0 100 100" className="cf-bo-donut-svg">
-                <circle cx="50" cy="50" r="38" fill="transparent" stroke="var(--bo-border)" strokeWidth="8" />
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="#22c55e"
-                  strokeWidth="8"
-                  strokeDasharray="238.7"
-                  strokeDashoffset="28.6"
-                  strokeLinecap="round"
-                  transform="rotate(-90 50 50)"
-                />
-              </svg>
-              <div className="cf-bo-donut-center">
-                <span className="cf-bo-donut-percent">88%</span>
-                <span className="cf-bo-donut-label">delivered</span>
+              <div className="cf-bo-legend-list">
+                <div className="cf-bo-legend-row">
+                  <span className="cf-bo-legend-name">
+                    <span className="cf-bo-dot is-green" /> Delivered
+                  </span>
+                  <span className="cf-bo-legend-num">306</span>
+                </div>
+                <div className="cf-bo-legend-row">
+                  <span className="cf-bo-legend-name">
+                    <span className="cf-bo-dot is-blue" /> In Transit
+                  </span>
+                  <span className="cf-bo-legend-num">28</span>
+                </div>
+                <div className="cf-bo-legend-row">
+                  <span className="cf-bo-legend-name">
+                    <span className="cf-bo-dot is-amber" /> Processing
+                  </span>
+                  <span className="cf-bo-legend-num">12</span>
+                </div>
+                <div className="cf-bo-legend-row">
+                  <span className="cf-bo-legend-name">
+                    <span className="cf-bo-dot is-red" /> Returns
+                  </span>
+                  <span className="cf-bo-legend-num">2</span>
+                </div>
               </div>
             </div>
-
-            <div className="cf-bo-legend-list">
-              <div className="cf-bo-legend-row">
-                <span className="cf-bo-legend-name">
-                  <span className="cf-bo-dot is-green" /> Delivered
-                </span>
-                <span className="cf-bo-legend-num">306</span>
-              </div>
-              <div className="cf-bo-legend-row">
-                <span className="cf-bo-legend-name">
-                  <span className="cf-bo-dot is-blue" /> In Transit
-                </span>
-                <span className="cf-bo-legend-num">28</span>
-              </div>
-              <div className="cf-bo-legend-row">
-                <span className="cf-bo-legend-name">
-                  <span className="cf-bo-dot is-amber" /> Processing
-                </span>
-                <span className="cf-bo-legend-num">12</span>
-              </div>
-              <div className="cf-bo-legend-row">
-                <span className="cf-bo-legend-name">
-                  <span className="cf-bo-dot is-red" /> Returns
-                </span>
-                <span className="cf-bo-legend-num">2</span>
-              </div>
-            </div>
-          </div>
-        </div>
+          </Card.Body>
+        </Card>
 
         {/* Box 2: Payment Distribution */}
-        <div className="cf-bo-insight-card">
-          <div className="cf-bo-card-top">
-            <h4 className="cf-bo-card-heading">
-              <IndianRupee size={14} className="cf-bo-flower-icon" /> Payment Distribution
-            </h4>
-          </div>
+        <Card>
+          <Card.Header
+            title="Payment Distribution"
+            subtitle="Settled transactions"
+            action={<Badge variant="processing" dot>UPI/Cards 84%</Badge>}
+          />
+          <Card.Body>
+            <div className="cf-bo-metric-huge">₹54,82,000</div>
+            <div className="cf-bo-metric-subtitle">Gross settled transactions</div>
 
-          <div className="cf-bo-metric-huge">₹54,82,000</div>
-          <div className="cf-bo-metric-subtitle">settled transactions</div>
-
-          <div className="cf-bo-progress-track">
-            <div className="cf-bo-progress-fill" style={{ width: '84%' }} />
-          </div>
-
-          <div className="cf-bo-split-row">
-            <div>
-              <span className="cf-bo-split-tag">↗ Online Prepaid (UPI/Cards)</span>
-              <strong className="cf-bo-split-val">₹46,20,000 (84%)</strong>
+            <div className="cf-bo-progress-track">
+              <div className="cf-bo-progress-fill" style={{ width: '84%' }} />
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <span className="cf-bo-split-tag">↗ Cash On Delivery</span>
-              <strong className="cf-bo-split-val">₹8,62,000 (16%)</strong>
+
+            <div className="cf-bo-split-row">
+              <div>
+                <span className="cf-bo-split-tag">Online Prepaid</span>
+                <strong className="cf-bo-split-val">₹46,20,000 (84%)</strong>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span className="cf-bo-split-tag">Cash On Delivery</span>
+                <strong className="cf-bo-split-val">₹8,62,000 (16%)</strong>
+              </div>
             </div>
-          </div>
-        </div>
+          </Card.Body>
+        </Card>
 
         {/* Box 3: Customer Retention */}
-        <div className="cf-bo-insight-card">
-          <div className="cf-bo-card-top">
-            <h4 className="cf-bo-card-heading">
-              <Users size={14} className="cf-bo-kpi-icon" /> Customer Retention
-            </h4>
-            <ArrowUpRight size={14} className="cf-bo-card-meta" />
-          </div>
+        <Card>
+          <Card.Header
+            title="Customer Retention"
+            subtitle="Repeat shopper rate"
+            action={<Badge variant="completed" dot>78% Repeat</Badge>}
+          />
+          <Card.Body>
+            <div className="cf-bo-metric-huge">78%</div>
+            <div className="cf-bo-metric-subtitle">Active loyalty retention</div>
 
-          <div className="cf-bo-metric-huge">78%</div>
-          <div className="cf-bo-metric-subtitle">repeat shopper rate</div>
-
-          <div className="cf-bo-progress-track">
-            <div className="cf-bo-progress-fill" style={{ width: '78%' }} />
-          </div>
-
-          <div className="cf-bo-split-row">
-            <div>
-              <span className="cf-bo-split-tag">Repeat VIPs</span>
-              <strong className="cf-bo-split-val">341</strong>
+            <div className="cf-bo-progress-track">
+              <div className="cf-bo-progress-fill" style={{ width: '78%' }} />
             </div>
-            <div style={{ textAlign: 'right' }}>
-              <span className="cf-bo-split-tag">New Shoppers</span>
-              <strong className="cf-bo-split-val">96</strong>
+
+            <div className="cf-bo-split-row">
+              <div>
+                <span className="cf-bo-split-tag">Repeat VIPs</span>
+                <strong className="cf-bo-split-val">341</strong>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <span className="cf-bo-split-tag">New Shoppers</span>
+                <strong className="cf-bo-split-val">96</strong>
+              </div>
             </div>
-          </div>
-        </div>
+          </Card.Body>
+        </Card>
       </div>
 
-      {/* 4. Bottom Table: Recent Customer Orders using UI Kit <Table> */}
+      {/* 4. Bottom Table: Recent Customer Orders using UI Kit <Table> inside <Card> */}
       <Card>
         <Card.Header
           title="Recent Customer Orders"
@@ -308,7 +310,7 @@ export default function AdminOverviewPage() {
               size="sm"
               variant="outline"
               iconRight={ArrowUpRight}
-              onClick={() => (window.location.href = '/admin/orders')}
+              onClick={() => navigate('/admin/orders')}
             >
               All Orders
             </Button>

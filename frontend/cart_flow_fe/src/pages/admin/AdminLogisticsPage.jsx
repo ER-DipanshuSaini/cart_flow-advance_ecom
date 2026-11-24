@@ -62,22 +62,22 @@ export default function AdminLogisticsPage() {
     {
       key: 'destination',
       label: 'Delivery Destination',
-      render: (val) => <span style={{ fontSize: '0.78rem', color: 'var(--bo-text-main)' }}>{val}</span>,
+      render: (val) => <span style={{ fontSize: '0.78rem', color: 'var(--cf-text-main)' }}>{val}</span>,
     },
     {
       key: 'carrier',
       label: 'Assigned Carrier',
       render: (val, row) => (
         <div>
-          <span style={{ fontWeight: 600, color: 'var(--bo-text-main)' }}>{val}</span>
-          <div style={{ fontSize: '0.7rem', color: 'var(--bo-text-dim)' }}>{row.service}</div>
+          <span style={{ fontWeight: 600, color: 'var(--cf-text-main)' }}>{val}</span>
+          <div style={{ fontSize: '0.7rem', color: 'var(--cf-text-dim)' }}>{row.service}</div>
         </div>
       ),
     },
     {
       key: 'weight',
       label: 'Parcel Weight',
-      render: (val) => <span style={{ color: 'var(--bo-text-muted)' }}>{val}</span>,
+      render: (val) => <span style={{ color: 'var(--cf-text-muted)' }}>{val}</span>,
     },
     {
       key: 'status',

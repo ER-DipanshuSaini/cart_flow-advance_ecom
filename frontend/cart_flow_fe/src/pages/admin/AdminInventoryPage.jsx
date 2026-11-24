@@ -93,17 +93,17 @@ export default function AdminInventoryPage() {
     {
       key: 'title',
       label: 'Garment Description',
-      render: (val) => <span style={{ fontWeight: 600, color: 'var(--bo-text-main)' }}>{val}</span>,
+      render: (val) => <span style={{ fontWeight: 600, color: 'var(--cf-text-main)' }}>{val}</span>,
     },
     {
       key: 'supplier',
       label: 'Supplier Vendor',
-      render: (val) => <span style={{ color: 'var(--bo-text-muted)' }}>{val}</span>,
+      render: (val) => <span style={{ color: 'var(--cf-text-muted)' }}>{val}</span>,
     },
     {
       key: 'available',
       label: 'Available Units',
-      render: (val) => <span style={{ fontWeight: 800, color: 'var(--bo-text-main)' }}>{val}</span>,
+      render: (val) => <span style={{ fontWeight: 800, color: 'var(--cf-text-main)' }}>{val}</span>,
     },
     {
       key: 'reserved',
@@ -247,25 +247,17 @@ export default function AdminInventoryPage() {
         }
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--cf-text-muted)', display: 'block', marginBottom: '6px' }}>
-              Supplier Mill
-            </label>
-            <Input
-              readOnly
-              value={selectedSku?.supplier || 'Vanguard Mills Florence'}
-            />
-          </div>
-          <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--cf-text-muted)', display: 'block', marginBottom: '6px' }}>
-              Units to Inward
-            </label>
-            <Input
-              type="number"
-              defaultValue="30"
-              placeholder="Enter batch quantity"
-            />
-          </div>
+          <Input
+            label="Supplier Mill"
+            readOnly
+            value={selectedSku?.supplier || 'Vanguard Mills Florence'}
+          />
+          <Input
+            label="Units to Inward"
+            type="number"
+            defaultValue="30"
+            placeholder="Enter batch quantity"
+          />
           <div style={{ fontSize: '0.78rem', color: 'var(--cf-text-dim)', lineHeight: 1.5 }}>
             Automated EDI delivery notice will be sent to the textile warehouse. Stock ledger will update upon quality inspection.
           </div>

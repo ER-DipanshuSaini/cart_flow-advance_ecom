@@ -60,11 +60,8 @@ export default function AdminLayout() {
 
           {/* Status Row */}
           <div className="cf-bo-console-status-row">
-            <div className="cf-bo-console-indicator">
-              <span className="cf-bo-indicator-dot" />
-              <span>LIVE STORE ENGINE</span>
-            </div>
-            <span className="cf-bo-admin-badge">ADMIN</span>
+            <Badge variant="completed" dot>LIVE STORE ENGINE</Badge>
+            <Badge variant="primary">ADMIN</Badge>
           </div>
         </div>
 
@@ -161,15 +158,15 @@ export default function AdminLayout() {
 
           <div className="cf-bo-topbar-controls">
             {/* Storefront External Link */}
-            <a
-              href="/"
-              target="_blank"
-              rel="noreferrer"
-              className="cf-bo-icon-button"
+            <Button
+              variant="outline"
+              size="sm"
+              icon={ExternalLink}
+              onClick={() => window.open('/', '_blank')}
               title="View Customer Storefront"
             >
-              <ExternalLink size={16} />
-            </a>
+              Storefront
+            </Button>
 
             {/* Standard Reusable Theme Toggle */}
             <ThemeToggle />
@@ -180,14 +177,15 @@ export default function AdminLayout() {
             </div>
 
             {/* Sign Out */}
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={LogOut}
               onClick={handleLogout}
-              className="cf-bo-icon-button"
               title="Sign Out"
             >
-              <LogOut size={16} />
-            </button>
+              Exit
+            </Button>
           </div>
         </header>
 
