@@ -156,7 +156,7 @@ export default function AdminOverviewPage() {
             <div className="cf-bo-donut-svg-wrap">
               <svg width="105" height="105" viewBox="0 0 100 100" className="cf-bo-donut-svg">
                 {/* Background Ring */}
-                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#1f2530" strokeWidth="8" />
+                <circle cx="50" cy="50" r="38" fill="transparent" stroke="var(--bo-border)" strokeWidth="8" />
                 {/* Delivered (88%) Green Ring */}
                 <circle
                   cx="50"
@@ -293,7 +293,7 @@ export default function AdminOverviewPage() {
                   <td className="cf-bo-td-title">{row.customer}</td>
                   <td>{row.items}</td>
                   <td className="cf-bo-td-mono">{row.payment}</td>
-                  <td style={{ color: '#ffffff', fontWeight: 800 }}>{row.total}</td>
+                  <td style={{ color: 'var(--bo-text-main)', fontWeight: 800 }}>{row.total}</td>
                   <td>
                     <span className={`cf-bo-chip ${row.statusClass}`}>
                       <span className="cf-bo-chip-dot" /> {row.status}

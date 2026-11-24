@@ -277,3 +277,68 @@
 .cf-switch-auth-link:hover {
   text-decoration: underline;
 }
+
+/* ========================================================
+   Admin Operations Gateway Layout (/admin-portal)
+   ======================================================== */
+.cf-auth-page-wrapper.cf-admin-gate-theme {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.25rem;
+  background-color: var(--cf-bg-base);
+  color: var(--cf-text-main);
+  font-family: var(--cf-font-sans);
+  transition: background-color var(--cf-transition);
+}
+
+.cf-auth-page-wrapper.cf-admin-gate-theme .cf-auth-box {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.cf-auth-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.85rem;
+}
+
+.cf-auth-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--cf-text-main);
+  margin-bottom: 0.35rem;
+}
+
+.cf-auth-subtitle {
+  font-size: 0.84rem;
+  color: var(--cf-text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.cf-auth-card {
+  width: 100%;
+  border-radius: var(--cf-radius-lg);
+  box-shadow: var(--cf-shadow-card);
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+}
+
+.cf-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cf-auth-submit-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+

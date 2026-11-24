@@ -87,8 +87,9 @@ export default function HomePage() {
         <div className="cf-aesthetic-lookbook-grid">
           <Link to="/shop?cat=Old Money" className="cf-lookbook-card">
             <img
-              src="https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?auto=format&fit=crop&w=800&q=80"
+              src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80"
               alt="Old Money Styling"
+              onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'; }}
             />
             <div className="cf-lookbook-overlay">
               <span className="cf-lookbook-tag">SIGNATURE LOOK</span>
@@ -162,7 +163,13 @@ export default function HomePage() {
                   </span>
                 )}
                 <Link to={`/product/${product.id}`}>
-                  <img src={product.imageUrl} alt={product.title} className="cf-compact-cover-img" loading="lazy" />
+                  <img
+                    src={product.imageUrl}
+                    alt={product.title}
+                    className="cf-compact-cover-img"
+                    loading="lazy"
+                    onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'; }}
+                  />
                 </Link>
 
                 <div className="cf-compact-hover-actions">

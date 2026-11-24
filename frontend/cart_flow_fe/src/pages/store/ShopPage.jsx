@@ -348,6 +348,7 @@ export default function ShopPage() {
                       alt={product.title}
                       className="cf-compact-cover-img"
                       loading="lazy"
+                      onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'; }}
                     />
                   </Link>
 

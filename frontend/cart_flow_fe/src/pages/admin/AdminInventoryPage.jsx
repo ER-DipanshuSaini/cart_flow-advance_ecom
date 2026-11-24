@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Boxes, AlertCircle, Plus, ArrowUpRight, TrendingUp } from 'lucide-react';
-import { Button, Input, Badge } from '../../components/ui';
+import { Boxes, AlertCircle, Plus, TrendingUp, CheckCircle } from 'lucide-react';
+import { Button, Input, Badge, Card, MetricCard, Table, Modal } from '../../components/ui';
 import './AdminConsole.css';
 
 const INVENTORY_DATA = [
@@ -58,124 +58,219 @@ const INVENTORY_DATA = [
 
 export default function AdminInventoryPage() {
   const [items, setItems] = useState(INVENTORY_DATA);
+  const [poModalOpen, setPoModalOpen] = useState(false);
+  const [selectedSku, setSelectedSku] = useState(null);
+  const [replenishSuccess, setReplenishSuccess] = useState('');
+
+  const handleReplenish = (item) => {
+    setSelectedSku(item);
+    setPoModalOpen(true);
+  };
+
+  const handleConfirmPO = (e) => {
+    e.preventDefault();
+    if (selectedSku) {
+      setItems((prev) =>
+        prev.map((i) =>
+          i.sku === selectedSku.sku
+            ? { ...i, available: i.available + 30, status: 'Healthy' }
+            : i
+        )
+      );
+      setReplenishSuccess(`Purchase Order dispatched for ${selectedSku.title} (+30 units).`);
+      setTimeout(() => setReplenishSuccess(''), 4000);
+    }
+    setPoModalOpen(false);
+  };
+
+  const columns = [
+    {
+      key: 'sku',
+      label: 'SKU',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'title',
+      label: 'Garment Description',
+      render: (val) => <span style={{ fontWeight: 600, color: 'var(--bo-text-main)' }}>{val}</span>,
+    },
+    {
+      key: 'supplier',
+      label: 'Supplier Vendor',
+      render: (val) => <span style={{ color: 'var(--bo-text-muted)' }}>{val}</span>,
+    },
+    {
+      key: 'available',
+      label: 'Available Units',
+      render: (val) => <span style={{ fontWeight: 800, color: 'var(--bo-text-main)' }}>{val}</span>,
+    },
+    {
+      key: 'reserved',
+      label: 'Reserved for Orders',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'reorderLevel',
+      label: 'Reorder Trigger',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'status',
+      label: 'Stock Status',
+      render: (val) => (
+        <Badge
+          dot
+          variant={
+            val === 'Healthy'
+              ? 'completed'
+              : val === 'Low Stock'
+              ? 'warning'
+              : 'failed'
+          }
+        >
+          {val}
+        </Badge>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Action',
+      render: (_, row) => (
+        <Button size="sm" variant="outline" onClick={() => handleReplenish(row)}>
+          Replenish
+        </Button>
+      ),
+    },
+  ];
 
   return (
-    <div>
-      <div className="cf-overview-header">
-        <h1 className="cf-overview-title">Supplier & Inventory Console</h1>
-        <p className="cf-overview-subtitle">
-          Real-time garment warehouse stock, vendor purchase orders, and replenishment thresholds.
-        </p>
+    <div className="cf-admin-content-inner">
+      <div className="cf-bo-page-header">
+        <div>
+          <h1 className="cf-bo-page-title">Supplier & Inventory Console</h1>
+          <p className="cf-bo-page-subtitle">
+            Real-time garment warehouse stock, vendor purchase orders, and replenishment thresholds.
+          </p>
+        </div>
+        <Button
+          size="sm"
+          variant="primary"
+          icon={Plus}
+          onClick={() => {
+            setSelectedSku(items[1]);
+            setPoModalOpen(true);
+          }}
+        >
+          Create Stock PO
+        </Button>
       </div>
 
-      {/* KPI Cards for Inventory */}
-      <div className="cf-admin-kpi-grid">
-        <div className="cf-admin-kpi-card">
-          <div className="cf-kpi-top">
-            <span className="cf-kpi-label">Active SKUs</span>
-            <Boxes size={18} className="cf-kpi-icon" />
-          </div>
-          <div className="cf-kpi-val">12</div>
-          <div className="cf-kpi-subtext">Across 4 premium suppliers</div>
+      {replenishSuccess && (
+        <div
+          style={{
+            marginBottom: '1.25rem',
+            padding: '0.75rem 1rem',
+            borderRadius: 'var(--cf-radius-md)',
+            backgroundColor: 'var(--cf-accent-primary-tint)',
+            border: '1px solid var(--cf-accent-primary)',
+            color: 'var(--cf-accent-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '0.82rem',
+            fontWeight: 600,
+          }}
+        >
+          <CheckCircle size={16} />
+          <span>{replenishSuccess}</span>
         </div>
+      )}
 
-        <div className="cf-admin-kpi-card">
-          <div className="cf-kpi-top">
-            <span className="cf-kpi-label">Total Units on Hand</span>
-            <TrendingUp size={18} className="cf-kpi-icon" />
-          </div>
-          <div className="cf-kpi-val">846</div>
-          <div className="cf-kpi-subtext">Warehoused in Central Hub</div>
-        </div>
-
-        <div className="cf-admin-kpi-card">
-          <div className="cf-kpi-top">
-            <span className="cf-kpi-label">Low Stock Alerts</span>
-            <AlertCircle size={18} color="#facc15" />
-          </div>
-          <div className="cf-kpi-val" style={{ color: '#facc15' }}>2</div>
-          <div className="cf-kpi-subtext">Polo & French Linen</div>
-        </div>
-
-        <div className="cf-admin-kpi-card">
-          <div className="cf-kpi-top">
-            <span className="cf-kpi-label">Inventory Valuation</span>
-            <Boxes size={18} className="cf-kpi-icon" />
-          </div>
-          <div className="cf-kpi-val">$58,420</div>
-          <div className="cf-kpi-subtext">At landed wholesale cost</div>
-        </div>
+      {/* 4 Metric Cards */}
+      <div className="cf-bo-kpi-grid">
+        <MetricCard
+          title="Active SKUs"
+          value="12"
+          subtext="Across 4 premium suppliers"
+          icon={Boxes}
+        />
+        <MetricCard
+          title="Total Units on Hand"
+          value="846"
+          subtext="Warehoused in Central Hub"
+          icon={TrendingUp}
+        />
+        <MetricCard
+          title="Low Stock Alerts"
+          value="2"
+          subtext="Polo & French Linen"
+          icon={AlertCircle}
+          highlighted
+        />
+        <MetricCard
+          title="Inventory Valuation"
+          value="$58,420"
+          subtext="At landed wholesale cost"
+          icon={Boxes}
+        />
       </div>
 
-      {/* Inventory Table */}
-      <div className="cf-admin-table-card">
-        <div className="cf-table-card-header">
-          <h3 className="cf-table-card-title">Warehouse Stock & Inward Pipeline</h3>
-          <Button size="sm" variant="primary" icon={Plus} onClick={() => alert('Create Inward Purchase Order')}>
-            Create Stock PO
-          </Button>
-        </div>
+      {/* Inventory Table inside Card */}
+      <Card>
+        <Card.Header
+          title="Warehouse Stock & Inward Pipeline"
+          subtitle="Real-time multi-vendor inventory ledger"
+        />
+        <Card.Body style={{ padding: 0 }}>
+          <Table columns={columns} data={items} keyField="sku" />
+        </Card.Body>
+      </Card>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table className="cf-admin-data-table">
-            <thead>
-              <tr>
-                <th>SKU</th>
-                <th>Garment Description</th>
-                <th>Supplier Vendor</th>
-                <th>Available Units</th>
-                <th>Reserved for Orders</th>
-                <th>Reorder Trigger</th>
-                <th>Stock Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((it) => (
-                <tr key={it.sku}>
-                  <td className="cf-td-mono">{it.sku}</td>
-                  <td className="cf-td-product-title">{it.title}</td>
-                  <td className="cf-td-mono">{it.supplier}</td>
-                  <td style={{ fontWeight: 800, color: '#ffffff' }}>{it.available}</td>
-                  <td className="cf-td-mono">{it.reserved}</td>
-                  <td className="cf-td-mono">{it.reorderLevel}</td>
-                  <td>
-                    <span
-                      className={`cf-status-chip ${
-                        it.status === 'Healthy'
-                          ? 'is-completed'
-                          : it.status === 'Low Stock'
-                          ? 'is-quota'
-                          : 'is-failed'
-                      }`}
-                    >
-                      • {it.status}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      onClick={() => alert(`Replenishment request dispatched to ${it.supplier}`)}
-                      style={{
-                        backgroundColor: '#161e2c',
-                        border: '1px solid #243042',
-                        color: '#93c5fd',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Replenish
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Styled PO Modal instead of native alert */}
+      <Modal
+        isOpen={poModalOpen}
+        onClose={() => setPoModalOpen(false)}
+        title="Create Inward Purchase Order"
+        subtitle={selectedSku ? `Replenishing ${selectedSku.title} (${selectedSku.sku})` : 'New Vendor Restock'}
+        footer={
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', width: '100%' }}>
+            <Button variant="ghost" onClick={() => setPoModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleConfirmPO}>
+              Dispatch Purchase Order
+            </Button>
+          </div>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--cf-text-muted)', display: 'block', marginBottom: '6px' }}>
+              Supplier Mill
+            </label>
+            <Input
+              readOnly
+              value={selectedSku?.supplier || 'Vanguard Mills Florence'}
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--cf-text-muted)', display: 'block', marginBottom: '6px' }}>
+              Units to Inward
+            </label>
+            <Input
+              type="number"
+              defaultValue="30"
+              placeholder="Enter batch quantity"
+            />
+          </div>
+          <div style={{ fontSize: '0.78rem', color: 'var(--cf-text-dim)', lineHeight: 1.5 }}>
+            Automated EDI delivery notice will be sent to the textile warehouse. Stock ledger will update upon quality inspection.
+          </div>
         </div>
-      </div>
+      </Modal>
     </div>
   );
 }

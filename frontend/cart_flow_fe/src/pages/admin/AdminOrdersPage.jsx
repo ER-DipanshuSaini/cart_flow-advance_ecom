@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ShoppingBag, Search, Filter, Truck, Check, Eye, Download } from 'lucide-react';
-import { Button, Input, Dropdown } from '../../components/ui';
+import { Button, Input, Table, Badge, Card } from '../../components/ui';
 import './AdminConsole.css';
 
 const INITIAL_ORDERS = [
@@ -82,114 +82,141 @@ export default function AdminOrdersPage() {
     );
   };
 
+  const columns = [
+    {
+      key: 'id',
+      label: 'Order ID',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'customer',
+      label: 'Client Name',
+      render: (val, row) => (
+        <div>
+          <span style={{ fontWeight: 600, color: 'var(--bo-text-main)' }}>{val}</span>
+          <div style={{ fontSize: '0.72rem', color: 'var(--bo-text-dim)' }}>{row.date}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'items',
+      label: 'Purchased Garments',
+      render: (val) => <span style={{ color: 'var(--bo-text-muted)' }}>{val}</span>,
+    },
+    {
+      key: 'total',
+      label: 'Total Value',
+      render: (val) => <span style={{ fontWeight: 800, color: 'var(--bo-text-main)' }}>{val}</span>,
+    },
+    {
+      key: 'payment',
+      label: 'Payment',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'status',
+      label: 'Fulfillment Status',
+      render: (val) => (
+        <Badge
+          dot
+          variant={
+            val === 'Delivered'
+              ? 'completed'
+              : val === 'In Transit'
+              ? 'processing'
+              : val === 'Processing'
+              ? 'warning'
+              : 'neutral'
+          }
+        >
+          {val}
+        </Badge>
+      ),
+    },
+    {
+      key: 'courier',
+      label: 'Courier Partner',
+      render: (val) => <span style={{ fontSize: '0.78rem', color: 'var(--bo-text-muted)' }}>{val}</span>,
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (_, row) => (
+        <Button
+          size="sm"
+          variant={row.status === 'In Transit' ? 'outline' : 'primary'}
+          disabled={row.status === 'In Transit' || row.status === 'Delivered'}
+          onClick={() => markShipped(row.id)}
+        >
+          {row.status === 'In Transit' ? 'Dispatched' : row.status === 'Delivered' ? 'Completed' : 'Dispatch'}
+        </Button>
+      ),
+    },
+  ];
+
   return (
-    <div>
-      <div className="cf-overview-header">
-        <h1 className="cf-overview-title">Orders & Order Fulfillment</h1>
-        <p className="cf-overview-subtitle">Manage customer orders, packing slips, and dispatch logistics.</p>
+    <div className="cf-admin-content-inner">
+      <div className="cf-bo-page-header">
+        <div>
+          <h1 className="cf-bo-page-title">Orders & Order Fulfillment</h1>
+          <p className="cf-bo-page-subtitle">Manage customer orders, packing slips, and dispatch logistics.</p>
+        </div>
       </div>
 
-      <div className="cf-admin-table-card">
-        {/* Controls Bar */}
-        <div className="cf-table-card-header" style={{ flexWrap: 'wrap', gap: '10px' }}>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8' }}>Filter Status:</span>
+      <Card>
+        <Card.Header
+          title="Live Customer Orders"
+          subtitle={`${filteredOrders.length} orders shown`}
+          action={
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Input
+                placeholder="Search order ID, client..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ width: '240px' }}
+                icon={Search}
+              />
+            </div>
+          }
+        />
+
+        {/* Filter Toolbar */}
+        <div
+          style={{
+            padding: '0.75rem 1.25rem',
+            borderBottom: '1px solid var(--cf-border-subtle)',
+            backgroundColor: 'var(--cf-bg-elevated)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            gap: '8px',
+          }}
+        >
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--cf-text-dim)', marginRight: '4px' }}>
+              Filter Status:
+            </span>
             {['All', 'Confirmed', 'Processing', 'In Transit', 'Delivered'].map((st) => (
-              <button
+              <Button
                 key={st}
-                type="button"
+                size="sm"
+                variant={statusFilter === st.toLowerCase() ? 'primary' : 'ghost'}
                 onClick={() => setStatusFilter(st.toLowerCase())}
-                style={{
-                  background: statusFilter === st.toLowerCase() ? '#003f7f' : '#141b27',
-                  border: '1px solid #243042',
-                  color: statusFilter === st.toLowerCase() ? '#ffffff' : '#94a3b8',
-                  padding: '4px 10px',
-                  borderRadius: '14px',
-                  fontSize: '0.72rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
+                style={{ height: '28px', fontSize: '0.72rem', padding: '0 10px' }}
               >
                 {st}
-              </button>
+              </Button>
             ))}
           </div>
-
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Input
-              placeholder="Search order ID, client..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ width: '220px' }}
-            />
-          </div>
         </div>
 
-        {/* Orders Table */}
-        <div style={{ overflowX: 'auto' }}>
-          <table className="cf-admin-data-table">
-            <thead>
-              <tr>
-                <th>Order ID</th>
-                <th>Client Name</th>
-                <th>Purchased Garments</th>
-                <th>Total Value</th>
-                <th>Payment</th>
-                <th>Fulfillment Status</th>
-                <th>Courier Partner</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOrders.map((o) => (
-                <tr key={o.id}>
-                  <td className="cf-td-mono">{o.id}</td>
-                  <td className="cf-td-product-title">{o.customer}</td>
-                  <td>{o.items}</td>
-                  <td style={{ fontWeight: 800, color: '#ffffff' }}>{o.total}</td>
-                  <td className="cf-td-mono">{o.payment}</td>
-                  <td>
-                    <span
-                      className={`cf-status-chip ${
-                        o.status === 'Delivered'
-                          ? 'is-completed'
-                          : o.status === 'In Transit'
-                          ? 'is-processing'
-                          : 'is-quota'
-                      }`}
-                    >
-                      • {o.status}
-                    </span>
-                  </td>
-                  <td className="cf-td-mono">{o.courier}</td>
-                  <td>
-                    {o.status === 'Processing' || o.status === 'Confirmed' ? (
-                      <button
-                        type="button"
-                        onClick={() => markShipped(o.id)}
-                        style={{
-                          backgroundColor: '#003f7f',
-                          border: 'none',
-                          color: '#ffffff',
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          fontSize: '0.7rem',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Dispatch
-                      </button>
-                    ) : (
-                      <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Dispatched</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <Card.Body style={{ padding: 0 }}>
+          <Table columns={columns} data={filteredOrders} keyField="id" />
+        </Card.Body>
+      </Card>
     </div>
   );
 }

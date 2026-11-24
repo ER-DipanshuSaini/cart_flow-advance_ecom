@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Truck, Check, MapPin, Printer, ArrowUpRight, ShieldCheck } from 'lucide-react';
-import { Button, Input, Dropdown } from '../../components/ui';
+import { Truck, Check, MapPin, Printer, ShieldCheck, CheckCircle } from 'lucide-react';
+import { Button, Input, Badge, Card, MetricCard, Table, Modal } from '../../components/ui';
 import './AdminConsole.css';
 
 const DISPATCH_SHIPMENTS = [
@@ -37,125 +37,227 @@ const DISPATCH_SHIPMENTS = [
 ];
 
 export default function AdminLogisticsPage() {
-  const [shipments, setShipments] = useState(DISPATCH_SHIPMENTS);
+  const [shipments] = useState(DISPATCH_SHIPMENTS);
+  const [activeLabelModal, setActiveLabelModal] = useState(null);
+  const [manifestBanner, setManifestBanner] = useState('');
+
+  const handlePrintDailyManifest = () => {
+    setManifestBanner('Daily Courier Manifest compiled (3 Shipments). Ready for Air Cargo handover.');
+    setTimeout(() => setManifestBanner(''), 5000);
+  };
+
+  const columns = [
+    {
+      key: 'waybill',
+      label: 'Air Waybill (AWB)',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'orderId',
+      label: 'Order Ref',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'destination',
+      label: 'Delivery Destination',
+      render: (val) => <span style={{ fontSize: '0.78rem', color: 'var(--bo-text-main)' }}>{val}</span>,
+    },
+    {
+      key: 'carrier',
+      label: 'Assigned Carrier',
+      render: (val, row) => (
+        <div>
+          <span style={{ fontWeight: 600, color: 'var(--bo-text-main)' }}>{val}</span>
+          <div style={{ fontSize: '0.7rem', color: 'var(--bo-text-dim)' }}>{row.service}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'weight',
+      label: 'Parcel Weight',
+      render: (val) => <span style={{ color: 'var(--bo-text-muted)' }}>{val}</span>,
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (val) => (
+        <Badge
+          dot
+          variant={
+            val === 'In Transit'
+              ? 'processing'
+              : val === 'Ready for Pickup'
+              ? 'warning'
+              : 'completed'
+          }
+        >
+          {val}
+        </Badge>
+      ),
+    },
+    {
+      key: 'sla',
+      label: 'Delivery SLA',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (_, row) => (
+        <Button
+          size="sm"
+          variant="outline"
+          icon={Printer}
+          onClick={() => setActiveLabelModal(row)}
+        >
+          Print Label
+        </Button>
+      ),
+    },
+  ];
 
   return (
-    <div>
-      <div className="cf-overview-header">
-        <h1 className="cf-overview-title">Logistics & Courier Dispatch Hub</h1>
-        <p className="cf-overview-subtitle">
-          Real-time courier API sync, Air Waybills (AWBs), shipping manifests, and delivery SLAs.
-        </p>
+    <div className="cf-admin-content-inner">
+      <div className="cf-bo-page-header">
+        <div>
+          <h1 className="cf-bo-page-title">Logistics & Courier Dispatch Hub</h1>
+          <p className="cf-bo-page-subtitle">
+            Real-time courier API sync, Air Waybills (AWBs), shipping manifests, and delivery SLAs.
+          </p>
+        </div>
+        <Button
+          size="sm"
+          variant="outline"
+          icon={Printer}
+          onClick={handlePrintDailyManifest}
+        >
+          Print Daily Manifest
+        </Button>
       </div>
 
-      {/* KPI Cards for Logistics */}
-      <div className="cf-admin-kpi-grid">
-        <div className="cf-admin-kpi-card">
-          <div className="cf-kpi-top">
-            <span className="cf-kpi-label">Active Dispatches</span>
-            <Truck size={18} className="cf-kpi-icon" />
-          </div>
-          <div className="cf-kpi-val">28</div>
-          <div className="cf-kpi-subtext">18 BlueDart • 10 Delhivery</div>
+      {manifestBanner && (
+        <div
+          style={{
+            marginBottom: '1.25rem',
+            padding: '0.75rem 1rem',
+            borderRadius: 'var(--cf-radius-md)',
+            backgroundColor: 'var(--cf-accent-primary-tint)',
+            border: '1px solid var(--cf-accent-primary)',
+            color: 'var(--cf-accent-primary)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '0.82rem',
+            fontWeight: 600,
+          }}
+        >
+          <CheckCircle size={16} />
+          <span>{manifestBanner}</span>
         </div>
+      )}
 
-        <div className="cf-admin-kpi-card">
-          <div className="cf-kpi-top">
-            <span className="cf-kpi-label">On-Time Delivery Rate</span>
-            <ShieldCheck size={18} color="#22c55e" />
-          </div>
-          <div className="cf-kpi-val" style={{ color: '#4ade80' }}>99.2%</div>
-          <div className="cf-kpi-subtext">Exceeding 98% SLA target</div>
-        </div>
-
-        <div className="cf-admin-kpi-card">
-          <div className="cf-kpi-top">
-            <span className="cf-kpi-label">Pending Pickup</span>
-            <Truck size={18} color="#facc15" />
-          </div>
-          <div className="cf-kpi-val" style={{ color: '#facc15' }}>4</div>
-          <div className="cf-kpi-subtext">Scheduled for 5:00 PM slot</div>
-        </div>
-
-        <div className="cf-admin-kpi-card">
-          <div className="cf-kpi-top">
-            <span className="cf-kpi-label">Avg Transit Time</span>
-            <Truck size={18} className="cf-kpi-icon" />
-          </div>
-          <div className="cf-kpi-val">1.4 Days</div>
-          <div className="cf-kpi-subtext">Across metro pin codes</div>
-        </div>
+      {/* 4 Metric Cards */}
+      <div className="cf-bo-kpi-grid">
+        <MetricCard
+          title="Active Dispatches"
+          value="28"
+          subtext="18 BlueDart • 10 Delhivery"
+          icon={Truck}
+        />
+        <MetricCard
+          title="On-Time Delivery Rate"
+          value="99.2%"
+          subtext="Exceeding 98% SLA target"
+          icon={ShieldCheck}
+        />
+        <MetricCard
+          title="Pending Pickup"
+          value="4"
+          subtext="Scheduled for 5:00 PM slot"
+          icon={Truck}
+          highlighted
+        />
+        <MetricCard
+          title="Avg Transit Time"
+          value="1.4 Days"
+          subtext="Across metro pin codes"
+          icon={Truck}
+        />
       </div>
 
-      {/* Shipments Table */}
-      <div className="cf-admin-table-card">
-        <div className="cf-table-card-header">
-          <h3 className="cf-table-card-title">Live Dispatch Manifest</h3>
-          <Button size="sm" variant="outline" icon={Printer} onClick={() => alert('Printing Daily Manifest Summary')}>
-            Print Daily Manifest
-          </Button>
-        </div>
+      {/* Manifest Table Card */}
+      <Card>
+        <Card.Header
+          title="Live Dispatch Manifest"
+          subtitle="Real-time multi-carrier tracking telemetry"
+        />
+        <Card.Body style={{ padding: 0 }}>
+          <Table columns={columns} data={shipments} keyField="waybill" />
+        </Card.Body>
+      </Card>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table className="cf-admin-data-table">
-            <thead>
-              <tr>
-                <th>Air Waybill (AWB)</th>
-                <th>Order Ref</th>
-                <th>Delivery Destination</th>
-                <th>Assigned Carrier</th>
-                <th>Parcel Weight</th>
-                <th>Status</th>
-                <th>Delivery SLA</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {shipments.map((s) => (
-                <tr key={s.waybill}>
-                  <td className="cf-td-mono">{s.waybill}</td>
-                  <td className="cf-td-mono">{s.orderId}</td>
-                  <td style={{ color: '#ffffff', fontSize: '0.74rem' }}>{s.destination}</td>
-                  <td className="cf-td-product-title">{s.carrier}</td>
-                  <td className="cf-td-mono">{s.weight}</td>
-                  <td>
-                    <span
-                      className={`cf-status-chip ${
-                        s.status === 'In Transit'
-                          ? 'is-processing'
-                          : s.status === 'Ready for Pickup'
-                          ? 'is-quota'
-                          : 'is-completed'
-                      }`}
-                    >
-                      • {s.status}
-                    </span>
-                  </td>
-                  <td className="cf-td-mono">{s.sla}</td>
-                  <td>
-                    <button
-                      type="button"
-                      onClick={() => alert(`Printing thermal label for ${s.waybill}`)}
-                      style={{
-                        backgroundColor: '#161e2c',
-                        border: '1px solid #243042',
-                        color: '#93c5fd',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontSize: '0.7rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Print Label
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Thermal Label Modal */}
+      <Modal
+        isOpen={Boolean(activeLabelModal)}
+        onClose={() => setActiveLabelModal(null)}
+        title="Thermal Shipping Label Preview"
+        subtitle={activeLabelModal ? `AWB: ${activeLabelModal.waybill}` : ''}
+        footer={
+          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', width: '100%' }}>
+            <Button variant="ghost" onClick={() => setActiveLabelModal(null)}>
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              icon={Printer}
+              onClick={() => {
+                window.print();
+                setActiveLabelModal(null);
+              }}
+            >
+              Send to Zebra Thermal Printer
+            </Button>
+          </div>
+        }
+      >
+        {activeLabelModal && (
+          <div
+            style={{
+              padding: '1.25rem',
+              border: '2px dashed var(--cf-border-hover)',
+              borderRadius: 'var(--cf-radius-md)',
+              backgroundColor: 'var(--cf-bg-elevated)',
+              fontFamily: 'monospace',
+              fontSize: '0.82rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid var(--cf-border-subtle)', paddingBottom: '6px' }}>
+              <strong>CARRIER: {activeLabelModal.carrier.toUpperCase()}</strong>
+              <strong>{activeLabelModal.service}</strong>
+            </div>
+            <div>
+              <strong>AIR WAYBILL:</strong> {activeLabelModal.waybill}
+            </div>
+            <div>
+              <strong>ORDER REF:</strong> {activeLabelModal.orderId}
+            </div>
+            <div>
+              <strong>DESTINATION:</strong> {activeLabelModal.destination}
+            </div>
+            <div>
+              <strong>WEIGHT:</strong> {activeLabelModal.weight} | SLA: {activeLabelModal.sla}
+            </div>
+            <div style={{ textAlign: 'center', marginTop: '10px', letterSpacing: '4px', fontSize: '1.2rem' }}>
+              ||| | |||| || |||||| | |||
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
