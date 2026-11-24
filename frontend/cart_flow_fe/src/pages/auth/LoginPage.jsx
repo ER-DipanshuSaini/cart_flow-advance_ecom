@@ -87,7 +87,7 @@ export default function LoginPage() {
           <div className="cf-auth-card-header">
             <h1 className="cf-auth-page-heading">Welcome Back</h1>
             <p className="cf-auth-page-subheading">
-              Sign in to manage your orders, saved try-on fits, and wardrobe wishlists.
+              Sign in to manage your orders, saved addresses, and wardrobe wishlists.
             </p>
           </div>
 

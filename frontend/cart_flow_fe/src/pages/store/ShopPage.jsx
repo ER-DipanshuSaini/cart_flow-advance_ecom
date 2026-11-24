@@ -3,7 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Search, ShoppingBag, Eye, Star, Filter, X, SlidersHorizontal, Grid3X3, LayoutGrid, Check } from 'lucide-react';
 import { PRODUCTS, CATEGORIES } from '../../data/products';
 import { useCart } from '../../context/CartContext';
-import { Button, Input, Dropdown, Pagination, Badge } from '../../components/ui';
+import { Button, Input, Dropdown, Pagination, Badge, ProductCard } from '../../components/ui';
 import './StorePages.css';
 
 export default function ShopPage() {
@@ -310,119 +310,14 @@ export default function ShopPage() {
         </div>
       ) : (
         <div className={`cf-products-compact-grid ${gridColumns === 3 ? 'is-3-cols' : ''}`}>
-          {paginatedList.map((product) => {
-            const discountPct = product.originalPrice
-              ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-              : null;
-
-            const isJustAdded = addedItemNotice === product.id;
-
-            return (
-              <div key={product.id} className="cf-compact-product-card">
-                {/* Image Media Box */}
-                <div className="cf-compact-media-box">
-                  {/* Badges */}
-                  <div className="cf-card-badges-row">
-                    {product.badge && (
-                      <span
-                        className={`cf-compact-badge ${
-                          product.badge.toLowerCase().includes('money')
-                            ? 'is-oldmoney'
-                            : product.badge.toLowerCase().includes('viral')
-                            ? 'is-viral'
-                            : ''
-                        }`}
-                      >
-                        {product.badge}
-                      </span>
-                    )}
-                    {discountPct && (
-                      <span className="cf-compact-badge is-discount">-{discountPct}%</span>
-                    )}
-                  </div>
-
-                  {/* Product Clickable Image */}
-                  <Link to={`/product/${product.id}`} className="cf-compact-img-link">
-                    <img
-                      src={product.imageUrl}
-                      alt={product.title}
-                      className="cf-compact-cover-img"
-                      loading="lazy"
-                      onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'; }}
-                    />
-                  </Link>
-
-                  {/* Sizes Quick Preview Bar */}
-                  {product.sizes && product.sizes.length > 0 && (
-                    <div className="cf-card-sizes-overlay">
-                      <span>Sizes: {product.sizes.join(' • ')}</span>
-                    </div>
-                  )}
-
-                  {/* Hover Actions Strip */}
-                  <div className="cf-compact-hover-actions">
-                    <Button
-                      size="sm"
-                      variant={isJustAdded ? 'secondary' : 'primary'}
-                      icon={isJustAdded ? Check : ShoppingBag}
-                      className="cf-compact-quick-add"
-                      onClick={() => handleQuickAdd(product)}
-                    >
-                      {isJustAdded ? 'Added to Bag' : 'Quick Add'}
-                    </Button>
-                    <Link to={`/product/${product.id}`}>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        icon={Eye}
-                        className="cf-compact-view-btn"
-                        title="View Details"
-                      />
-                    </Link>
-                  </div>
-                </div>
-
-                {/* Card Details & Metadata */}
-                <div className="cf-compact-details">
-                  <div className="cf-compact-meta-row">
-                    <span className="cf-compact-cat">{product.category}</span>
-                    <div className="cf-compact-rating">
-                      <Star size={11} fill="var(--cf-accent-warning)" color="var(--cf-accent-warning)" />
-                      <span>{product.rating}</span>
-                      <span className="cf-rating-count">({product.reviewCount})</span>
-                    </div>
-                  </div>
-
-                  <h3 className="cf-compact-title">
-                    <Link to={`/product/${product.id}`}>{product.title}</Link>
-                  </h3>
-
-                  {/* Color Swatch Dots */}
-                  {product.colors && product.colors.length > 0 && (
-                    <div className="cf-card-colors-row">
-                      {product.colors.map((c, idx) => (
-                        <span
-                          key={idx}
-                          className="cf-card-color-dot"
-                          style={{ backgroundColor: c }}
-                          title={`Color variant ${idx + 1}`}
-                        />
-                      ))}
-                      <span className="cf-color-count-label">+{product.colors.length} shades</span>
-                    </div>
-                  )}
-
-                  {/* Pricing */}
-                  <div className="cf-compact-price-row">
-                    <span className="cf-compact-price">₹{product.price.toLocaleString('en-IN')}</span>
-                    {product.originalPrice && (
-                      <span className="cf-compact-orig-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+          {paginatedList.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onQuickAdd={handleQuickAdd}
+              isAdded={addedItemNotice === product.id}
+            />
+          ))}
         </div>
       )}
 

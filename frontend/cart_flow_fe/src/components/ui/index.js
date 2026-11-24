@@ -27,5 +27,6 @@ export { default as Modal } from './Modal/Modal';
 export { default as Toast, ToastContainer } from './Toast/Toast';
 
 // E-commerce
+export { default as ProductCard } from './ProductCard/ProductCard';
 export { default as CartItem } from './Cart/CartItem';
 export { default as OrderSummary } from './Cart/OrderSummary';

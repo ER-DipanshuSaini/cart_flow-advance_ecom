@@ -33,8 +33,8 @@ export function Footer() {
           <div className="cf-perk-block">
             <Sparkles size={20} className="cf-perk-icon" />
             <div>
-              <span className="cf-perk-heading">AI Virtual Try-On Studio</span>
-              <span className="cf-perk-sub">Precision fitting preview</span>
+              <span className="cf-perk-heading">Express Pan-India Delivery</span>
+              <span className="cf-perk-sub">Dispatched within 24 hours</span>
             </div>
           </div>
         </div>
@@ -45,7 +45,7 @@ export function Footer() {
         <div className="cf-footer-brand-col">
           <h3 className="cf-footer-brand-title">CART<span>FLOW</span></h3>
           <p className="cf-footer-brand-desc">
-            Next-generation e-commerce platform engineered with architectural minimalism, sustainable materials, and intelligent virtual fitting room microservices.
+            Next-generation e-commerce platform engineered with architectural minimalism, sustainable materials, and seamless high-speed commerce workflows.
           </p>
           <div className="cf-footer-newsletter-wrap">
             <input type="email" placeholder="Join the CartFlow newsletter..." />

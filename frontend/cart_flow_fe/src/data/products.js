@@ -23,7 +23,7 @@ export const PRODUCTS = [
     rating: 4.8,
     reviewCount: 64,
     badge: 'BESTSELLER',
-    imageUrl: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?auto=format&fit=crop&w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=800&q=80',
     description: 'Soft sky-blue cable weave featuring seamless ribbed neck and cuffs. Fluid Mediterranean resort styling.',
     colors: ['#93c5fd', '#e2e8f0', '#003f7f'],
     sizes: ['S', 'M', 'L', 'XL'],

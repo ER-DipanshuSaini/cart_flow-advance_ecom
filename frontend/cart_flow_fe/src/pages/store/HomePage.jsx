@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Star, ShoppingBag, Eye, ShieldCheck, Flame, Compass, Award } from 'lucide-react';
 import { PRODUCTS } from '../../data/products';
 import { useCart } from '../../context/CartContext';
-import { Button, Badge } from '../../components/ui';
+import { Button, Badge, ProductCard } from '../../components/ui';
 import './StorePages.css';
 
 export default function HomePage() {
   const { addToCart } = useCart();
+  const [addedItemNotice, setAddedItemNotice] = useState(null);
+
+  const handleQuickAdd = (product) => {
+    addToCart(product, 1);
+    setAddedItemNotice(product.id);
+    setTimeout(() => {
+      setAddedItemNotice(null);
+    }, 1800);
+  };
 
   return (
     <div className="cf-store-page">
@@ -87,7 +96,7 @@ export default function HomePage() {
         <div className="cf-aesthetic-lookbook-grid">
           <Link to="/shop?cat=Old Money" className="cf-lookbook-card">
             <img
-              src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=800&q=80"
+              src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80"
               alt="Old Money Styling"
               onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'; }}
             />
@@ -155,62 +164,12 @@ export default function HomePage() {
         {/* 4 Cards in 1 Row (Compact & Modern) */}
         <div className="cf-products-compact-grid">
           {PRODUCTS.slice(0, 8).map((product) => (
-            <div key={product.id} className="cf-compact-product-card">
-              <div className="cf-compact-media-box">
-                {product.badge && (
-                  <span className={`cf-compact-badge ${product.badge === 'OLD MONEY' ? 'is-oldmoney' : product.badge === 'VIRAL' ? 'is-viral' : ''}`}>
-                    {product.badge}
-                  </span>
-                )}
-                <Link to={`/product/${product.id}`}>
-                  <img
-                    src={product.imageUrl}
-                    alt={product.title}
-                    className="cf-compact-cover-img"
-                    loading="lazy"
-                    onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'; }}
-                  />
-                </Link>
-
-                <div className="cf-compact-hover-actions">
-                  <Button
-                    size="sm"
-                    variant="primary"
-                    icon={ShoppingBag}
-                    onClick={() => addToCart(product, 1)}
-                    className="cf-compact-quick-add"
-                  >
-                    Quick Add
-                  </Button>
-                  <Link to={`/product/${product.id}`}>
-                    <Button size="sm" variant="secondary" icon={Eye} className="cf-compact-view-btn">
-                      View
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="cf-compact-details">
-                <div className="cf-compact-meta-row">
-                  <span className="cf-compact-cat">{product.category}</span>
-                  <div className="cf-compact-rating">
-                    <Star size={11} fill="var(--cf-accent-warning)" color="var(--cf-accent-warning)" />
-                    <span>{product.rating}</span>
-                  </div>
-                </div>
-
-                <h3 className="cf-compact-title">
-                  <Link to={`/product/${product.id}`}>{product.title}</Link>
-                </h3>
-
-                <div className="cf-compact-price-row">
-                  <span className="cf-compact-price">₹{product.price.toLocaleString('en-IN')}</span>
-                  {product.originalPrice && (
-                    <span className="cf-compact-orig-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
-                  )}
-                </div>
-              </div>
-            </div>
+            <ProductCard
+              key={product.id}
+              product={product}
+              onQuickAdd={handleQuickAdd}
+              isAdded={addedItemNotice === product.id}
+            />
           ))}
         </div>
       </section>

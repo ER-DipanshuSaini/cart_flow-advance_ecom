@@ -6,7 +6,7 @@ import ShopPage from '../pages/store/ShopPage';
 import ProductDetailPage from '../pages/store/ProductDetailPage';
 import CartPage from '../pages/store/CartPage';
 import CheckoutPage from '../pages/store/CheckoutPage';
-import AccountPage from '../pages/store/AccountPage';
+import CustomerDashboard from '../pages/customer/CustomerDashboard';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import AdminLoginPage from '../pages/auth/AdminLoginPage';
@@ -29,7 +29,7 @@ export default function AppRoutes() {
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/account" element={<AccountPage />} />
+        <Route path="/account" element={<CustomerDashboard />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         {/* UI Kit & Component Workshop */}

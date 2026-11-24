@@ -56,18 +56,18 @@ const REGION_OPTIONS = [
   { label: 'FastAPI AI Cluster (US-East)', sublabel: 'Low latency GPU inference', value: 'us-east', icon: Server },
   { label: 'DRF Core Backend (EU-Central)', sublabel: 'PostgreSQL & Redis cache', value: 'eu-central', icon: Database },
   { label: 'Global Edge CDN (Singapore)', sublabel: 'Static asset delivery', value: 'sg-edge', icon: Globe },
-  { label: 'Virtual Try-On Engine (Beta)', sublabel: 'Diffusers & ONNX runtime', value: 'tryon-ai', icon: Sparkles },
+  { label: 'Order Processing Pipeline', sublabel: 'High-throughput fulfillment queue', value: 'proc-ai', icon: Sparkles },
 ];
 
 const FULL_PROCESS_DATA = [
-  { sr: 1, id: 'TRY-0067', product: 'Black Cable Knit Crop Sweater – Mock Neck', status: 'Quota exceeded', user: 'USR-0441', tokens: 0, time: '12:13 AM' },
-  { sr: 2, id: 'TRY-0066', product: 'Sky Blue Cable Knit Crop Sweater – Crew Neck', status: 'Completed', user: 'USR-0441', tokens: '3,151', time: '12:11 AM' },
-  { sr: 3, id: 'TRY-0065', product: "Men's Sky Blue & White Micro-Check Shirt", status: 'Quota exceeded', user: 'USR-0212', tokens: 0, time: '10:18 PM' },
-  { sr: 4, id: 'TRY-0064', product: "Men's Sky Blue & White Micro-Check Shirt", status: 'Completed', user: 'USR-0212', tokens: '3,150', time: '10:15 PM' },
-  { sr: 5, id: 'TRY-0063', product: 'Forest Green Oversized Zip-Up Hoodie', status: 'Completed', user: 'USR-0176', tokens: '3,150', time: '10:43 AM' },
-  { sr: 6, id: 'TRY-0062', product: 'Charcoal Minimalist Wool Overcoat', status: 'Completed', user: 'USR-0922', tokens: '3,200', time: '09:20 AM' },
-  { sr: 7, id: 'TRY-0061', product: 'Relaxed Fit Tailored Pleated Trousers', status: 'Failed', user: 'USR-0811', tokens: 0, time: '08:45 AM' },
-  { sr: 8, id: 'TRY-0060', product: 'Raw Indigo Selvedge Denim Jacket', status: 'Completed', user: 'USR-0554', tokens: '3,145', time: '07:12 AM' },
+  { sr: 1, id: 'ORD-0067', product: 'Black Cable Knit Crop Sweater – Mock Neck', status: 'Payment Pending', user: 'USR-0441', tokens: 0, time: '12:13 AM' },
+  { sr: 2, id: 'ORD-0066', product: 'Sky Blue Cable Knit Crop Sweater – Crew Neck', status: 'Completed', user: 'USR-0441', tokens: '3,151', time: '12:11 AM' },
+  { sr: 3, id: 'ORD-0065', product: "Men's Sky Blue & White Micro-Check Shirt", status: 'Payment Pending', user: 'USR-0212', tokens: 0, time: '10:18 PM' },
+  { sr: 4, id: 'ORD-0064', product: "Men's Sky Blue & White Micro-Check Shirt", status: 'Completed', user: 'USR-0212', tokens: '3,150', time: '10:15 PM' },
+  { sr: 5, id: 'ORD-0063', product: 'Forest Green Oversized Zip-Up Hoodie', status: 'Completed', user: 'USR-0176', tokens: '3,150', time: '10:43 AM' },
+  { sr: 6, id: 'ORD-0062', product: 'Charcoal Minimalist Wool Overcoat', status: 'Completed', user: 'USR-0922', tokens: '3,200', time: '09:20 AM' },
+  { sr: 7, id: 'ORD-0061', product: 'Relaxed Fit Tailored Pleated Trousers', status: 'Failed', user: 'USR-0811', tokens: 0, time: '08:45 AM' },
+  { sr: 8, id: 'ORD-0060', product: 'Raw Indigo Selvedge Denim Jacket', status: 'Completed', user: 'USR-0554', tokens: '3,145', time: '07:12 AM' },
   { sr: 9, id: 'TRY-0059', product: 'Italian Leather Derby Brogues', status: 'Processing', user: 'USR-0310', tokens: '1,500', time: '06:50 AM' },
   { sr: 10, id: 'TRY-0058', product: 'Textured Waffle Knit Beanie', status: 'Completed', user: 'USR-0102', tokens: '2,900', time: '05:30 AM' },
   { sr: 11, id: 'TRY-0057', product: 'Cashmere Ribbed Turtleneck Sweater', status: 'Completed', user: 'USR-0441', tokens: '3,180', time: '04:15 AM' },
@@ -229,14 +229,14 @@ export default function ShowcasePage() {
                 />
                 <Card.Body>
                   <p style={{ color: 'var(--cf-text-muted)', fontSize: '0.88rem', lineHeight: '1.6' }}>
-                    When users initiate an AI try-on generation or heavy background process, this overlay loader blurs the container and presents the animated wave indicator.
+                    When users initiate an asynchronous order placement or inventory sync, this overlay loader blurs the container and presents the animated wave indicator.
                   </p>
                 </Card.Body>
 
                 {isSimulatingAI && (
                   <OverlayLoader
-                    message="Processing Try-On Generation..."
-                    subtext="Running diffusion model inference"
+                    message="Processing Order Dispatch..."
+                    subtext="Synchronizing courier API gateway"
                   />
                 )}
               </Card>
@@ -284,7 +284,7 @@ export default function ShowcasePage() {
                   <div style={{ marginTop: '1.5rem' }}>
                     <Toggle
                       label="Auto-archive logs older than selected date"
-                      sublabel="Exports completed try-on sessions to cloud storage"
+                      sublabel="Exports completed fulfillment sessions to cloud storage"
                       checked={toggleActive}
                       onChange={setToggleActive}
                     />
@@ -346,7 +346,7 @@ export default function ShowcasePage() {
                     <Badge variant="failed" dot={true}>Failed</Badge>
                     <Badge variant="processing" dot={true}>Processing</Badge>
                     <Badge variant="neutral">Neutral</Badge>
-                    <Badge variant="mono">TRY-0067</Badge>
+                    <Badge variant="mono">ORD-0067</Badge>
                     <Badge variant="mono">USR-0441</Badge>
                   </div>
                 </Card.Body>
@@ -361,9 +361,9 @@ export default function ShowcasePage() {
             <h3 className="cf-section-heading">Metrics & Compound Cards</h3>
             <div className="cf-metrics-grid">
               <MetricCard
-                title="Try-on processes"
+                title="Active Orders"
                 value="56"
-                subtext="40 completed generations"
+                subtext="40 dispatched packages"
                 icon={Layers}
                 hasArrow={true}
                 highlighted={true}

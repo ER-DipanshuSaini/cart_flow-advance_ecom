@@ -69,7 +69,7 @@ export default function RegisterPage() {
               </div>
               <div className="cf-side-perk-item">
                 <CheckCircle2 size={16} />
-                <span>AI Try-On avatar sync across devices</span>
+                <span>VIP rewards & exclusive seasonal drop access</span>
               </div>
             </div>
           </div>
