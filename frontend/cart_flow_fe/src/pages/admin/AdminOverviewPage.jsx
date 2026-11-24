@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  DollarSign,
+  IndianRupee,
   ShoppingBag,
   Users,
   TrendingUp,
@@ -19,7 +19,7 @@ const RECENT_ORDERS = [
     customer: 'Vikramaditya Roy',
     items: 'Structured Blazer (1), Riviera Knit (1)',
     payment: 'Prepaid (Razorpay)',
-    total: '$329.00',
+    total: '₹8,198',
     status: 'In Transit',
     statusClass: 'is-processing',
     date: 'Nov 24, 2026, 12:13 PM',
@@ -29,8 +29,8 @@ const RECENT_ORDERS = [
     orderId: 'CF-99417',
     customer: 'Aarav Singhania',
     items: 'French Linen Overshirt (2)',
-    payment: 'Prepaid (Stripe)',
-    total: '$190.00',
+    payment: 'Prepaid (UPI)',
+    total: '₹4,598',
     status: 'Delivered',
     statusClass: 'is-completed',
     date: 'Nov 24, 2026, 11:20 AM',
@@ -41,7 +41,7 @@ const RECENT_ORDERS = [
     customer: 'Kabir Malhotra',
     items: 'Suede Tassel Loafers (1)',
     payment: 'Cash On Delivery',
-    total: '$180.00',
+    total: '₹4,499',
     status: 'Processing',
     statusClass: 'is-quota',
     date: 'Nov 23, 2026, 6:45 PM',
@@ -52,7 +52,7 @@ const RECENT_ORDERS = [
     customer: 'Rohan Mehra',
     items: 'Gurkha Trousers (1), Crochet Shirt (1)',
     payment: 'Prepaid (UPI)',
-    total: '$195.00',
+    total: '₹4,698',
     status: 'Delivered',
     statusClass: 'is-completed',
     date: 'Nov 22, 2026, 4:10 PM',
@@ -63,7 +63,7 @@ const RECENT_ORDERS = [
     customer: 'Devansh Kapur',
     items: 'Wool Minimalist Overcoat (1)',
     payment: 'Prepaid (Cards)',
-    total: '$260.00',
+    total: '₹6,499',
     status: 'Delivered',
     statusClass: 'is-completed',
     date: 'Nov 21, 2026, 2:30 PM',
@@ -101,11 +101,11 @@ export default function AdminOverviewPage() {
           <div className="cf-bo-kpi-top">
             <span className="cf-bo-kpi-title">Gross Revenue</span>
             <div className="cf-bo-kpi-icons">
-              <DollarSign size={18} className="cf-bo-kpi-icon" />
+              <IndianRupee size={18} className="cf-bo-kpi-icon" />
               <ArrowUpRight size={14} className="cf-bo-kpi-arrow" />
             </div>
           </div>
-          <div className="cf-bo-kpi-value">$54,820</div>
+          <div className="cf-bo-kpi-value">₹54,82,000</div>
           <div className="cf-bo-kpi-sub">+14.2% growth this month</div>
           <div className="cf-bo-rainbow-bar" />
         </div>
@@ -136,7 +136,7 @@ export default function AdminOverviewPage() {
             <span className="cf-bo-kpi-title">Average Order Value</span>
             <TrendingUp size={18} className="cf-bo-kpi-icon" />
           </div>
-          <div className="cf-bo-kpi-value">$157.50</div>
+          <div className="cf-bo-kpi-value">₹3,450</div>
           <div className="cf-bo-kpi-sub">Basket size across collections</div>
         </div>
       </div>
@@ -210,11 +210,11 @@ export default function AdminOverviewPage() {
         <div className="cf-bo-insight-card">
           <div className="cf-bo-card-top">
             <h4 className="cf-bo-card-heading">
-              <DollarSign size={14} className="cf-bo-flower-icon" /> Payment Distribution
+              <IndianRupee size={14} className="cf-bo-flower-icon" /> Payment Distribution
             </h4>
           </div>
 
-          <div className="cf-bo-metric-huge">$54,820</div>
+          <div className="cf-bo-metric-huge">₹54,82,000</div>
           <div className="cf-bo-metric-subtitle">settled transactions</div>
 
           <div className="cf-bo-progress-track">
@@ -223,12 +223,12 @@ export default function AdminOverviewPage() {
 
           <div className="cf-bo-split-row">
             <div>
-              <span className="cf-bo-split-tag">↗ Online Prepaid</span>
-              <strong className="cf-bo-split-val">$46,200 (84%)</strong>
+              <span className="cf-bo-split-tag">↗ Online Prepaid (UPI/Cards)</span>
+              <strong className="cf-bo-split-val">₹46,20,000 (84%)</strong>
             </div>
             <div style={{ textAlign: 'right' }}>
               <span className="cf-bo-split-tag">↗ Cash On Delivery</span>
-              <strong className="cf-bo-split-val">$8,620 (16%)</strong>
+              <strong className="cf-bo-split-val">₹8,62,000 (16%)</strong>
             </div>
           </div>
         </div>

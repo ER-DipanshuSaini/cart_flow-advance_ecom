@@ -204,9 +204,9 @@ export default function HomePage() {
                 </h3>
 
                 <div className="cf-compact-price-row">
-                  <span className="cf-compact-price">${product.price.toFixed(2)}</span>
+                  <span className="cf-compact-price">₹{product.price.toLocaleString('en-IN')}</span>
                   {product.originalPrice && (
-                    <span className="cf-compact-orig-price">${product.originalPrice.toFixed(2)}</span>
+                    <span className="cf-compact-orig-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
                   )}
                 </div>
               </div>

@@ -61,7 +61,7 @@ export default function CartItem({
           </div>
 
           {/* Item Total Price */}
-          <div className="cf-cart-item-price">${(price * quantity).toFixed(2)}</div>
+          <div className="cf-cart-item-price">₹{Math.round(price * quantity).toLocaleString('en-IN')}</div>
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@ const INVENTORY_DATA = [
     available: 48,
     reserved: 12,
     reorderLevel: 20,
-    costPerUnit: '$110.00',
+    costPerUnit: '₹2,200',
     status: 'Healthy',
   },
   {
@@ -21,7 +21,7 @@ const INVENTORY_DATA = [
     available: 14,
     reserved: 8,
     reorderLevel: 25,
-    costPerUnit: '$35.00',
+    costPerUnit: '₹850',
     status: 'Low Stock',
   },
   {
@@ -31,7 +31,7 @@ const INVENTORY_DATA = [
     available: 62,
     reserved: 5,
     reorderLevel: 30,
-    costPerUnit: '$48.00',
+    costPerUnit: '₹1,100',
     status: 'Healthy',
   },
   {
@@ -41,7 +41,7 @@ const INVENTORY_DATA = [
     available: 8,
     reserved: 14,
     reorderLevel: 20,
-    costPerUnit: '$42.00',
+    costPerUnit: '₹950',
     status: 'Critical Alert',
   },
   {
@@ -51,7 +51,7 @@ const INVENTORY_DATA = [
     available: 34,
     reserved: 6,
     reorderLevel: 15,
-    costPerUnit: '$85.00',
+    costPerUnit: '₹1,800',
     status: 'Healthy',
   },
 ];
@@ -212,7 +212,7 @@ export default function AdminInventoryPage() {
         />
         <MetricCard
           title="Inventory Valuation"
-          value="$58,420"
+          value="₹58,42,000"
           subtext="At landed wholesale cost"
           icon={Boxes}
         />

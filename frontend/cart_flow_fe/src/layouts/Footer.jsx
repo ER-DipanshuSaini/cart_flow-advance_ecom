@@ -13,7 +13,7 @@ export function Footer() {
             <Truck size={20} className="cf-perk-icon" />
             <div>
               <span className="cf-perk-heading">Complimentary Express Shipping</span>
-              <span className="cf-perk-sub">On orders exceeding $150</span>
+              <span className="cf-perk-sub">On orders exceeding ₹1,999</span>
             </div>
           </div>
           <div className="cf-perk-block">

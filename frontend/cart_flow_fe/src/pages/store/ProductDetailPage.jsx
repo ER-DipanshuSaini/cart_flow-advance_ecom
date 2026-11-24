@@ -75,9 +75,9 @@ export default function ProductDetailPage() {
 
           {/* Pricing */}
           <div className="cf-pdp-price-row">
-            <span className="cf-pdp-price">${product.price.toFixed(2)}</span>
+            <span className="cf-pdp-price">₹{product.price.toLocaleString('en-IN')}</span>
             {product.originalPrice && (
-              <span className="cf-pdp-orig-price">${product.originalPrice.toFixed(2)}</span>
+              <span className="cf-pdp-orig-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
             )}
             <Badge variant="completed">IN STOCK</Badge>
           </div>
@@ -148,7 +148,7 @@ export default function ProductDetailPage() {
               onClick={handleAddToCart}
               className="cf-pdp-add-cart-btn"
             >
-              Add to Bag • ${(product.price * quantity).toFixed(2)}
+              Add to Bag • ₹{Math.round(product.price * quantity).toLocaleString('en-IN')}
             </Button>
           </div>
 
@@ -156,7 +156,7 @@ export default function ProductDetailPage() {
           <div className="cf-pdp-perks-box">
             <div className="cf-pdp-perk-item">
               <Truck size={16} />
-              <span>Complimentary shipping over $150</span>
+              <span>Complimentary shipping over ₹1,999</span>
             </div>
             <div className="cf-pdp-perk-item">
               <RotateCcw size={16} />

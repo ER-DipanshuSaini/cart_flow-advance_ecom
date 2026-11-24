@@ -27,8 +27,8 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [placedOrderId, setPlacedOrderId] = useState('');
 
-  const shippingFee = cartSubtotal > 150 ? 0 : 15.0;
-  const taxFee = cartSubtotal * 0.08;
+  const shippingFee = cartSubtotal > 1999 ? 0 : 149.0;
+  const taxFee = Math.round(cartSubtotal * 0.05);
   const totalAmount = cartSubtotal + shippingFee + taxFee;
 
   const handlePlaceOrder = (e) => {
@@ -187,7 +187,7 @@ export default function CheckoutPage() {
                       <span className="cf-chk-title">{item.title}</span>
                       <span className="cf-chk-sub">{item.variant} • Qty: {item.quantity}</span>
                     </div>
-                    <span className="cf-chk-price">${(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="cf-chk-price">₹{Math.round(item.price * item.quantity).toLocaleString('en-IN')}</span>
                   </div>
                 ))}
               </div>
@@ -197,20 +197,20 @@ export default function CheckoutPage() {
               <div className="cf-summary-rows">
                 <div className="cf-summary-row">
                   <span>Subtotal</span>
-                  <span>${cartSubtotal.toFixed(2)}</span>
+                  <span>₹{Math.round(cartSubtotal).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="cf-summary-row">
                   <span>Shipping</span>
-                  <span>{shippingFee === 0 ? <strong style={{ color: 'var(--cf-accent-primary)' }}>FREE</strong> : `$${shippingFee.toFixed(2)}`}</span>
+                  <span>{shippingFee === 0 ? <strong style={{ color: 'var(--cf-accent-primary)' }}>FREE</strong> : `₹${Math.round(shippingFee).toLocaleString('en-IN')}`}</span>
                 </div>
                 <div className="cf-summary-row">
-                  <span>Estimated Tax</span>
-                  <span>${taxFee.toFixed(2)}</span>
+                  <span>Estimated Tax (GST 5%)</span>
+                  <span>₹{Math.round(taxFee).toLocaleString('en-IN')}</span>
                 </div>
                 <div className="cf-summary-divider" />
                 <div className="cf-summary-row is-total">
                   <span>Total Amount</span>
-                  <span className="cf-summary-total-val">${totalAmount.toFixed(2)}</span>
+                  <span className="cf-summary-total-val">₹{Math.round(totalAmount).toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
@@ -222,7 +222,7 @@ export default function CheckoutPage() {
                 iconRight={ArrowRight}
                 style={{ width: '100%', marginTop: '1.5rem' }}
               >
-                Place Order • ${totalAmount.toFixed(2)}
+                Place Order • ₹{Math.round(totalAmount).toLocaleString('en-IN')}
               </Button>
             </Card.Body>
           </Card>

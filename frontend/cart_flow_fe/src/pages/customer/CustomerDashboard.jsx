@@ -31,7 +31,7 @@ const CUSTOMER_ORDERS = [
   {
     id: 'CF-99418',
     date: 'Nov 23, 2026',
-    total: 329.0,
+    total: 8198,
     status: 'In Transit',
     courier: 'BlueDart Express • AWB: 8847291039',
     estimatedDelivery: 'Nov 26, 2026',
@@ -41,7 +41,7 @@ const CUSTOMER_ORDERS = [
         title: 'Italian Double-Breasted Structured Blazer',
         size: '40R',
         color: 'Navy Blue',
-        price: 240.0,
+        price: 5999,
         qty: 1,
         image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=400&q=80',
       },
@@ -49,16 +49,16 @@ const CUSTOMER_ORDERS = [
         title: 'The Riviera Textured Knit Polo',
         size: 'M',
         color: 'Ecru',
-        price: 89.0,
+        price: 2199,
         qty: 1,
-        image: 'https://images.unsplash.com/photo-1620012253295-c15c429fbb3e?auto=format&fit=crop&w=400&q=80',
+        image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=400&q=80',
       },
     ],
   },
   {
     id: 'CF-98102',
     date: 'Nov 12, 2026',
-    total: 110.0,
+    total: 2699,
     status: 'Delivered',
     courier: 'Delhivery Surface • Delivered on Nov 15',
     estimatedDelivery: 'Nov 15, 2026',
@@ -68,7 +68,7 @@ const CUSTOMER_ORDERS = [
         title: 'Pleated Gurkha Trousers - Straight Cut',
         size: '32',
         color: 'Espresso',
-        price: 110.0,
+        price: 2699,
         qty: 1,
         image: 'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&w=400&q=80',
       },
@@ -77,7 +77,7 @@ const CUSTOMER_ORDERS = [
   {
     id: 'CF-97430',
     date: 'Oct 28, 2026',
-    total: 180.0,
+    total: 4499,
     status: 'Delivered',
     courier: 'Delhivery Express • Delivered on Oct 31',
     estimatedDelivery: 'Oct 31, 2026',
@@ -87,7 +87,7 @@ const CUSTOMER_ORDERS = [
         title: 'Minimalist Suede Tassel Loafers',
         size: '42',
         color: 'Dark Chocolate',
-        price: 180.0,
+        price: 4499,
         qty: 1,
         image: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?auto=format&fit=crop&w=400&q=80',
       },
@@ -153,7 +153,7 @@ export default function CustomerDashboard() {
           </div>
           <div className="cf-cust-stat-divider" />
           <div className="cf-cust-stat-item">
-            <span className="cf-cust-stat-val">$619</span>
+            <span className="cf-cust-stat-val">₹15,396</span>
             <span className="cf-cust-stat-label">Lifetime Value</span>
           </div>
           <div className="cf-cust-stat-divider" />
@@ -260,7 +260,7 @@ export default function CustomerDashboard() {
                         </div>
 
                         <div className="cf-order-status-group">
-                          <span className="cf-order-amount">${order.total.toFixed(2)}</span>
+                          <span className="cf-order-amount">₹{order.total.toLocaleString('en-IN')}</span>
                           <Badge
                             variant={
                               order.status === 'Delivered'
@@ -323,7 +323,7 @@ export default function CustomerDashboard() {
                               <p className="cf-order-item-spec">
                                 Size: {item.size} • Color: {item.color} • Qty: {item.qty}
                               </p>
-                              <span className="cf-order-item-price">${item.price.toFixed(2)}</span>
+                              <span className="cf-order-item-price">₹{item.price.toLocaleString('en-IN')}</span>
                             </div>
                             <Button
                               size="sm"

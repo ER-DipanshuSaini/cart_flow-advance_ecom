@@ -24,23 +24,23 @@ export default function OrderSummary({
       <div className="cf-summary-rows">
         <div className="cf-summary-row">
           <span>Subtotal</span>
-          <span>${subtotal.toFixed(2)}</span>
+          <span>₹{Math.round(subtotal).toLocaleString('en-IN')}</span>
         </div>
 
         <div className="cf-summary-row">
           <span>Estimated Shipping</span>
-          <span>{shipping === 0 ? <span className="cf-summary-free">FREE</span> : `$${shipping.toFixed(2)}`}</span>
+          <span>{shipping === 0 ? <span className="cf-summary-free">FREE</span> : `₹${Math.round(shipping).toLocaleString('en-IN')}`}</span>
         </div>
 
         <div className="cf-summary-row">
-          <span>Estimated Tax</span>
-          <span>${tax.toFixed(2)}</span>
+          <span>Estimated Tax (GST 5%)</span>
+          <span>₹{Math.round(tax).toLocaleString('en-IN')}</span>
         </div>
 
         {discount > 0 && (
           <div className="cf-summary-row is-discount">
             <span>Promo Discount</span>
-            <span>-${discount.toFixed(2)}</span>
+            <span>-₹{Math.round(discount).toLocaleString('en-IN')}</span>
           </div>
         )}
 
@@ -48,7 +48,7 @@ export default function OrderSummary({
 
         <div className="cf-summary-row is-total">
           <span>Total</span>
-          <span className="cf-summary-total-val">${total.toFixed(2)}</span>
+          <span className="cf-summary-total-val">₹{Math.round(total).toLocaleString('en-IN')}</span>
         </div>
       </div>
 

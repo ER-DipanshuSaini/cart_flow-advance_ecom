@@ -36,7 +36,7 @@ export function CartDrawer() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', marginBottom: '6px' }}>
               <span style={{ color: 'var(--cf-text-muted)' }}>Estimated Subtotal:</span>
               <span style={{ color: 'var(--cf-accent-primary)', fontSize: '1.2rem', fontWeight: '700' }}>
-                ${cartSubtotal.toFixed(2)}
+                ₹{Math.round(cartSubtotal).toLocaleString('en-IN')}
               </span>
             </div>
 

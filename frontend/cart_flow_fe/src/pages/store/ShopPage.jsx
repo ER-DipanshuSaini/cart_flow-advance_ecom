@@ -42,12 +42,12 @@ export default function ShopPage() {
     }
 
     // Price range filter
-    if (priceRange === 'under-100') {
-      list = list.filter((p) => p.price < 100);
-    } else if (priceRange === '100-200') {
-      list = list.filter((p) => p.price >= 100 && p.price <= 200);
-    } else if (priceRange === 'over-200') {
-      list = list.filter((p) => p.price > 200);
+    if (priceRange === 'under-2000') {
+      list = list.filter((p) => p.price < 2000);
+    } else if (priceRange === '2000-4000') {
+      list = list.filter((p) => p.price >= 2000 && p.price <= 4000);
+    } else if (priceRange === 'over-4000') {
+      list = list.filter((p) => p.price > 4000);
     }
 
     // Sort order
@@ -189,9 +189,9 @@ export default function ShopPage() {
             <Dropdown
               options={[
                 { label: 'All Price Tiers', value: 'all' },
-                { label: 'Under $100', value: 'under-100' },
-                { label: '$100 – $200', value: '100-200' },
-                { label: '$200 and Above', value: 'over-200' },
+                { label: 'Under ₹2,000', value: 'under-2000' },
+                { label: '₹2,000 – ₹4,000', value: '2000-4000' },
+                { label: '₹4,000 and Above', value: 'over-4000' },
               ]}
               value={priceRange}
               onChange={(val) => {
@@ -414,9 +414,9 @@ export default function ShopPage() {
 
                   {/* Pricing */}
                   <div className="cf-compact-price-row">
-                    <span className="cf-compact-price">${product.price.toFixed(2)}</span>
+                    <span className="cf-compact-price">₹{product.price.toLocaleString('en-IN')}</span>
                     {product.originalPrice && (
-                      <span className="cf-compact-orig-price">${product.originalPrice.toFixed(2)}</span>
+                      <span className="cf-compact-orig-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
                     )}
                   </div>
                 </div>

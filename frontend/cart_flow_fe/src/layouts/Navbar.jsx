@@ -45,7 +45,7 @@ export function Navbar() {
         <div className="cf-announcement-strip">
           <div className="cf-announcement-inner">
             <span>
-              <strong>NEW DROP:</strong> The Old Money & Formal Capsule &nbsp;•&nbsp; Free Express Shipping on orders over $150
+              <strong>NEW DROP:</strong> The Old Money & Formal Capsule &nbsp;•&nbsp; Free Express Shipping on orders over ₹1,999
             </span>
             <button
               type="button"
