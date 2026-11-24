@@ -41,6 +41,7 @@
   border-color: var(--cf-accent-primary);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
+
 .cf-ui-btn-primary:hover:not(:disabled) {
   background: var(--cf-accent-primary-hover);
   box-shadow: 0 0 12px var(--cf-accent-primary-glow);
@@ -51,6 +52,7 @@
   color: var(--cf-text-main);
   border-color: var(--cf-border-subtle);
 }
+
 .cf-ui-btn-secondary:hover:not(:disabled) {
   background-color: var(--cf-border-hover);
   border-color: var(--cf-border-hover);
@@ -61,6 +63,7 @@
   color: var(--cf-text-main);
   border-color: var(--cf-border-subtle);
 }
+
 .cf-ui-btn-outline:hover:not(:disabled) {
   background-color: var(--cf-bg-elevated);
   border-color: var(--cf-border-hover);
@@ -71,6 +74,7 @@
   color: var(--cf-accent-danger);
   border-color: var(--cf-accent-danger);
 }
+
 .cf-ui-btn-danger:hover:not(:disabled) {
   background-color: var(--cf-accent-danger);
   color: #ffffff;
@@ -80,6 +84,7 @@
   background-color: transparent;
   color: var(--cf-text-muted);
 }
+
 .cf-ui-btn-ghost:hover:not(:disabled) {
   background-color: var(--cf-bg-elevated);
   color: var(--cf-text-main);

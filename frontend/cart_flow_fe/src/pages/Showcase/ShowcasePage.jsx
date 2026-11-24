@@ -126,10 +126,10 @@ export default function ShowcasePage() {
             status === 'Completed'
               ? 'completed'
               : status === 'Quota exceeded'
-              ? 'warning'
-              : status === 'Processing'
-              ? 'processing'
-              : 'failed'
+                ? 'warning'
+                : status === 'Processing'
+                  ? 'processing'
+                  : 'failed'
           }
           dot={true}
         >

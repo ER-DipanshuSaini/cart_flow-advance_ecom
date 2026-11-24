@@ -10,12 +10,13 @@
 
 body {
   font-family: var(--cf-font-sans);
-  background-color: var(--cf-white);
-  color: var(--cf-black);
+  background-color: var(--cf-bg-base);
+  color: var(--cf-text-main);
   line-height: 1.5;
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--cf-transition), color var(--cf-transition);
 }
 
 a {

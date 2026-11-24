@@ -6,10 +6,9 @@ import {
   TrendingUp,
   ArrowUpRight,
   CheckCircle2,
-  Clock,
-  Truck,
   RefreshCw
 } from 'lucide-react';
+import { Card, MetricCard, Table, Badge, Button } from '../../components/ui';
 import './AdminConsole.css';
 
 const RECENT_ORDERS = [
@@ -21,7 +20,6 @@ const RECENT_ORDERS = [
     payment: 'Prepaid (Razorpay)',
     total: '₹8,198',
     status: 'In Transit',
-    statusClass: 'is-processing',
     date: 'Nov 24, 2026, 12:13 PM',
   },
   {
@@ -32,7 +30,6 @@ const RECENT_ORDERS = [
     payment: 'Prepaid (UPI)',
     total: '₹4,598',
     status: 'Delivered',
-    statusClass: 'is-completed',
     date: 'Nov 24, 2026, 11:20 AM',
   },
   {
@@ -43,7 +40,6 @@ const RECENT_ORDERS = [
     payment: 'Cash On Delivery',
     total: '₹4,499',
     status: 'Processing',
-    statusClass: 'is-quota',
     date: 'Nov 23, 2026, 6:45 PM',
   },
   {
@@ -54,7 +50,6 @@ const RECENT_ORDERS = [
     payment: 'Prepaid (UPI)',
     total: '₹4,698',
     status: 'Delivered',
-    statusClass: 'is-completed',
     date: 'Nov 22, 2026, 4:10 PM',
   },
   {
@@ -65,12 +60,71 @@ const RECENT_ORDERS = [
     payment: 'Prepaid (Cards)',
     total: '₹6,499',
     status: 'Delivered',
-    statusClass: 'is-completed',
     date: 'Nov 21, 2026, 2:30 PM',
   },
 ];
 
 export default function AdminOverviewPage() {
+  const columns = [
+    {
+      key: 'srNo',
+      label: 'Sr. No.',
+      width: '70px',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'orderId',
+      label: 'Order Ref',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'customer',
+      label: 'Customer',
+      render: (val, row) => (
+        <div>
+          <span style={{ fontWeight: 600, color: 'var(--bo-text-main)' }}>{val}</span>
+          <div style={{ fontSize: '0.72rem', color: 'var(--bo-text-dim)' }}>{row.date}</div>
+        </div>
+      ),
+    },
+    {
+      key: 'items',
+      label: 'Purchased Garments',
+      render: (val) => <span style={{ color: 'var(--bo-text-muted)' }}>{val}</span>,
+    },
+    {
+      key: 'payment',
+      label: 'Payment Mode',
+      cellClassName: 'cf-table-cell-mono',
+      render: (val) => <span className="cf-table-cell-mono">{val}</span>,
+    },
+    {
+      key: 'total',
+      label: 'Total Value',
+      render: (val) => <span style={{ fontWeight: 800, color: 'var(--bo-text-main)' }}>{val}</span>,
+    },
+    {
+      key: 'status',
+      label: 'Fulfillment Status',
+      render: (val) => (
+        <Badge
+          dot
+          variant={
+            val === 'Delivered'
+              ? 'completed'
+              : val === 'In Transit'
+              ? 'processing'
+              : 'warning'
+          }
+        >
+          {val}
+        </Badge>
+      ),
+    },
+  ];
+
   return (
     <div className="cf-admin-content-inner">
       {/* 1. Header Row */}
@@ -84,61 +138,45 @@ export default function AdminOverviewPage() {
           <div className="cf-bo-perf-tag">
             <span className="cf-bo-perf-icon">⚡</span> All-time performance
           </div>
-          <button
-            type="button"
-            className="cf-bo-refresh-btn"
+          <Button
+            size="sm"
+            variant="outline"
+            icon={RefreshCw}
             onClick={() => window.location.reload()}
           >
-            <RefreshCw size={13} /> Refresh
-          </button>
+            Refresh
+          </Button>
         </div>
       </div>
 
-      {/* 2. Top 4 Metric KPI Cards */}
+      {/* 2. Top 4 Metric KPI Cards using UI Kit MetricCard */}
       <div className="cf-bo-kpi-grid">
-        {/* Card 1: Gross Sales */}
-        <div className="cf-bo-kpi-card is-primary-kpi">
-          <div className="cf-bo-kpi-top">
-            <span className="cf-bo-kpi-title">Gross Revenue</span>
-            <div className="cf-bo-kpi-icons">
-              <IndianRupee size={18} className="cf-bo-kpi-icon" />
-              <ArrowUpRight size={14} className="cf-bo-kpi-arrow" />
-            </div>
-          </div>
-          <div className="cf-bo-kpi-value">₹54,82,000</div>
-          <div className="cf-bo-kpi-sub">+14.2% growth this month</div>
-          <div className="cf-bo-rainbow-bar" />
-        </div>
-
-        {/* Card 2: Total Orders */}
-        <div className="cf-bo-kpi-card">
-          <div className="cf-bo-kpi-top">
-            <span className="cf-bo-kpi-title">Total Orders</span>
-            <ShoppingBag size={18} className="cf-bo-kpi-icon" />
-          </div>
-          <div className="cf-bo-kpi-value">348</div>
-          <div className="cf-bo-kpi-sub">28 in dispatch / 312 delivered</div>
-        </div>
-
-        {/* Card 3: Customers */}
-        <div className="cf-bo-kpi-card">
-          <div className="cf-bo-kpi-top">
-            <span className="cf-bo-kpi-title">Active Customers</span>
-            <Users size={18} className="cf-bo-kpi-icon" />
-          </div>
-          <div className="cf-bo-kpi-value">437</div>
-          <div className="cf-bo-kpi-sub">92 VIP members / 345 standard</div>
-        </div>
-
-        {/* Card 4: Average Order Value (AOV) */}
-        <div className="cf-bo-kpi-card">
-          <div className="cf-bo-kpi-top">
-            <span className="cf-bo-kpi-title">Average Order Value</span>
-            <TrendingUp size={18} className="cf-bo-kpi-icon" />
-          </div>
-          <div className="cf-bo-kpi-value">₹3,450</div>
-          <div className="cf-bo-kpi-sub">Basket size across collections</div>
-        </div>
+        <MetricCard
+          title="Gross Revenue"
+          value="₹54,82,000"
+          subtext="+14.2% growth this month"
+          icon={IndianRupee}
+          hasArrow
+          highlighted
+        />
+        <MetricCard
+          title="Total Orders"
+          value="348"
+          subtext="28 in dispatch / 312 delivered"
+          icon={ShoppingBag}
+        />
+        <MetricCard
+          title="Active Customers"
+          value="437"
+          subtext="92 VIP members / 345 standard"
+          icon={Users}
+        />
+        <MetricCard
+          title="Average Order Value"
+          value="₹3,450"
+          subtext="Basket size across collections"
+          icon={TrendingUp}
+        />
       </div>
 
       {/* 3. Middle 3 Insight Cards */}
@@ -155,9 +193,7 @@ export default function AdminOverviewPage() {
           <div className="cf-bo-donut-content">
             <div className="cf-bo-donut-svg-wrap">
               <svg width="105" height="105" viewBox="0 0 100 100" className="cf-bo-donut-svg">
-                {/* Background Ring */}
                 <circle cx="50" cy="50" r="38" fill="transparent" stroke="var(--bo-border)" strokeWidth="8" />
-                {/* Delivered (88%) Green Ring */}
                 <circle
                   cx="50"
                   cy="50"
@@ -262,56 +298,26 @@ export default function AdminOverviewPage() {
         </div>
       </div>
 
-      {/* 4. Bottom Table: Recent Customer Orders */}
-      <div className="cf-bo-table-card">
-        <div className="cf-bo-table-header">
-          <h3 className="cf-bo-table-title">Recent Customer Orders</h3>
-          <a href="/admin/orders" className="cf-bo-table-all-link">
-            All orders <ArrowUpRight size={13} />
-          </a>
-        </div>
-
-        <div style={{ overflowX: 'auto' }}>
-          <table className="cf-bo-data-table">
-            <thead>
-              <tr>
-                <th>Sr. No.</th>
-                <th>Order Ref</th>
-                <th>Customer</th>
-                <th>Purchased Garments</th>
-                <th>Payment Mode</th>
-                <th>Total Value</th>
-                <th>Fulfillment</th>
-                <th>Order Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {RECENT_ORDERS.map((row) => (
-                <tr key={row.orderId}>
-                  <td className="cf-bo-td-num">{row.srNo}</td>
-                  <td className="cf-bo-td-mono">{row.orderId}</td>
-                  <td className="cf-bo-td-title">{row.customer}</td>
-                  <td>{row.items}</td>
-                  <td className="cf-bo-td-mono">{row.payment}</td>
-                  <td style={{ color: 'var(--bo-text-main)', fontWeight: 800 }}>{row.total}</td>
-                  <td>
-                    <span className={`cf-bo-chip ${row.statusClass}`}>
-                      <span className="cf-bo-chip-dot" /> {row.status}
-                    </span>
-                  </td>
-                  <td className="cf-bo-td-date">{row.date}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Floating Bottom Right Badge */}
-      <div className="cf-bo-netlify-pill">
-        <span className="cf-bo-netlify-icon">❖</span>
-        <span>CartFlow <strong>Operations Core</strong></span>
-      </div>
+      {/* 4. Bottom Table: Recent Customer Orders using UI Kit <Table> */}
+      <Card>
+        <Card.Header
+          title="Recent Customer Orders"
+          subtitle="Real-time multi-gateway transactions feed"
+          action={
+            <Button
+              size="sm"
+              variant="outline"
+              iconRight={ArrowUpRight}
+              onClick={() => (window.location.href = '/admin/orders')}
+            >
+              All Orders
+            </Button>
+          }
+        />
+        <Card.Body style={{ padding: 0 }}>
+          <Table columns={columns} data={RECENT_ORDERS} keyField="orderId" />
+        </Card.Body>
+      </Card>
     </div>
   );
 }

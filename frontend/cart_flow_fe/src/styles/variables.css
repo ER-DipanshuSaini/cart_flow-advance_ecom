@@ -1,23 +1,23 @@
 :root,
 [data-theme="dark"] {
-  /* Dark Theme with Royal Navy #003f7f branding */
-  --cf-bg-base: #0a0c11;
-  --cf-bg-surface: #12151d;
-  --cf-bg-elevated: #181d26;
-  --cf-bg-input: #0e1117;
-  --cf-border-subtle: #202633;
-  --cf-border-hover: #313a4d;
-  --cf-border-focus: #1d72b8;
+  /* Neutral Charcoal / Zinc Gray Dark Theme (Zero Bluish Tint) */
+  --cf-bg-base: #09090b;
+  --cf-bg-surface: #141416;
+  --cf-bg-elevated: #1c1d20;
+  --cf-bg-input: #101113;
+  --cf-border-subtle: #27272a;
+  --cf-border-hover: #3f3f46;
+  --cf-border-focus: #003f7f;
 
-  --cf-text-main: #f8fafc;
-  --cf-text-muted: #94a3b8;
-  --cf-text-dim: #64748b;
+  --cf-text-main: #f4f4f5;
+  --cf-text-muted: #a1a1aa;
+  --cf-text-dim: #71717a;
 
   --cf-accent-primary: #003f7f;
   --cf-accent-primary-hover: #0056ad;
   --cf-accent-primary-light: #2563eb;
   --cf-accent-primary-glow: rgba(0, 63, 127, 0.35);
-  --cf-accent-primary-tint: rgba(0, 63, 127, 0.18);
+  --cf-accent-primary-tint: rgba(0, 63, 127, 0.22);
 
   --cf-accent-warning: #f59e0b;
   --cf-accent-warning-tint: #271f13;
@@ -26,8 +26,8 @@
   --cf-accent-info: #0284c7;
   --cf-accent-info-tint: #122131;
 
-  --cf-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.45);
-  --cf-shadow-float: 0 16px 36px rgba(0, 0, 0, 0.65);
+  --cf-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.55);
+  --cf-shadow-float: 0 16px 36px rgba(0, 0, 0, 0.75);
 }
 
 [data-theme="light"] {
