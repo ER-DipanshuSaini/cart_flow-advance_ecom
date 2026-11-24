@@ -57,6 +57,49 @@ const HERO_SLIDES = [
   },
 ];
 
+const CATALOG_ITEMS = [
+  {
+    id: 'shirts',
+    name: 'Textured Shirts',
+    category: 'Old Money',
+    itemCount: '48 Pieces',
+    image: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=900&auto=format&fit=crop',
+    fallback: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=900&auto=format&fit=crop'
+  },
+  {
+    id: 'suiting',
+    name: 'Tailored Suiting & Blazers',
+    category: 'Formal & Suiting',
+    itemCount: '36 Pieces',
+    image: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?q=80&w=900&auto=format&fit=crop',
+    fallback: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=900&auto=format&fit=crop'
+  },
+  {
+    id: 'linen',
+    name: 'Linen & Resort Wear',
+    category: 'Linen & Resort',
+    itemCount: '42 Pieces',
+    image: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=900&auto=format&fit=crop',
+    fallback: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=900&auto=format&fit=crop'
+  },
+  {
+    id: 'co-ords',
+    name: 'Trousers & Co-Ords',
+    category: 'Co-Ords',
+    itemCount: '32 Pieces',
+    image: 'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=900&auto=format&fit=crop',
+    fallback: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=900&auto=format&fit=crop'
+  },
+  {
+    id: 'footwear',
+    name: 'Handcrafted Footwear',
+    category: 'Footwear',
+    itemCount: '24 Pieces',
+    image: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?q=80&w=900&auto=format&fit=crop',
+    fallback: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=900&auto=format&fit=crop'
+  }
+];
+
 export default function HomePage() {
   const { addToCart } = useCart();
   const [activeSlide, setActiveSlide] = useState(0);
@@ -148,71 +191,43 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 3. Curated Aesthetic Categories Grid (Snitch Style Lookbook) */}
+      {/* 3. Clean Studio Apparel Catalog Showcase (5 Items in 1 Row) */}
       <section className="cf-store-section cf-store-container">
         <div className="cf-section-title-row">
           <div>
-            <span className="cf-section-pretitle">Aesthetic Playlists</span>
-            <h2 className="cf-section-headline">Shop by Aesthetic</h2>
+            <span className="cf-section-pretitle">The Wardrobe Edit</span>
+            <h2 className="cf-section-headline">Shop by Catalog</h2>
           </div>
           <Link to="/shop" className="cf-section-view-all">
             Browse All Drops <ArrowRight size={14} />
           </Link>
         </div>
 
-        <div className="cf-aesthetic-lookbook-grid">
-          <Link to="/shop?cat=Old Money" className="cf-lookbook-card">
-            <img
-              src="https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80"
-              alt="Old Money Styling"
-              onError={(e) => { e.currentTarget.src = 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80'; }}
-            />
-            <div className="cf-lookbook-overlay">
-              <span className="cf-lookbook-tag">SIGNATURE LOOK</span>
-              <h4>The Old Money Edit</h4>
-              <p>Textured knit polos, linen trousers & loafers</p>
-              <span className="cf-lookbook-cta">Shop Edit <ArrowRight size={13} /></span>
-            </div>
-          </Link>
-
-          <Link to="/shop?cat=Formal & Suiting" className="cf-lookbook-card">
-            <img
-              src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
-              alt="Formal Tailoring"
-            />
-            <div className="cf-lookbook-overlay">
-              <span className="cf-lookbook-tag">CONTEMPORARY SUITING</span>
-              <h4>Modern Formal</h4>
-              <p>Double-breasted blazers & tailored overcoats</p>
-              <span className="cf-lookbook-cta">Shop Suits <ArrowRight size={13} /></span>
-            </div>
-          </Link>
-
-          <Link to="/shop?cat=Linen & Resort" className="cf-lookbook-card">
-            <img
-              src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=800&q=80"
-              alt="Linen Resort"
-            />
-            <div className="cf-lookbook-overlay">
-              <span className="cf-lookbook-tag">SUMMER LUXE</span>
-              <h4>Linen & Resort</h4>
-              <p>French Normandy linen & crochet Cuban shirts</p>
-              <span className="cf-lookbook-cta">Shop Resort <ArrowRight size={13} /></span>
-            </div>
-          </Link>
-
-          <Link to="/shop?cat=Co-Ords" className="cf-lookbook-card">
-            <img
-              src="https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=800&q=80"
-              alt="Co-Ords & Sets"
-            />
-            <div className="cf-lookbook-overlay">
-              <span className="cf-lookbook-tag">GEN-Z FAVORITE</span>
-              <h4>Tailored Co-Ords</h4>
-              <p>Effortless matched shackets & trousers</p>
-              <span className="cf-lookbook-cta">Shop Sets <ArrowRight size={13} /></span>
-            </div>
-          </Link>
+        <div className="cf-catalog-showcase-grid">
+          {CATALOG_ITEMS.map((item) => (
+            <Link
+              key={item.id}
+              to={`/shop?cat=${encodeURIComponent(item.category)}`}
+              className="cf-catalog-card"
+            >
+              <div className="cf-catalog-img-wrap">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  loading="lazy"
+                  onError={(e) => {
+                    if (item.fallback) e.currentTarget.src = item.fallback;
+                  }}
+                />
+              </div>
+              <div className="cf-catalog-meta">
+                <h3 className="cf-catalog-name">{item.name}</h3>
+                <span className="cf-catalog-count">
+                  {item.itemCount} <ArrowRight size={11} />
+                </span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
