@@ -1,0 +1,426 @@
+/* Storefront Global Layout & Navbar CSS */
+.cf-storefront-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--cf-bg-base);
+  color: var(--cf-text-main);
+  font-family: var(--cf-font-sans);
+  transition: var(--cf-transition);
+}
+
+.cf-storefront-main {
+  flex: 1;
+}
+
+.cf-store-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Announcement Strip */
+.cf-announcement-strip {
+  background-color: var(--cf-bg-elevated);
+  border-bottom: 1px solid var(--cf-border-subtle);
+  color: var(--cf-text-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0.45rem 1rem;
+  text-align: center;
+}
+
+/* Navbar */
+.cf-store-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--cf-bg-surface);
+  border-bottom: 1px solid var(--cf-border-subtle);
+  box-shadow: var(--cf-shadow-card);
+  transition: var(--cf-transition);
+}
+
+.cf-store-navbar {
+  height: 68px;
+  display: flex;
+  align-items: center;
+}
+
+.cf-nav-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Logo */
+.cf-store-logo {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--cf-text-main);
+  text-transform: uppercase;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.cf-store-logo span {
+  font-weight: 300;
+  color: var(--cf-accent-primary);
+}
+
+/* Desktop Navigation */
+.cf-desktop-nav {
+  display: none;
+  align-items: center;
+  gap: 1.75rem;
+}
+
+@media (min-width: 860px) {
+  .cf-desktop-nav {
+    display: flex;
+  }
+}
+
+.cf-nav-link {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cf-text-muted);
+  transition: color var(--cf-transition);
+  text-decoration: none;
+}
+
+.cf-nav-link:hover {
+  color: var(--cf-accent-primary);
+}
+
+.cf-nav-link.cf-nav-uikit {
+  color: var(--cf-accent-primary);
+}
+
+/* Nav Search */
+.cf-nav-search-form {
+  position: relative;
+  display: none;
+  align-items: center;
+  max-width: 260px;
+  flex: 1;
+}
+
+@media (min-width: 680px) {
+  .cf-nav-search-form {
+    display: flex;
+  }
+}
+
+.cf-search-input-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--cf-text-dim);
+  pointer-events: none;
+}
+
+.cf-nav-search-input {
+  width: 100%;
+  padding: 6px 10px 6px 32px;
+  background-color: var(--cf-bg-input);
+  border: 1px solid var(--cf-border-subtle);
+  border-radius: var(--cf-radius-pill);
+  font-size: 0.8rem;
+  color: var(--cf-text-main);
+  outline: none;
+  transition: var(--cf-transition);
+}
+
+.cf-nav-search-input:focus {
+  border-color: var(--cf-border-focus);
+  box-shadow: 0 0 0 2px var(--cf-accent-primary-glow);
+}
+
+/* Actions Group */
+.cf-nav-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cf-nav-icon-link {
+  position: relative;
+  color: var(--cf-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color var(--cf-transition);
+}
+
+.cf-nav-icon-link:hover {
+  color: var(--cf-accent-primary);
+}
+
+.cf-online-indicator {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--cf-accent-primary);
+}
+
+.cf-nav-cart-btn {
+  position: relative;
+  color: var(--cf-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--cf-transition);
+}
+
+.cf-nav-cart-btn:hover {
+  color: var(--cf-accent-primary);
+}
+
+.cf-cart-pill {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background-color: var(--cf-accent-primary);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  min-width: 17px;
+  height: 17px;
+  border-radius: var(--cf-radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.cf-mobile-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--cf-text-main);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+@media (min-width: 860px) {
+  .cf-mobile-menu-btn {
+    display: none;
+  }
+}
+
+.cf-mobile-dropdown {
+  position: absolute;
+  top: 68px;
+  left: 0;
+  right: 0;
+  background-color: var(--cf-bg-surface);
+  border-bottom: 1px solid var(--cf-border-subtle);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--cf-shadow-float);
+}
+
+.cf-mobile-dropdown a {
+  color: var(--cf-text-main);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.cf-mobile-divider {
+  height: 1px;
+  background-color: var(--cf-border-subtle);
+  margin: 0.25rem 0;
+}
+
+/* Footer Styling */
+.cf-store-footer {
+  background-color: var(--cf-bg-surface);
+  border-top: 1px solid var(--cf-border-subtle);
+  margin-top: 4rem;
+}
+
+.cf-footer-perks-strip {
+  border-bottom: 1px solid var(--cf-border-subtle);
+  padding: 2rem 0;
+  background-color: var(--cf-bg-elevated);
+}
+
+.cf-perks-row {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .cf-perks-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cf-perks-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.cf-perk-block {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.cf-perk-icon {
+  color: var(--cf-accent-primary);
+  flex-shrink: 0;
+}
+
+.cf-perk-heading {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+}
+
+.cf-perk-sub {
+  font-size: 0.75rem;
+  color: var(--cf-text-muted);
+}
+
+.cf-footer-content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+}
+
+@media (min-width: 768px) {
+  .cf-footer-content-grid {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+
+.cf-footer-brand-title {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.75rem;
+  color: var(--cf-text-main);
+}
+
+.cf-footer-brand-title span {
+  color: var(--cf-accent-primary);
+}
+
+.cf-footer-brand-desc {
+  font-size: 0.85rem;
+  color: var(--cf-text-muted);
+  line-height: 1.6;
+  max-width: 420px;
+  margin-bottom: 1.25rem;
+}
+
+.cf-footer-newsletter-wrap {
+  display: flex;
+  max-width: 320px;
+  position: relative;
+}
+
+.cf-footer-newsletter-wrap input {
+  width: 100%;
+  padding: 0.6rem 2.5rem 0.6rem 0.8rem;
+  background-color: var(--cf-bg-input);
+  border: 1px solid var(--cf-border-subtle);
+  border-radius: var(--cf-radius-md);
+  font-size: 0.8rem;
+  color: var(--cf-text-main);
+  outline: none;
+}
+
+.cf-footer-newsletter-wrap button {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--cf-text-main);
+  cursor: pointer;
+}
+
+.cf-footer-links-col h5 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+  color: var(--cf-text-main);
+}
+
+.cf-footer-links-col ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0;
+  margin: 0;
+}
+
+.cf-footer-links-col ul a {
+  font-size: 0.85rem;
+  color: var(--cf-text-muted);
+  text-decoration: none;
+  transition: color var(--cf-transition);
+}
+
+.cf-footer-links-col ul a:hover {
+  color: var(--cf-accent-primary);
+}
+
+.cf-footer-bottom-bar {
+  border-top: 1px solid var(--cf-border-subtle);
+  padding-top: 1.5rem;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--cf-text-dim);
+}
+
+@media (min-width: 640px) {
+  .cf-footer-bottom-bar {
+    flex-direction: row;
+  }
+}
+
+.cf-bottom-legal-links {
+  display: flex;
+  gap: 1.5rem;
+}

@@ -1,0 +1,84 @@
+/* Auth Pages Styling */
+.cf-auth-page-wrapper {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+}
+
+.cf-auth-box {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cf-auth-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.75rem;
+}
+
+.cf-auth-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--cf-text-main);
+  margin-bottom: 0.4rem;
+}
+
+.cf-auth-subtitle {
+  font-size: 0.85rem;
+  color: var(--cf-text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.75rem;
+}
+
+.cf-auth-card {
+  box-shadow: var(--cf-shadow-float);
+}
+
+.cf-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.cf-auth-form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cf-forgot-link {
+  font-size: 0.78rem;
+  color: var(--cf-accent-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.cf-forgot-link:hover {
+  text-decoration: underline;
+}
+
+.cf-auth-submit-btn {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.cf-auth-error-banner {
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--cf-radius-sm);
+  background-color: var(--cf-accent-danger-tint);
+  border: 1px solid var(--cf-accent-danger);
+  color: var(--cf-accent-danger);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* Admin Gate Variant */
+.cf-admin-gate-theme .cf-auth-box {
+  max-width: 460px;
+}

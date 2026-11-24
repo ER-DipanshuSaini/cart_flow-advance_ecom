@@ -1,18 +1,24 @@
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import AppRoutes from './routes/AppRoutes';
 
 /**
  * Root Application Entry
- * Kept ultra-clean with Theme and Router Providers.
+ * Wraps global providers (Theme, Auth, Cart) with clean routing.
  */
 function App() {
   return (
     <ThemeProvider defaultTheme="dark">
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <AuthProvider>
+        <CartProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </CartProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
