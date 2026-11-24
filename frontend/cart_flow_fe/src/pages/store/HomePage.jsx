@@ -68,7 +68,7 @@ export default function HomePage() {
       {/* 2. Snitch-Inspired Ticker Strip */}
       <div className="cf-snitch-ticker">
         <div className="cf-ticker-track">
-          <span>OLD MONEY CLASSICS • BESPOKE ITALIAN CUT • 100% FRENCH LINEN • AI VIRTUAL FITTING ROOM • FREE EXPRESS SHIPPING • LIMITED BATCH DROPS • OLD MONEY CLASSICS • BESPOKE ITALIAN CUT •</span>
+          <span>OLD MONEY CLASSICS • BESPOKE ITALIAN CUT • 100% FRENCH LINEN • COMPLIMENTARY EXPRESS SHIPPING • LIMITED BATCH DROPS • PREMIUM HANDCRAFTED APPAREL • OLD MONEY CLASSICS • BESPOKE ITALIAN CUT •</span>
         </div>
       </div>
 
@@ -224,33 +224,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. AI Virtual Try-On Studio Banner */}
-      <section className="cf-tryon-highlight-banner">
-        <div className="cf-store-container cf-tryon-highlight-inner">
-          <div className="cf-tryon-text-wrap">
-            <Badge variant="mono">
-              <Sparkles size={13} /> POWERED BY FASTAPI AI SERVICES
-            </Badge>
-            <h2 className="cf-tryon-banner-heading">Virtual Fitting Room Studio</h2>
-            <p className="cf-tryon-banner-desc">
-              Zero sizing guesswork. Preview realistic drape, fabric texture, and shoulder structure on your personalized 3D avatar before you purchase.
-            </p>
-            <Link to="/shop">
-              <Button variant="primary" size="lg" iconRight={ArrowRight}>
-                Try On In Studio
-              </Button>
-            </Link>
-          </div>
-          <div className="cf-tryon-media-wrap">
-            <img
-              src="https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&w=900&q=80"
-              alt="AI Virtual Try On Fitting"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* 7. Craftsmanship & Old Money Philosophy Pillars */}
+      {/* 6. Craftsmanship & Old Money Philosophy Pillars */}
       <section className="cf-store-section cf-store-container">
         <div className="cf-pillars-grid">
           <div className="cf-pillar-item">

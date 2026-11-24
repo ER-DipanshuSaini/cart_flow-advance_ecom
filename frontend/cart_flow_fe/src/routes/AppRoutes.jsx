@@ -12,6 +12,13 @@ import RegisterPage from '../pages/auth/RegisterPage';
 import AdminLoginPage from '../pages/auth/AdminLoginPage';
 import ShowcasePage from '../pages/Showcase/ShowcasePage';
 
+// Admin Operations Console
+import AdminLayout from '../pages/admin/AdminLayout';
+import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
+import AdminOrdersPage from '../pages/admin/AdminOrdersPage';
+import AdminInventoryPage from '../pages/admin/AdminInventoryPage';
+import AdminLogisticsPage from '../pages/admin/AdminLogisticsPage';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -31,6 +38,16 @@ export default function AppRoutes() {
 
       {/* 2. Hidden Admin Gate (Direct non-public path with credentials prompt) */}
       <Route path="/admin-portal" element={<AdminLoginPage />} />
+
+      {/* 3. Dedicated Admin & Operations Console (BattleOne Workspace) */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<Navigate to="/admin/overview" replace />} />
+        <Route path="overview" element={<AdminOverviewPage />} />
+        <Route path="console" element={<Navigate to="/admin/overview" replace />} />
+        <Route path="orders" element={<AdminOrdersPage />} />
+        <Route path="inventory" element={<AdminInventoryPage />} />
+        <Route path="logistics" element={<AdminLogisticsPage />} />
+      </Route>
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

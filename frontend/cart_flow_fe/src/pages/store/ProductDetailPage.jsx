@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Star, ShoppingBag, Sparkles, ShieldCheck, Truck, RotateCcw, ArrowLeft, Minus, Plus } from 'lucide-react';
+import {
+  Star,
+  ShoppingBag,
+  ShieldCheck,
+  Truck,
+  RotateCcw,
+  ArrowLeft,
+  Minus,
+  Plus
+} from 'lucide-react';
 import { PRODUCTS } from '../../data/products';
 import { useCart } from '../../context/CartContext';
-import { Button, Badge, Card, ToastContainer } from '../../components/ui';
+import { Button, Badge, ToastContainer } from '../../components/ui';
 import './StorePages.css';
 
 export default function ProductDetailPage() {
@@ -15,7 +24,6 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || '#111');
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState('description');
   const [toasts, setToasts] = useState([]);
 
   const addToast = (type, title, message) => {
@@ -28,10 +36,7 @@ export default function ProductDetailPage() {
 
   const handleAddToCart = () => {
     addToCart(product, quantity, `Size: ${selectedSize}`);
-  };
-
-  const handleTryOnSimulation = () => {
-    addToast('info', 'AI Try-On Ready', `Launching 3D avatar fitting for ${product.title}`);
+    addToast('success', 'Added to Shopping Bag', `${product.title} (Size: ${selectedSize}) added to your bag.`);
   };
 
   return (
@@ -144,19 +149,6 @@ export default function ProductDetailPage() {
               className="cf-pdp-add-cart-btn"
             >
               Add to Bag • ${(product.price * quantity).toFixed(2)}
-            </Button>
-          </div>
-
-          {/* AI Virtual Try-On Action */}
-          <div style={{ marginTop: '0.75rem' }}>
-            <Button
-              variant="outline"
-              size="lg"
-              icon={Sparkles}
-              onClick={handleTryOnSimulation}
-              className="cf-pdp-tryon-btn"
-            >
-              Launch Virtual AI Try-On Studio
             </Button>
           </div>
 
