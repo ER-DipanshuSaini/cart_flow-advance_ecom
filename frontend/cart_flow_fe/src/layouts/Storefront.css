@@ -493,6 +493,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  height: 70px;
 }
 
 .cf-nav-user-chip {
@@ -547,89 +548,69 @@
   flex-shrink: 0;
 }
 
+.cf-user-chevron.is-flipped,
 .cf-nav-user-dropdown-wrap:hover .cf-user-chevron {
   transform: rotate(180deg);
   color: var(--cf-accent-primary);
 }
 
-.cf-user-menu-dropdown {
+/* Compact Editorial User Dropdown (Attached Flush Below Navbar, Aligned Under Name Pill) */
+.cf-user-editorial-dropdown {
   position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  min-width: 230px;
+  top: 100%;
+  left: 0;
+  min-width: 225px;
   background-color: var(--cf-bg-surface);
   border: 1px solid var(--cf-border-subtle);
-  border-radius: 12px;
-  box-shadow: 0 18px 45px -8px rgba(0, 0, 0, 0.22), 0 0 0 1px var(--cf-border-subtle);
-  padding: 8px;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 24px 54px -12px rgba(0, 0, 0, 0.28);
+  padding: 1.15rem 1.25rem;
   z-index: 1000;
-  animation: cfNavDropdownFade 0.18s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: cfMegaMenuSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.cf-user-menu-dropdown::before {
-  content: '';
-  position: absolute;
-  top: -12px;
-  left: 0;
-  right: 0;
-  height: 12px;
+@media (max-width: 768px) {
+  .cf-user-editorial-dropdown {
+    left: auto;
+    right: 0;
+  }
 }
 
-.cf-user-menu-header {
-  padding: 8px 12px 6px;
+.cf-user-dd-heading {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.6rem;
 }
 
-.cf-user-menu-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--cf-text-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.cf-user-dd-links {
+  gap: 0.6rem;
 }
 
-.cf-user-menu-tier {
-  font-size: 0.7rem;
-  color: var(--cf-accent-primary);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-top: 2px;
-}
-
-.cf-user-menu-divider {
+.cf-user-dd-divider {
   height: 1px;
   background-color: var(--cf-border-subtle);
-  margin: 6px 0;
+  margin: 0.25rem 0;
 }
 
-.cf-user-menu-item {
-  display: flex;
+.cf-user-dd-signout {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: 7px;
-  border: none;
+  gap: 7px;
   background: transparent;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--cf-text-main);
-  text-decoration: none;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.cf-user-menu-item:hover {
-  background-color: var(--cf-bg-subtle);
-  color: var(--cf-accent-primary);
-}
-
-.cf-user-menu-item.is-danger {
+  border: none;
+  padding: 0;
+  font-size: 0.84rem;
+  font-weight: 600;
   color: #ef4444;
+  cursor: pointer;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.cf-user-dd-signout:hover {
+  color: #dc2626;
+  transform: translateX(4px);
 }
 
 .cf-user-menu-item.is-danger:hover {

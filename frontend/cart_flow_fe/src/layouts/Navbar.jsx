@@ -8,7 +8,6 @@ import {
   X,
   ArrowRight,
   ChevronDown,
-  Package,
   LogOut,
   Sparkles,
   Flame
@@ -182,44 +181,47 @@ export function Navbar() {
                 <Link to="/account" className="cf-nav-user-chip" title="View Account">
                   <span className="cf-user-avatar-badge">{avatarLetter}</span>
                   <span className="cf-user-name-text">Hi, {firstName}</span>
-                  <ChevronDown size={13} className="cf-user-chevron" />
+                  <ChevronDown size={13} className={`cf-user-chevron ${userDropdownOpen ? 'is-flipped' : ''}`} />
                 </Link>
 
                 {userDropdownOpen && (
-                  <div className="cf-user-menu-dropdown">
-                    <div className="cf-user-menu-header">
-                      <div className="cf-user-menu-name">{user?.name}</div>
-                      <div className="cf-user-menu-tier">{user?.tier || 'VIP Club Member'}</div>
+                  <div className="cf-user-editorial-dropdown">
+                    <div className="cf-mega-col-heading cf-user-dd-heading">
+                      <span>{user?.name || 'Account'}</span>
+                      <span className="cf-mega-badge">{user?.tier?.split(' ')[0] || 'VIP'}</span>
                     </div>
-                    <div className="cf-user-menu-divider" />
-                    <Link
-                      to="/account"
-                      className="cf-user-menu-item"
-                      onClick={() => setUserDropdownOpen(false)}
-                    >
-                      <User size={15} />
-                      <span>My Account & Wardrobe</span>
-                    </Link>
-                    <Link
-                      to="/account"
-                      className="cf-user-menu-item"
-                      onClick={() => setUserDropdownOpen(false)}
-                    >
-                      <Package size={15} />
-                      <span>Orders & Tracking</span>
-                    </Link>
-                    <div className="cf-user-menu-divider" />
-                    <button
-                      type="button"
-                      className="cf-user-menu-item is-danger"
-                      onClick={() => {
-                        logout();
-                        setUserDropdownOpen(false);
-                      }}
-                    >
-                      <LogOut size={15} />
-                      <span>Sign Out</span>
-                    </button>
+
+                    <ul className="cf-mega-links cf-user-dd-links">
+                      <li>
+                        <Link to="/account?tab=profile" onClick={() => setUserDropdownOpen(false)}>
+                          My Account &amp; Profile
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/account?tab=orders" onClick={() => setUserDropdownOpen(false)}>
+                          Orders &amp; Tracking
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/account?tab=addresses" onClick={() => setUserDropdownOpen(false)}>
+                          Saved Addresses
+                        </Link>
+                      </li>
+                      <li className="cf-user-dd-divider" />
+                      <li>
+                        <button
+                          type="button"
+                          className="cf-user-dd-signout"
+                          onClick={() => {
+                            logout();
+                            setUserDropdownOpen(false);
+                          }}
+                        >
+                          <LogOut size={13} />
+                          <span>Sign Out</span>
+                        </button>
+                      </li>
+                    </ul>
                   </div>
                 )}
               </div>
