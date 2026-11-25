@@ -158,6 +158,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 2.25rem;
 }
 
@@ -176,6 +177,7 @@
   font-weight: 800;
   color: var(--cf-text-main);
   letter-spacing: -0.02em;
+  margin: 0;
 }
 
 .cf-section-view-all {
@@ -190,6 +192,25 @@
   letter-spacing: 0.05em;
   border-bottom: 2px solid var(--cf-accent-primary);
   padding-bottom: 2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (max-width: 639px) {
+  .cf-section-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cf-section-headline {
+    font-size: 1.45rem;
+  }
+
+  .cf-section-view-all {
+    font-size: 0.74rem;
+  }
 }
 
 /* 4. Clean Studio Apparel Catalog Showcase (5 Columns per Row, Studio Hangers) */
@@ -513,7 +534,7 @@
   margin-bottom: 1.5rem;
 }
 
-@media (min-width: 840px) {
+@media (min-width: 1080px) {
   .cf-shop-toolbar {
     flex-direction: row;
     align-items: center;
@@ -524,7 +545,14 @@
 .cf-shop-search-box {
   position: relative;
   flex: 1;
-  max-width: 360px;
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 1080px) {
+  .cf-shop-search-box {
+    max-width: 320px;
+  }
 }
 
 .cf-shop-search-field {
@@ -553,14 +581,30 @@
 }
 
 .cf-shop-right-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+  width: 100%;
 }
 
 .cf-filter-dropdown-wrap {
-  min-width: 170px;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .cf-shop-right-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    width: auto;
+  }
+
+  .cf-filter-dropdown-wrap {
+    min-width: 155px;
+    width: auto;
+  }
 }
 
 .cf-grid-layout-switcher {
@@ -847,9 +891,41 @@
   overflow: hidden;
 }
 
-/* ==========================================================================
-   Full Luxury Product Detail Page (PDP) Experience
-   ========================================================================== */
+@media (max-width: 639px) {
+  .cf-pdp-main-img-box {
+    width: 100%;
+    height: auto;
+    max-height: 460px;
+  }
+
+  .cf-pdp-title {
+    font-size: 1.45rem;
+  }
+
+  .cf-pdp-add-cart-btn {
+    min-width: 0 !important;
+    flex: 1;
+  }
+
+  .cf-pdp-deliver-card {
+    flex-wrap: wrap;
+  }
+
+  .cf-pdp-tabs-header {
+    overflow-x: auto;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+
+  .cf-pdp-tabs-header::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cf-shop-pagination-bar {
+    justify-content: center;
+    text-align: center;
+  }
+}
 .cf-pdp-wrapper {
   padding-top: 0.75rem;
   padding-bottom: 5rem;
@@ -905,12 +981,35 @@
   display: flex;
   flex-direction: column-reverse;
   gap: 1rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cf-pdp-info-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cf-pdp-thumbs-slider-col {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 @media (min-width: 640px) {
   .cf-pdp-gallery-col {
     flex-direction: row;
     align-items: flex-start;
+  }
+}
+
+@media (min-width: 960px) {
+  .cf-pdp-gallery-col {
     position: sticky;
     top: 80px;
   }
@@ -1342,19 +1441,20 @@
 .cf-pdp-price-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 0.4rem;
 }
 
 .cf-pdp-price {
-  font-size: 2rem;
+  font-size: 1.85rem;
   font-weight: 900;
   color: var(--cf-text-main);
   letter-spacing: -0.01em;
 }
 
 .cf-pdp-orig-price {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: var(--cf-text-dim);
   text-decoration: line-through;
 }
@@ -1366,6 +1466,8 @@
   background: rgba(239, 68, 68, 0.1);
   padding: 4px 10px;
   border-radius: var(--cf-radius-pill);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .cf-pdp-stock-pill {
@@ -1374,6 +1476,8 @@
   padding: 4px 10px;
   border-radius: var(--cf-radius-pill);
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .cf-pdp-stock-pill.is-low {

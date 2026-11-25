@@ -32,6 +32,17 @@
   gap: 10px;
 }
 
+@media (max-width: 440px) {
+  .cf-otp-boxes-row {
+    gap: 6px;
+  }
+
+  .cf-otp-digit-input {
+    height: 44px;
+    font-size: 1.05rem;
+  }
+}
+
 .cf-otp-digit-input {
   width: 100%;
   height: 50px;

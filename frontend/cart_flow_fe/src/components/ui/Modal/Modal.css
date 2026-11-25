@@ -13,6 +13,8 @@
 
 .cf-ui-modal-container {
   width: 100%;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
   background-color: var(--cf-bg-surface);
   border: 1px solid var(--cf-border-subtle);
   border-radius: var(--cf-radius-lg);

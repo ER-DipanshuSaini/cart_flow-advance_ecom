@@ -73,8 +73,24 @@
   background-color: var(--cf-bg-surface);
   border: 1px solid var(--cf-border-subtle);
   box-shadow: var(--cf-shadow-card);
-  position: sticky;
-  top: 90px;
+}
+
+@media (min-width: 920px) {
+  .cf-score-summary-card {
+    position: sticky;
+    top: 90px;
+  }
+}
+
+@media (max-width: 639px) {
+  .cf-client-review-card {
+    padding: 1.15rem;
+  }
+
+  .cf-reviews-pagination-bar {
+    justify-content: center;
+    text-align: center;
+  }
 }
 
 .cf-score-main-flex {
@@ -743,6 +759,7 @@
   align-items: center;
   transition: transform 0.15s ease;
 }
+
 
 
 .cf-star-picker-btn:hover {

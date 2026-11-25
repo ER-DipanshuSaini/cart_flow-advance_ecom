@@ -409,15 +409,33 @@ export function Navbar() {
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
           <div className="cf-mobile-dropdown">
+            <form
+              className="cf-mobile-search-form"
+              onSubmit={(e) => {
+                handleSearchSubmit(e);
+                setMobileMenuOpen(false);
+              }}
+            >
+              <Search size={15} className="cf-search-input-icon" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search shirts, blazers, linen..."
+                className="cf-nav-search-input"
+              />
+            </form>
+
             <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-            <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>All Drops</Link>
+            <Link to="/shop" onClick={() => setMobileMenuOpen(false)}>Shop</Link>
+            <Link to="/catalog" onClick={() => setMobileMenuOpen(false)}>Catalogs</Link>
             <Link to="/shop?cat=Old Money" onClick={() => setMobileMenuOpen(false)}>Old Money Edit</Link>
             <Link to="/shop?cat=Formal & Suiting" onClick={() => setMobileMenuOpen(false)}>Formal & Suiting</Link>
             <Link to="/shop?cat=Linen & Resort" onClick={() => setMobileMenuOpen(false)}>Linen & Resort</Link>
             <Link to="/shop?cat=Co-Ords" onClick={() => setMobileMenuOpen(false)}>Co-Ords & Sets</Link>
             <Link to="/shop?cat=Footwear" onClick={() => setMobileMenuOpen(false)}>Footwear & Loafers</Link>
             <div className="cf-mobile-divider" />
-            <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>Shopping Bag ({cartCount})</Link>
+            <Link to="/cart" onClick={() => setMobileMenuOpen(false)}>Shopping Cart ({cartCount})</Link>
             <Link to={isAuthenticated ? '/account' : '/login'} onClick={() => setMobileMenuOpen(false)}>
               {isAuthenticated ? `Signed in as ${user.name}` : 'Sign In / Register'} <ArrowRight size={14} />
             </Link>

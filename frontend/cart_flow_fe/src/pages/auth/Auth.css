@@ -133,6 +133,12 @@
   overflow-y: auto;
 }
 
+@media (max-width: 520px) {
+  .cf-auth-form-column {
+    padding: 1.75rem 1.25rem;
+  }
+}
+
 .cf-auth-form-card {
   width: 100%;
   max-width: 440px;
