@@ -3,36 +3,32 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Star,
   ShoppingBag,
-  ShieldCheck,
-  Truck,
-  RotateCcw,
   ArrowRight,
   Minus,
   Plus,
   Heart,
   Share2,
   Ruler,
-  Check,
   ChevronUp,
   ChevronDown,
   MapPin,
-  Flame,
-  Award,
-  Feather,
-  Zap,
   ChevronLeft,
   ChevronRight,
-  Maximize2
+  Maximize2,
+  Info,
+  HelpCircle
 } from 'lucide-react';
 import { PRODUCTS } from '../../data/products';
 import { useCart } from '../../context/CartContext';
-import { Button, Badge, ProductCard, ProductReviews, ToastContainer, Modal } from '../../components/ui';
+import { useAuth } from '../../context/AuthContext';
+import { Button, ProductCard, ProductReviews, ToastContainer, Modal } from '../../components/ui';
 import './StorePages.css';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart, openCart } = useCart();
+  const { addToCart } = useCart();
+  const { customer } = useAuth();
 
   const product = useMemo(() => {
     return PRODUCTS.find((p) => p.id === Number(id)) || PRODUCTS[0];
@@ -69,14 +65,57 @@ export default function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || '#111');
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [pincode, setPincode] = useState('110001');
-  const [pincodeChecked, setPincodeChecked] = useState(true);
   const [sizeModalOpen, setSizeModalOpen] = useState(false);
   const [fullViewOpen, setFullViewOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('fabric');
+  const [activeTab, setActiveTab] = useState('details');
+  const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const [toasts, setToasts] = useState([]);
   const [thumbsOverflow, setThumbsOverflow] = useState(false);
   const thumbsListRef = useRef(null);
+
+  // Stock & Short Description (max 20 words)
+  const stockCount = typeof product.stockCount === 'number' ? product.stockCount : product.inStock ? 5 : 0;
+  const isOutOfStock = !product.inStock || stockCount <= 0;
+
+  const shortDescription = useMemo(() => {
+    if (!product.description) return 'No short description available for this item.';
+    const words = product.description.trim().split(/\s+/);
+    return words.length > 20 ? `${words.slice(0, 20).join(' ')}...` : product.description;
+  }, [product.description]);
+
+  // Delivery Address Lookup (Selected address from profile or null)
+  const deliveryAddress = useMemo(() => {
+    if (!customer) return null;
+    try {
+      const saved = localStorage.getItem('cf_selected_address');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // ignore storage errors
+    }
+    return {
+      label: 'Primary Residence',
+      line: 'Suite 402, Imperial Heights, Worli, Mumbai - 400018',
+    };
+  }, [customer]);
+
+  // Product FAQs with fallback support
+  const productFaqs = useMemo(() => {
+    if (Array.isArray(product.faqs)) return product.faqs;
+    return [
+      {
+        q: 'How does the sizing run for this piece?',
+        a: 'It is tailored for a clean, true-to-size silhouette. Choose your regular size, or refer to the Size Chart above for exact chest and length measurements.',
+      },
+      {
+        q: 'What is the fabric care and washing procedure?',
+        a: 'Machine wash cold on a delicate cycle with mild detergent or dry clean. Lay flat in shade to dry and steam lightly inside-out.',
+      },
+      {
+        q: 'How can I exchange or return if the fit is not right?',
+        a: 'We offer a 7-day complimentary doorstep exchange and return pickup across 19,000+ pincodes.',
+      },
+    ];
+  }, [product]);
 
   useEffect(() => {
     const checkOverflow = () => {
@@ -107,16 +146,10 @@ export default function ProductDetailPage() {
     }, 3200);
   };
 
-  // Add to Bag
+  // Add to Cart
   const handleAddToCart = () => {
     addToCart(product, quantity, `Size: ${selectedSize}`);
-    addToast('success', 'Added to Shopping Bag', `${product.title} (Size: ${selectedSize}) has been added.`);
-  };
-
-  // Instant Buy Now
-  const handleBuyNow = () => {
-    addToCart(product, quantity, `Size: ${selectedSize}`);
-    navigate('/checkout');
+    addToast('success', 'Added to Cart', `${product.title} (Size: ${selectedSize}) has been added.`);
   };
 
   // Toggle Wishlist
@@ -129,18 +162,40 @@ export default function ProductDetailPage() {
     );
   };
 
-  // Share Product Link
-  const handleShare = () => {
-    navigator.clipboard?.writeText(window.location.href);
+  // Native OS Share Modal with Clipboard Fallback
+  const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: product.title,
+      text: `Check out ${product.title} on CartFlow`,
+      url: shareUrl,
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        if (err.name === 'AbortError') return;
+      }
+    }
+
+    navigator.clipboard?.writeText(shareUrl);
     addToast('success', 'Link Copied', 'Product link copied to your clipboard.');
   };
 
-  // Pincode Verification
-  const handleCheckPincode = (e) => {
-    e.preventDefault();
-    if (pincode.length >= 6) {
-      setPincodeChecked(true);
-      addToast('success', 'Pincode Serviceable', `Express delivery available for ${pincode}`);
+  // Scroll smoothly to Reviews section
+  const handleScrollToReviews = () => {
+    const el = document.getElementById('cf-reviews-anchor');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  // Navigate to Saved Addresses or Login
+  const handleAddressAction = () => {
+    if (customer) {
+      navigate('/account?tab=addresses');
+    } else {
+      navigate('/login');
     }
   };
 
@@ -275,29 +330,55 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Product Details & Purchase Form Column */}
+        {/* Product Details & Purchase Form Column (Compact to match 5:6 Image Height) */}
         <div className="cf-pdp-info-col">
           <div className="cf-pdp-cat-row">
-            <span className="cf-pdp-category">{product.category}</span>
-            <span className="cf-pdp-sku">SKU: CF-{product.id}042</span>
+            <div className="cf-pdp-cat-meta">
+              <span className="cf-pdp-category">{product.category}</span>
+              <span className="cf-pdp-sku">SKU: CF-{product.id}042</span>
+            </div>
+
+            <div className="cf-pdp-top-actions">
+              <button
+                type="button"
+                className={`cf-pdp-icon-action-btn ${isWishlisted ? 'is-active' : ''}`}
+                onClick={handleToggleWishlist}
+                title="Save to Wishlist"
+                aria-label="Save to Wishlist"
+              >
+                <Heart size={17} fill={isWishlisted ? 'currentColor' : 'none'} />
+              </button>
+              <button
+                type="button"
+                className="cf-pdp-icon-action-btn"
+                onClick={handleShare}
+                title="Share Product"
+                aria-label="Share Product"
+              >
+                <Share2 size={17} />
+              </button>
+            </div>
           </div>
 
           <h1 className="cf-pdp-title">{product.title}</h1>
 
-          {/* Social Proof & Rating Line */}
-          <div className="cf-pdp-rating-line">
+          {/* Clickable Rating Line -> Smooth Scroll to Reviews */}
+          <button
+            type="button"
+            className="cf-pdp-rating-line cf-pdp-rating-btn"
+            onClick={handleScrollToReviews}
+            title="Jump to Ratings & Reviews"
+          >
             <div className="cf-pdp-stars">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} size={14} fill="var(--cf-accent-warning)" color="var(--cf-accent-warning)" />
               ))}
             </div>
             <span className="cf-pdp-rating-val">{product.rating}</span>
-            <span className="cf-pdp-review-count">({product.reviewCount} verified client reviews)</span>
-            <span className="cf-pdp-rating-sep">•</span>
-            <span className="cf-pdp-recommend-tag">96% recommend fit</span>
-          </div>
+            <span className="cf-pdp-review-count">({product.reviewCount} verified reviews)</span>
+          </button>
 
-          {/* Pricing Row with Strikethrough & Savings Badge */}
+          {/* Pricing Row with Strikethrough, Savings & Stock Urgency */}
           <div className="cf-pdp-price-row">
             <span className="cf-pdp-price">₹{product.price.toLocaleString('en-IN')}</span>
             {product.originalPrice && (
@@ -306,11 +387,14 @@ export default function ProductDetailPage() {
                 <span className="cf-pdp-discount-badge">{discountPercent}% OFF</span>
               </>
             )}
-            <Badge variant="completed" size="sm">IN STOCK</Badge>
+            <span className={`cf-pdp-stock-pill ${isOutOfStock ? 'is-out' : 'is-low'}`}>
+              {isOutOfStock ? 'Out of Stock' : `Only ${stockCount} left`}
+            </span>
           </div>
-          <span className="cf-pdp-tax-notice">Inclusive of all taxes • Complimentary shipping included</span>
+          <span className="cf-pdp-tax-notice">Inclusive of all taxes</span>
 
-          <p className="cf-pdp-short-desc">{product.description}</p>
+          {/* Short Description (Max 20 Words) */}
+          <p className="cf-pdp-short-desc">{shortDescription}</p>
 
           <div className="cf-pdp-divider" />
 
@@ -335,7 +419,7 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Size Selector with Urgency Indicator & Size Chart Modal Trigger */}
+          {/* Size Selector with Size Chart Link */}
           <div className="cf-pdp-selector-group">
             <div className="cf-selector-label-row">
               <span className="cf-selector-label">
@@ -346,7 +430,7 @@ export default function ProductDetailPage() {
                 className="cf-size-guide-link"
                 onClick={() => setSizeModalOpen(true)}
               >
-                <Ruler size={13} /> Size Chart & Measurements
+                <Ruler size={13} /> Size Chart &amp; Measurements
               </button>
             </div>
             <div className="cf-size-chips-row">
@@ -361,18 +445,14 @@ export default function ProductDetailPage() {
                 </button>
               ))}
             </div>
-            <div className="cf-pdp-stock-notice">
-              <Flame size={13} />
-              <span>Only 3 pieces remaining in Size {selectedSize} — High demand drop</span>
-            </div>
           </div>
 
-          {/* Purchase Actions: Quantity, Add to Bag & Instant Buy Now */}
+          {/* Purchase Actions: Quantity & Add to Cart */}
           <div className="cf-pdp-actions-row">
             <div className="cf-pdp-qty-counter">
               <button
                 type="button"
-                disabled={quantity <= 1}
+                disabled={isOutOfStock || quantity <= 1}
                 onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                 aria-label="Decrease quantity"
               >
@@ -381,7 +461,8 @@ export default function ProductDetailPage() {
               <span>{quantity}</span>
               <button
                 type="button"
-                onClick={() => setQuantity((q) => q + 1)}
+                disabled={isOutOfStock || quantity >= stockCount}
+                onClick={() => setQuantity((q) => Math.min(stockCount, q + 1))}
                 aria-label="Increase quantity"
               >
                 <Plus size={14} />
@@ -389,155 +470,146 @@ export default function ProductDetailPage() {
             </div>
 
             <Button
-              variant="secondary"
+              variant="primary"
               size="lg"
               icon={ShoppingBag}
               onClick={handleAddToCart}
+              disabled={isOutOfStock}
               className="cf-pdp-add-cart-btn"
             >
-              Add to Bag
+              {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
             </Button>
-
-            <Button
-              variant="primary"
-              size="lg"
-              iconRight={ArrowRight}
-              onClick={handleBuyNow}
-              className="cf-pdp-buy-now-btn"
-            >
-              Buy Now • ₹{Math.round(product.price * quantity).toLocaleString('en-IN')}
-            </Button>
-
-            <button
-              type="button"
-              className={`cf-pdp-icon-action-btn ${isWishlisted ? 'is-active' : ''}`}
-              onClick={handleToggleWishlist}
-              title="Save to Wardrobe"
-            >
-              <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
-            </button>
-
-            <button
-              type="button"
-              className="cf-pdp-icon-action-btn"
-              onClick={handleShare}
-              title="Share Link"
-            >
-              <Share2 size={18} />
-            </button>
           </div>
 
-          {/* Real-Time Pincode Delivery Estimator */}
-          <div className="cf-pdp-pincode-card">
-            <div className="cf-pincode-title-row">
+          {/* Deliver To Address Card */}
+          <div className="cf-pdp-deliver-card">
+            <div className="cf-deliver-left">
               <MapPin size={16} className="cf-pincode-icon" />
-              <span>Delivery & Doorstep Service Checker</span>
-            </div>
-            <form onSubmit={handleCheckPincode} className="cf-pincode-form">
-              <input
-                type="text"
-                maxLength={6}
-                value={pincode}
-                onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
-                placeholder="Enter 6-digit Pincode"
-                className="cf-pincode-input"
-              />
-              <button type="submit" className="cf-pincode-btn">Check</button>
-            </form>
-            {pincodeChecked && (
-              <div className="cf-pincode-result">
-                <div className="cf-pincode-item">
-                  <Check size={14} />
-                  <span>Express Dispatch: Delivered by <strong>Friday, 28 Nov</strong> to {pincode}</span>
+              {deliveryAddress ? (
+                <div className="cf-deliver-info">
+                  <span className="cf-deliver-label">
+                    Deliver to: <strong>{customer?.name}</strong> ({deliveryAddress.label})
+                  </span>
+                  <span className="cf-deliver-address-txt">{deliveryAddress.line}</span>
                 </div>
-                <div className="cf-pincode-item">
-                  <Check size={14} />
-                  <span>Free 7-Day Doorstep Size Exchange & Pickup</span>
+              ) : (
+                <div className="cf-deliver-info">
+                  <span className="cf-deliver-label">No delivery address selected</span>
+                  <span className="cf-deliver-address-txt">
+                    {customer ? 'Add an address in your profile to proceed.' : 'Sign in to select or add a delivery address.'}
+                  </span>
                 </div>
-                <div className="cf-pincode-item">
-                  <Check size={14} />
-                  <span>Cash on Delivery (COD) Available</span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Garment Details & Accordion Tabs */}
-          <div className="cf-pdp-tabs-container">
-            <div className="cf-pdp-tabs-header">
-              <button
-                type="button"
-                className={`cf-pdp-tab-trigger ${activeTab === 'fabric' ? 'is-active' : ''}`}
-                onClick={() => setActiveTab('fabric')}
-              >
-                Fabric & Heritage
-              </button>
-              <button
-                type="button"
-                className={`cf-pdp-tab-trigger ${activeTab === 'fit' ? 'is-active' : ''}`}
-                onClick={() => setActiveTab('fit')}
-              >
-                Silhouette & Fit
-              </button>
-              <button
-                type="button"
-                className={`cf-pdp-tab-trigger ${activeTab === 'care' ? 'is-active' : ''}`}
-                onClick={() => setActiveTab('care')}
-              >
-                Garment Care
-              </button>
-              <button
-                type="button"
-                className={`cf-pdp-tab-trigger ${activeTab === 'exchange' ? 'is-active' : ''}`}
-                onClick={() => setActiveTab('exchange')}
-              >
-                Doorstep Exchanges
-              </button>
+              )}
             </div>
 
-            <div className="cf-pdp-tab-content">
-              {activeTab === 'fabric' && (
-                <div className="cf-tab-panel">
-                  <ul className="cf-spec-list">
-                    <li><span>Textile:</span> 100% Normandy Flax Linen & Long-Staple Combed Cotton</li>
-                    <li><span>Weave Gauge:</span> 280 GSM Structured Luxury Knitted Drape</li>
-                    <li><span>Hardware:</span> Hand-carved Mother-of-Pearl Troca Shell Buttons</li>
-                    <li><span>Atelier Origin:</span> Woven in Biella, Italy & Handcrafted in Florence</li>
-                  </ul>
-                </div>
-              )}
-              {activeTab === 'fit' && (
-                <div className="cf-tab-panel">
-                  <ul className="cf-spec-list">
-                    <li><span>Cut:</span> Tailored Modern Proportions with Clean Shoulder Drop</li>
-                    <li><span>Collar:</span> Vintage Spread Cuban Lapel Collar with Reinforcement</li>
-                    <li><span>Hem:</span> Straight-cut vented hem engineered to be worn tucked or untucked</li>
-                    <li><span>Fit Advice:</span> True to size. Take your standard size for a sculpted look.</li>
-                  </ul>
-                </div>
-              )}
-              {activeTab === 'care' && (
-                <div className="cf-tab-panel">
-                  <ul className="cf-spec-list">
-                    <li><span>Washing:</span> Machine wash cold on delicate cycle or dry clean for best longevity</li>
-                    <li><span>Drying:</span> Lay flat to dry in shade. Avoid tumble dry to preserve natural fibers</li>
-                    <li><span>Ironing:</span> Warm steam iron inside-out while garment is slightly damp</li>
-                  </ul>
-                </div>
-              )}
-              {activeTab === 'exchange' && (
-                <div className="cf-tab-panel">
-                  <ul className="cf-spec-list">
-                    <li><span>Exchange Window:</span> 7 Days from delivery date</li>
-                    <li><span>Doorstep Service:</span> Courier brings your new size and picks up old piece simultaneously</li>
-                    <li><span>Reverse Shipping:</span> 100% Free doorstep pickup across 19,000+ pan-India pincodes</li>
-                  </ul>
-                </div>
-              )}
-            </div>
+            <button
+              type="button"
+              className="cf-deliver-action-btn"
+              onClick={handleAddressAction}
+            >
+              {deliveryAddress ? 'Change' : 'Add Address'}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* 2B. Full-Width Additional Details, Instructions & FAQ Container */}
+      <section className="cf-pdp-full-details-section">
+        <div className="cf-pdp-tabs-header">
+          <button
+            type="button"
+            className={`cf-pdp-tab-trigger ${activeTab === 'details' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('details')}
+          >
+            Additional Details
+          </button>
+          <button
+            type="button"
+            className={`cf-pdp-tab-trigger ${activeTab === 'instructions' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('instructions')}
+          >
+            Care Instructions
+          </button>
+          <button
+            type="button"
+            className={`cf-pdp-tab-trigger ${activeTab === 'faq' ? 'is-active' : ''}`}
+            onClick={() => setActiveTab('faq')}
+          >
+            FAQs
+          </button>
+        </div>
+
+        <div className="cf-pdp-full-tab-body">
+          {activeTab === 'details' && (
+            <div className="cf-full-details-grid">
+              <div className="cf-full-desc-block">
+                <h3 className="cf-full-block-title">Product Description</h3>
+                {product.description ? (
+                  <p className="cf-full-desc-text">{product.description}</p>
+                ) : (
+                  <div className="cf-pdp-fallback-box">
+                    <Info size={16} />
+                    <span>No detailed description is available for this product yet.</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="cf-full-specs-block">
+                <h3 className="cf-full-block-title">Specifications</h3>
+                <ul className="cf-spec-list">
+                  <li><span>Category:</span> {product.category || 'Menswear'}</li>
+                  <li><span>Textile:</span> 100% Normandy Flax Linen &amp; Long-Staple Combed Cotton</li>
+                  <li><span>Weave Gauge:</span> 280 GSM Structured Luxury Drape</li>
+                  <li><span>Cut &amp; Fit:</span> Tailored Modern Proportions</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'instructions' && (
+            <div className="cf-full-instructions-block">
+              <h3 className="cf-full-block-title">Garment Care &amp; Handling Instructions</h3>
+              <ul className="cf-spec-list">
+                <li><span>Washing:</span> Machine wash cold on delicate cycle or dry clean for best longevity.</li>
+                <li><span>Drying:</span> Lay flat to dry in shade. Avoid tumble dry to preserve natural fibers.</li>
+                <li><span>Ironing:</span> Warm steam iron inside-out while garment is slightly damp.</li>
+                <li><span>Storage:</span> Hang on wide-shouldered wooden hangers to maintain collar and shoulder line.</li>
+              </ul>
+            </div>
+          )}
+
+          {activeTab === 'faq' && (
+            <div className="cf-full-faq-block">
+              <h3 className="cf-full-block-title">Frequently Asked Questions</h3>
+              {productFaqs.length === 0 ? (
+                <div className="cf-pdp-fallback-box">
+                  <HelpCircle size={16} />
+                  <span>No frequently asked questions available for this product yet.</span>
+                </div>
+              ) : (
+                <div className="cf-pdp-faq-list">
+                  {productFaqs.map((item, idx) => {
+                    const isOpen = openFaqIndex === idx;
+                    return (
+                      <div key={idx} className={`cf-pdp-faq-item ${isOpen ? 'is-open' : ''}`}>
+                        <button
+                          type="button"
+                          className="cf-pdp-faq-question"
+                          onClick={() => setOpenFaqIndex(isOpen ? -1 : idx)}
+                        >
+                          <span>{item.q}</span>
+                          <ChevronDown size={16} className="cf-faq-chevron" />
+                        </button>
+                        {isOpen && <p className="cf-pdp-faq-answer">{item.a}</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* 3. Complete The Look / Curated Outfit Pairings */}
       <section className="cf-pdp-complete-look-section">

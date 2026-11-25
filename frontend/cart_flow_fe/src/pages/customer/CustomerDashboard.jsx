@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import {
   User,
   Package,
@@ -99,8 +99,19 @@ export default function CustomerDashboard() {
   const { customer, logoutCustomer } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'profile' | 'addresses' | 'security'
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabParam = searchParams.get('tab');
+    return ['orders', 'profile', 'addresses', 'security'].includes(tabParam) ? tabParam : 'orders';
+  }); // 'orders' | 'profile' | 'addresses' | 'security'
+
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (['orders', 'profile', 'addresses', 'security'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
   const [selectedOrder, setSelectedOrder] = useState(CUSTOMER_ORDERS[0]);
   const [copiedTracking, setCopiedTracking] = useState(false);
 
