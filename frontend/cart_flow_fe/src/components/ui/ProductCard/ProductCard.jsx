@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Eye, Star, Check } from 'lucide-react';
 import Button from '../Button/Button';
 import './ProductCard.css';
@@ -17,6 +17,8 @@ export default function ProductCard({
   isAdded = false,
   className = '',
 }) {
+  const navigate = useNavigate();
+
   if (!product) return null;
 
   const discountPct =
@@ -25,7 +27,10 @@ export default function ProductCard({
       : null;
 
   return (
-    <div className={`cf-product-card-root ${className}`}>
+    <div
+      className={`cf-product-card-root ${className}`}
+      onClick={() => navigate(`/product/${product.id}`)}
+    >
       {/* 1. Media Image Container */}
       <div className="cf-product-card-media">
         {/* Badges Row */}
@@ -69,13 +74,19 @@ export default function ProductCard({
         )}
 
         {/* Hover Action Overlay Buttons */}
-        <div className="cf-product-card-actions">
+        <div
+          className="cf-product-card-actions"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Button
             size="sm"
             variant={isAdded ? 'secondary' : 'primary'}
             icon={isAdded ? Check : ShoppingBag}
             className="cf-product-card-quick-btn"
-            onClick={() => onQuickAdd && onQuickAdd(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onQuickAdd && onQuickAdd(product);
+            }}
           >
             {isAdded ? 'Added' : 'Quick Add'}
           </Button>
