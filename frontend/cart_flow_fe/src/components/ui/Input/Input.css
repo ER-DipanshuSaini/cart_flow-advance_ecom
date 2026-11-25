@@ -38,6 +38,25 @@
   pointer-events: none;
 }
 
+.cf-ui-password-toggle {
+  position: absolute;
+  right: 0.65rem;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  color: var(--cf-text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.cf-ui-password-toggle:hover {
+  color: var(--cf-text-main);
+}
+
 .cf-ui-input,
 .cf-ui-select,
 .cf-ui-textarea {

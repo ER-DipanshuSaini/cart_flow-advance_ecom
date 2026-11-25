@@ -10,6 +10,7 @@ import CheckoutPage from '../pages/store/CheckoutPage';
 import CustomerDashboard from '../pages/customer/CustomerDashboard';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
+import ForgotPasswordPage from '../pages/auth/ForgotPasswordPage';
 import AdminLoginPage from '../pages/auth/AdminLoginPage';
 import ShowcasePage from '../pages/Showcase/ShowcasePage';
 
@@ -32,11 +33,14 @@ export default function AppRoutes() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/account" element={<CustomerDashboard />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
         {/* UI Kit & Component Workshop */}
         <Route path="/components" element={<ShowcasePage />} />
       </Route>
+
+      {/* Standalone Full-Page Auth Routes */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
       {/* 2. Hidden Admin Gate (Direct non-public path with credentials prompt) */}
       <Route path="/admin-portal" element={<AdminLoginPage />} />

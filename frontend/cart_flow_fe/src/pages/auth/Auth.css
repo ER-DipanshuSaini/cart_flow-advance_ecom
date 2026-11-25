@@ -41,9 +41,9 @@
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(0, 45, 92, 0.82) 0%,
-    rgba(0, 63, 127, 0.75) 50%,
-    rgba(5, 10, 20, 0.92) 100%
+    rgba(10, 15, 28, 0.42) 0%,
+    rgba(10, 15, 28, 0.68) 55%,
+    rgba(10, 15, 28, 0.92) 100%
   );
 }
 
@@ -73,25 +73,30 @@
 }
 
 .cf-side-banner-quote-box {
-  max-width: 480px;
+  max-width: 460px;
+}
+
+.cf-side-eyebrow-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(8px);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .cf-side-banner-title {
-  font-size: 2rem;
+  font-size: 1.9rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.25;
-  margin: 1.25rem 0 0.5rem;
+  margin: 1.15rem 0 1.5rem;
   color: #f8fafc;
-}
-
-.cf-side-banner-author {
-  font-size: 0.85rem;
-  color: #93c5fd;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 600;
-  margin-bottom: 2rem;
 }
 
 .cf-side-perks-list {
@@ -136,7 +141,10 @@
 }
 
 .cf-auth-card-top-nav {
-  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
 }
 
 .cf-back-store-link {
@@ -175,7 +183,19 @@
 .cf-auth-inputs-stack {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.15rem;
+}
+
+.cf-auth-name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 520px) {
+  .cf-auth-name-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .cf-auth-meta-options {

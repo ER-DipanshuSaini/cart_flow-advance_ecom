@@ -11,6 +11,7 @@ export { default as Toggle } from './Input/Toggle';
 export { default as Textarea } from './Input/Textarea';
 export { default as Dropdown } from './Input/Dropdown';
 export { default as DatePicker } from './Input/DatePicker';
+export { default as OtpVerification } from './Input/OtpVerification';
 
 // Cards & Display
 export { default as Card, MetricCard } from './Card/Card';
