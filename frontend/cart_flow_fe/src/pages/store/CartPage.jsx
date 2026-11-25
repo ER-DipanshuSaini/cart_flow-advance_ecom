@@ -2,37 +2,63 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
-import { Button, CartItem, OrderSummary, Card } from '../../components/ui';
+import { Button, CartItem, OrderSummary } from '../../components/ui';
 import './StorePages.css';
 
 export default function CartPage() {
-  const { cartItems, updateQuantity, removeFromCart, cartSubtotal, cartCount } = useCart();
+  const {
+    cartItems,
+    updateQuantity,
+    removeFromCart,
+    cartSubtotal,
+    cartCount,
+    appliedCoupon,
+    couponDiscount,
+    applyCoupon,
+    removeCoupon,
+  } = useCart();
   const navigate = useNavigate();
 
   return (
     <div className="cf-store-container cf-cart-page-wrap">
       <div className="cf-cart-page-header">
-        <h1 className="cf-cart-page-title">Shopping Bag</h1>
+        <span className="cf-section-pretitle">CartFlow Atelier</span>
+        <h1 className="cf-cart-page-title">Shopping Cart</h1>
         <p className="cf-cart-page-sub">
-          {cartCount === 0 ? 'Your bag is empty' : `You have ${cartCount} item(s) in your bag`}
+          {cartCount === 0 ? 'Your cart is currently empty' : `You have ${cartCount} item(s) in your cart`}
         </p>
       </div>
 
       {cartItems.length === 0 ? (
-        <Card className="cf-cart-empty-card">
-          <Card.Body style={{ textAlign: 'center', padding: '4rem 1.5rem' }}>
-            <ShoppingBag size={56} style={{ color: 'var(--cf-text-dim)', margin: '0 auto 1rem' }} />
-            <h3 style={{ marginBottom: '0.5rem' }}>Your shopping bag is empty</h3>
-            <p style={{ color: 'var(--cf-text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
-              Explore our new season arrivals and add luxury staples to your order.
-            </p>
-            <Link to="/shop">
-              <Button variant="primary" size="lg" iconRight={ArrowRight}>
-                Explore All Products
-              </Button>
-            </Link>
-          </Card.Body>
-        </Card>
+        <div className="cf-cart-empty-box">
+          <div className="cf-cart-empty-icon-ring">
+            <ShoppingBag size={28} />
+          </div>
+          <h2 className="cf-cart-empty-title">Your shopping cart is empty</h2>
+          <p className="cf-cart-empty-desc">
+            Explore our curated menswear capsules and add tailored essentials to your order.
+          </p>
+          <Link to="/shop" className="cf-cart-empty-cta">
+            <Button variant="primary" size="lg" iconRight={ArrowRight}>
+              Explore Collection
+            </Button>
+          </Link>
+
+          <div className="cf-cart-empty-links">
+            <span className="cf-cart-empty-links-label">Popular Categories:</span>
+            <div className="cf-cart-empty-pills">
+              <Link to="/shop?cat=Knitwear%20%26%20Sweaters" className="cf-cart-empty-pill">
+                Knitwear &amp; Sweaters
+              </Link>
+              <Link to="/shop?cat=Formal%20%26%20Suiting" className="cf-cart-empty-pill">
+                Formal &amp; Suiting
+              </Link>
+              <Link to="/shop?cat=Co-Ords" className="cf-cart-empty-pill">
+                Co-Ords
+              </Link>
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="cf-cart-layout-grid">
           {/* Items List */}
@@ -64,9 +90,12 @@ export default function CartPage() {
           <div className="cf-cart-summary-column">
             <OrderSummary
               subtotal={cartSubtotal}
-              shipping={cartSubtotal > 150 ? 0 : 15.0}
-              tax={cartSubtotal * 0.08}
-              discount={0}
+              shipping={cartSubtotal >= 1999 ? 0 : 99}
+              tax={cartSubtotal * 0.05}
+              discount={couponDiscount}
+              appliedCoupon={appliedCoupon}
+              onApplyCoupon={applyCoupon}
+              onRemoveCoupon={removeCoupon}
               onCheckout={() => navigate('/checkout')}
             />
           </div>

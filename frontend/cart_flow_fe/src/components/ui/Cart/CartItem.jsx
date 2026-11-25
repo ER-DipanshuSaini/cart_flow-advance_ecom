@@ -30,7 +30,7 @@ export default function CartItem({
           <button
             type="button"
             className="cf-cart-item-remove"
-            onClick={() => onRemove && onRemove(id)}
+            onClick={() => onRemove && onRemove(id, variant)}
             title="Remove item"
           >
             <Trash2 size={15} />
@@ -46,7 +46,7 @@ export default function CartItem({
               type="button"
               className="cf-qty-btn"
               disabled={quantity <= 1}
-              onClick={() => onQuantityChange && onQuantityChange(id, quantity - 1)}
+              onClick={() => onQuantityChange && onQuantityChange(id, quantity - 1, variant)}
             >
               <Minus size={13} />
             </button>
@@ -54,7 +54,7 @@ export default function CartItem({
             <button
               type="button"
               className="cf-qty-btn"
-              onClick={() => onQuantityChange && onQuantityChange(id, quantity + 1)}
+              onClick={() => onQuantityChange && onQuantityChange(id, quantity + 1, variant)}
             >
               <Plus size={13} />
             </button>

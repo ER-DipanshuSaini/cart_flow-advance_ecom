@@ -1886,6 +1886,98 @@
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--cf-text-main);
+  margin: 0.2rem 0 0.3rem;
+}
+
+.cf-cart-empty-box {
+  width: 100%;
+  margin: 1.5rem 0 2rem;
+  padding: 3.5rem 2rem;
+  border-radius: var(--cf-radius-lg);
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  box-shadow: var(--cf-shadow-card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cf-cart-empty-icon-ring {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--cf-accent-primary-tint);
+  color: var(--cf-accent-primary);
+  border: 1px solid rgba(0, 63, 127, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.cf-cart-empty-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+  margin: 0 0 0.5rem;
+}
+
+.cf-cart-empty-desc {
+  font-size: 0.9rem;
+  color: var(--cf-text-muted);
+  line-height: 1.55;
+  max-width: 400px;
+  margin: 0 0 1.75rem;
+}
+
+.cf-cart-empty-cta {
+  text-decoration: none;
+}
+
+.cf-cart-empty-links {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--cf-border-subtle);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.cf-cart-empty-links-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cf-text-dim);
+}
+
+.cf-cart-empty-pills {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cf-cart-empty-pill {
+  padding: 6px 14px;
+  border-radius: var(--cf-radius-pill);
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-body);
+  color: var(--cf-text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+
+.cf-cart-empty-pill:hover {
+  border-color: var(--cf-accent-primary);
+  color: var(--cf-accent-primary);
+  background-color: var(--cf-accent-primary-tint);
 }
 
 .cf-cart-page-sub {

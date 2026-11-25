@@ -1,12 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Drawer, CartItem, Button, Badge } from '../components/ui';
-import { ShoppingBag, ArrowRight } from 'lucide-react';
+import { ShoppingBag, ArrowRight, Tag, X } from 'lucide-react';
 
 export function CartDrawer() {
-  const { cartItems, isCartOpen, closeCart, updateQuantity, removeFromCart, cartSubtotal, cartCount } = useCart();
+
+  const {
+    cartItems,
+    isCartOpen,
+    closeCart,
+    updateQuantity,
+    removeFromCart,
+    cartSubtotal,
+    cartCount,
+    appliedCoupon,
+    couponDiscount,
+    applyCoupon,
+    removeCoupon,
+  } = useCart();
   const navigate = useNavigate();
+  const [couponInput, setCouponInput] = useState('');
+  const [couponError, setCouponError] = useState('');
+
+  const handleApplyCoupon = (e) => {
+    e.preventDefault();
+    const res = applyCoupon(couponInput);
+    if (!res.ok) {
+      setCouponError(res.message);
+    } else {
+      setCouponError('');
+      setCouponInput('');
+    }
+  };
+
+  const finalTotal = Math.max(0, cartSubtotal - couponDiscount);
 
   const handleCheckout = () => {
     closeCart();
@@ -33,10 +61,87 @@ export function CartDrawer() {
       footer={
         cartCount > 0 && (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', marginBottom: '6px' }}>
+            {/* Apply Coupon Section */}
+            <div style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid var(--cf-border-subtle)' }}>
+              {appliedCoupon ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.25)',
+                    fontSize: '0.8rem',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#059669', fontWeight: 600 }}>
+                    <Tag size={14} />
+                    <span>{appliedCoupon.code} ({appliedCoupon.label}) applied</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removeCoupon}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#059669',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      padding: '2px',
+                    }}
+                    title="Remove coupon"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleApplyCoupon} style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    value={couponInput}
+                    onChange={(e) => {
+                      setCouponInput(e.target.value);
+                      if (couponError) setCouponError('');
+                    }}
+                    placeholder="Coupon code (e.g. CARTFLOW10)"
+                    style={{
+                      flex: 1,
+                      height: '36px',
+                      padding: '0 12px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--cf-border-subtle)',
+                      backgroundColor: 'var(--cf-bg-input)',
+                      color: 'var(--cf-text-main)',
+                      fontSize: '0.82rem',
+                      outline: 'none',
+                    }}
+                  />
+                  <Button type="submit" variant="secondary" size="sm">
+                    Apply
+                  </Button>
+                </form>
+              )}
+              {couponError && (
+                <div style={{ color: '#ef4444', fontSize: '0.73rem', marginTop: '5px' }}>
+                  {couponError}
+                </div>
+              )}
+            </div>
+
+            {couponDiscount > 0 && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', marginBottom: '4px', color: '#059669' }}>
+                <span>Coupon Discount:</span>
+                <span>-₹{Math.round(couponDiscount).toLocaleString('en-IN')}</span>
+              </div>
+            )}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem', marginBottom: '10px' }}>
               <span style={{ color: 'var(--cf-text-muted)' }}>Estimated Subtotal:</span>
               <span style={{ color: 'var(--cf-accent-primary)', fontSize: '1.2rem', fontWeight: '700' }}>
-                ₹{Math.round(cartSubtotal).toLocaleString('en-IN')}
+                ₹{Math.round(finalTotal).toLocaleString('en-IN')}
               </span>
             </div>
 

@@ -23,6 +23,15 @@ export function CartProvider({ children }) {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  const [appliedCoupon, setAppliedCoupon] = useState(() => {
+    try {
+      const saved = localStorage.getItem('cf_coupon');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
   useEffect(() => {
     try {
       localStorage.setItem('cf_cart', JSON.stringify(cartItems));
@@ -30,6 +39,18 @@ export function CartProvider({ children }) {
       // storage disabled
     }
   }, [cartItems]);
+
+  useEffect(() => {
+    try {
+      if (appliedCoupon) {
+        localStorage.setItem('cf_coupon', JSON.stringify(appliedCoupon));
+      } else {
+        localStorage.removeItem('cf_coupon');
+      }
+    } catch {
+      // storage disabled
+    }
+  }, [appliedCoupon]);
 
   const addToCart = (product, quantity = 1, variant = 'Standard') => {
     setCartItems((prev) => {
@@ -56,22 +77,53 @@ export function CartProvider({ children }) {
     setIsCartOpen(true); // Auto-open right slide drawer
   };
 
-  const removeFromCart = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  const removeFromCart = (id, variant) => {
+    setCartItems((prev) =>
+      prev.filter((item) =>
+        variant !== undefined ? !(item.id === id && item.variant === variant) : item.id !== id
+      )
+    );
   };
 
-  const updateQuantity = (id, quantity) => {
+  const updateQuantity = (id, quantity, variant) => {
     if (quantity <= 0) {
-      removeFromCart(id);
+      removeFromCart(id, variant);
       return;
     }
     setCartItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+      prev.map((item) =>
+        item.id === id && (variant === undefined || item.variant === variant)
+          ? { ...item, quantity }
+          : item
+      )
     );
   };
 
   const clearCart = () => {
     setCartItems([]);
+    setAppliedCoupon(null);
+  };
+
+  const applyCoupon = (rawCode) => {
+    const code = (rawCode || '').trim().toUpperCase();
+    if (!code) return { ok: false, message: 'Please enter a coupon code.' };
+
+    const COUPONS = {
+      CARTFLOW10: { code: 'CARTFLOW10', type: 'percent', value: 10, label: '10% Off' },
+      VIP20: { code: 'VIP20', type: 'percent', value: 20, label: '20% VIP Off' },
+      WELCOME500: { code: 'WELCOME500', type: 'flat', value: 500, label: '₹500 Off' },
+    };
+
+    const found = COUPONS[code];
+    if (!found) {
+      return { ok: false, message: 'Invalid coupon. Try CARTFLOW10, VIP20, or WELCOME500.' };
+    }
+    setAppliedCoupon(found);
+    return { ok: true, coupon: found };
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
   };
 
   const openCart = () => setIsCartOpen(true);
@@ -80,6 +132,12 @@ export function CartProvider({ children }) {
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const cartSubtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  const couponDiscount = appliedCoupon
+    ? appliedCoupon.type === 'percent'
+      ? Math.round((cartSubtotal * appliedCoupon.value) / 100)
+      : Math.min(cartSubtotal, appliedCoupon.value)
+    : 0;
 
   return (
     <CartContext.Provider
@@ -95,6 +153,10 @@ export function CartProvider({ children }) {
         toggleCart,
         cartCount,
         cartSubtotal,
+        appliedCoupon,
+        couponDiscount,
+        applyCoupon,
+        removeCoupon,
       }}
     >
       {children}
