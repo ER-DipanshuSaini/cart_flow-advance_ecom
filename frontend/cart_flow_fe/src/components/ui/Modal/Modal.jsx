@@ -1,53 +1,87 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
-import Button from '../Button/Button';
 import './Modal.css';
 
+const SIZE_MAP = {
+  sm: '420px',
+  md: '540px',
+  lg: '720px',
+  xl: '880px',
+};
+
 /**
- * Reusable Modal / Dialog Component
+ * Reusable Luxury Modal / Dialog Component
  */
 export default function Modal({
   isOpen,
   onClose,
   title,
   subtitle,
+  eyebrow,
+  icon: Icon,
   children,
   footer,
-  maxWidth = '520px',
+  size = 'md',
+  maxWidth,
   closeOnEsc = true,
   className = '',
 }) {
   useEffect(() => {
-    if (!closeOnEsc || !isOpen) return;
+    if (!isOpen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (closeOnEsc && e.key === 'Escape') onClose?.();
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isOpen, closeOnEsc, onClose]);
 
   if (!isOpen) return null;
 
+  const resolvedMaxWidth = maxWidth || SIZE_MAP[size] || SIZE_MAP.md;
+
   return (
-    <div className="cf-ui-modal-overlay" onClick={onClose}>
+    <div
+      className="cf-ui-modal-overlay"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
       <div
         className={`cf-ui-modal-container ${className}`}
-        style={{ maxWidth }}
+        style={{ maxWidth: resolvedMaxWidth }}
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="cf-ui-modal-drag-pill" aria-hidden="true" />
+
         {/* Modal Header */}
         <div className="cf-ui-modal-header">
-          <div>
-            {title && <h3 className="cf-ui-modal-title">{title}</h3>}
-            {subtitle && <p className="cf-ui-modal-subtitle">{subtitle}</p>}
+          <div className="cf-ui-modal-header-left">
+            {Icon && (
+              <div className="cf-ui-modal-icon-badge">
+                <Icon size={18} />
+              </div>
+            )}
+            <div className="cf-ui-modal-titles">
+              {eyebrow && <span className="cf-ui-modal-eyebrow">{eyebrow}</span>}
+              {title && <h3 className="cf-ui-modal-title">{title}</h3>}
+              {subtitle && <p className="cf-ui-modal-subtitle">{subtitle}</p>}
+            </div>
           </div>
+
           <button
             type="button"
             className="cf-ui-modal-close"
             onClick={onClose}
             aria-label="Close modal"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
         </div>
 
