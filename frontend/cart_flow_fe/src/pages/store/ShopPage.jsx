@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Search, ShoppingBag, Eye, Star, Filter, X, SlidersHorizontal, Grid3X3, LayoutGrid, Check } from 'lucide-react';
+import { Search, Filter, X, Grid3X3, LayoutGrid, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PRODUCTS, CATEGORIES } from '../../data/products';
 import { useCart } from '../../context/CartContext';
-import { Button, Input, Dropdown, Pagination, Badge, ProductCard } from '../../components/ui';
+import { Button, Input, Dropdown, ProductCard } from '../../components/ui';
 import './StorePages.css';
 
 export default function ShopPage() {
@@ -13,19 +13,37 @@ export default function ShopPage() {
 
   const [searchFilter, setSearchFilter] = useState(urlQuery);
   const [priceRange, setPriceRange] = useState('all');
+  const [sizeFilter, setSizeFilter] = useState('all');
+  const [ratingFilter, setRatingFilter] = useState('all');
+  const [stockFilter, setStockFilter] = useState('all');
   const [sortBy, setSortBy] = useState('featured');
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8); // 8 items = 2 rows of 4
+  const pageSize = 8; // 8 items = 2 rows of 4
   const [gridColumns, setGridColumns] = useState(4); // 4 or 3
   const [addedItemNotice, setAddedItemNotice] = useState(null);
 
   const { addToCart } = useCart();
 
+  useEffect(() => {
+    setSearchFilter(urlQuery);
+    setCurrentPage(1);
+  }, [urlQuery]);
+
+  // Unique sizes across all products for filter dropdown
+  const availableSizes = useMemo(() => {
+    const sizeSet = new Set();
+    PRODUCTS.forEach((p) => (p.sizes || []).forEach((s) => sizeSet.add(s)));
+    return [
+      { label: 'All Sizes', value: 'all' },
+      ...Array.from(sizeSet).map((s) => ({ label: `Size: ${s}`, value: s })),
+    ];
+  }, []);
+
   // Filter & Sort Logic
   const filteredProducts = useMemo(() => {
     let list = [...PRODUCTS];
 
-    // Category filter
+    // Catalog / Category filter
     if (activeCategory !== 'all') {
       list = list.filter((p) => p.category.toLowerCase() === activeCategory.toLowerCase());
     }
@@ -39,6 +57,25 @@ export default function ShopPage() {
           p.category.toLowerCase().includes(q) ||
           p.description.toLowerCase().includes(q)
       );
+    }
+
+    // Size filter
+    if (sizeFilter !== 'all') {
+      list = list.filter((p) => (p.sizes || []).includes(sizeFilter));
+    }
+
+    // Rating filter
+    if (ratingFilter === '4.8') {
+      list = list.filter((p) => p.rating >= 4.8);
+    } else if (ratingFilter === '4.5') {
+      list = list.filter((p) => p.rating >= 4.5);
+    }
+
+    // Availability & Offer filter
+    if (stockFilter === 'in-stock') {
+      list = list.filter((p) => p.inStock !== false);
+    } else if (stockFilter === 'on-sale') {
+      list = list.filter((p) => p.originalPrice && p.originalPrice > p.price);
     }
 
     // Price range filter
@@ -62,7 +99,7 @@ export default function ShopPage() {
     }
 
     return list;
-  }, [activeCategory, searchFilter, priceRange, sortBy]);
+  }, [activeCategory, searchFilter, sizeFilter, ratingFilter, stockFilter, priceRange, sortBy]);
 
   const paginatedList = filteredProducts.slice(
     (currentPage - 1) * pageSize,
@@ -81,9 +118,13 @@ export default function ShopPage() {
 
   const clearAllFilters = () => {
     searchParams.delete('cat');
+    searchParams.delete('q');
     setSearchParams(searchParams);
     setSearchFilter('');
     setPriceRange('all');
+    setSizeFilter('all');
+    setRatingFilter('all');
+    setStockFilter('all');
     setSortBy('featured');
     setCurrentPage(1);
   };
@@ -96,7 +137,13 @@ export default function ShopPage() {
     }, 1800);
   };
 
-  const hasActiveFilters = activeCategory !== 'all' || searchFilter.trim() !== '' || priceRange !== 'all';
+  const hasActiveFilters =
+    activeCategory !== 'all' ||
+    searchFilter.trim() !== '' ||
+    priceRange !== 'all' ||
+    sizeFilter !== 'all' ||
+    ratingFilter !== 'all' ||
+    stockFilter !== 'all';
 
   return (
     <div className="cf-store-container cf-shop-page-wrap">
@@ -105,7 +152,7 @@ export default function ShopPage() {
         <div className="cf-shop-breadcrumb">
           <Link to="/">Home</Link>
           <span className="cf-bc-separator">/</span>
-          <span>Catalog</span>
+          <Link to="/shop">Shop</Link>
           {activeCategory !== 'all' && (
             <>
               <span className="cf-bc-separator">/</span>
@@ -113,22 +160,20 @@ export default function ShopPage() {
             </>
           )}
         </div>
-        
+
         <div className="cf-shop-header-row">
           <div>
             <h1 className="cf-shop-page-title">
-              {activeCategory === 'all' ? 'Ready-to-Wear Catalog' : activeCategory}
+              {activeCategory === 'all' ? 'All Products' : activeCategory}
             </h1>
             <p className="cf-shop-page-subtitle">
-              Showing {filteredProducts.length} curated luxury garments engineered for modern wardrobes.
+              Showing {filteredProducts.length} curated garments engineered for modern wardrobes.
             </p>
           </div>
 
-          <div className="cf-shop-stats-pills">
-            <span className="cf-stat-tag">Imperial Navy #003F7F Accent</span>
-            <span className="cf-stat-tag">4-Column Grid</span>
-            <span className="cf-stat-tag">Snitch Aesthetic</span>
-          </div>
+          <Link to="/catalog" className="cf-section-view-all">
+            Browse All Catalogs <ArrowRight size={14} />
+          </Link>
         </div>
       </div>
 
@@ -182,8 +227,58 @@ export default function ShopPage() {
           )}
         </div>
 
-        {/* Right Controls: Price filter, Sorting, Grid switch */}
+        {/* Right Controls: Size, Rating, Availability, Price, Sorting, Grid switch */}
         <div className="cf-shop-right-controls">
+          {/* Size Filter Dropdown */}
+          <div className="cf-filter-dropdown-wrap">
+            <Dropdown
+              options={availableSizes}
+              value={sizeFilter}
+              onChange={(val) => {
+                setSizeFilter(val);
+                setCurrentPage(1);
+              }}
+              searchable={false}
+              className="cf-shop-filter-dropdown"
+            />
+          </div>
+
+          {/* Rating Filter Dropdown */}
+          <div className="cf-filter-dropdown-wrap">
+            <Dropdown
+              options={[
+                { label: 'All Ratings', value: 'all' },
+                { label: '4.8 ★ & above', value: '4.8' },
+                { label: '4.5 ★ & above', value: '4.5' },
+              ]}
+              value={ratingFilter}
+              onChange={(val) => {
+                setRatingFilter(val);
+                setCurrentPage(1);
+              }}
+              searchable={false}
+              className="cf-shop-filter-dropdown"
+            />
+          </div>
+
+          {/* Availability / Offers Filter */}
+          <div className="cf-filter-dropdown-wrap">
+            <Dropdown
+              options={[
+                { label: 'All Availability', value: 'all' },
+                { label: 'In Stock Only', value: 'in-stock' },
+                { label: 'On Sale / Offers', value: 'on-sale' },
+              ]}
+              value={stockFilter}
+              onChange={(val) => {
+                setStockFilter(val);
+                setCurrentPage(1);
+              }}
+              searchable={false}
+              className="cf-shop-filter-dropdown"
+            />
+          </div>
+
           {/* Price Range Dropdown */}
           <div className="cf-filter-dropdown-wrap">
             <Dropdown
@@ -249,10 +344,49 @@ export default function ShopPage() {
 
           {activeCategory !== 'all' && (
             <span className="cf-active-chip">
-              Category: {activeCategory}
+              Catalog: {activeCategory}
               <button
                 type="button"
                 onClick={() => handleCategoryChange('all')}
+                className="cf-chip-remove"
+              >
+                <X size={12} />
+              </button>
+            </span>
+          )}
+
+          {sizeFilter !== 'all' && (
+            <span className="cf-active-chip">
+              Size: {sizeFilter}
+              <button
+                type="button"
+                onClick={() => setSizeFilter('all')}
+                className="cf-chip-remove"
+              >
+                <X size={12} />
+              </button>
+            </span>
+          )}
+
+          {ratingFilter !== 'all' && (
+            <span className="cf-active-chip">
+              Rating: {ratingFilter} ★ &amp; up
+              <button
+                type="button"
+                onClick={() => setRatingFilter('all')}
+                className="cf-chip-remove"
+              >
+                <X size={12} />
+              </button>
+            </span>
+          )}
+
+          {stockFilter !== 'all' && (
+            <span className="cf-active-chip">
+              {stockFilter === 'on-sale' ? 'On Sale' : 'In Stock'}
+              <button
+                type="button"
+                onClick={() => setStockFilter('all')}
                 className="cf-chip-remove"
               >
                 <X size={12} />
@@ -321,20 +455,61 @@ export default function ShopPage() {
         </div>
       )}
 
-      {/* Pagination Strip */}
-      {filteredProducts.length > pageSize && (
-        <div className="cf-shop-pagination-wrap">
-          <Pagination
-            currentPage={currentPage}
-            pageSize={pageSize}
-            totalItems={filteredProducts.length}
-            onPageChange={(page) => {
-              setCurrentPage(page);
-              window.scrollTo({ top: 120, behavior: 'smooth' });
-            }}
-          />
-        </div>
-      )}
+      {/* Storefront Pagination Bar */}
+      {filteredProducts.length > pageSize && (() => {
+        const totalPages = Math.ceil(filteredProducts.length / pageSize);
+        const startItem = (currentPage - 1) * pageSize + 1;
+        const endItem = Math.min(currentPage * pageSize, filteredProducts.length);
+        const goToPage = (page) => {
+          setCurrentPage(page);
+          window.scrollTo({ top: 120, behavior: 'smooth' });
+        };
+
+        return (
+          <div className="cf-shop-pagination-bar">
+            <span className="cf-shop-pagination-status">
+              Showing <strong>{startItem}</strong> to <strong>{endItem}</strong> of{' '}
+              <strong>{filteredProducts.length}</strong> products
+            </span>
+
+            <div className="cf-shop-pagination-controls">
+              <button
+                type="button"
+                className="cf-shop-page-btn"
+                disabled={currentPage <= 1}
+                onClick={() => goToPage(currentPage - 1)}
+              >
+                <ChevronLeft size={15} /> Prev
+              </button>
+
+              <div className="cf-shop-page-numbers">
+                {[...Array(totalPages)].map((_, idx) => {
+                  const pageNum = idx + 1;
+                  return (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      className={`cf-shop-page-num ${pageNum === currentPage ? 'is-active' : ''}`}
+                      onClick={() => goToPage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                className="cf-shop-page-btn"
+                disabled={currentPage >= totalPages}
+                onClick={() => goToPage(currentPage + 1)}
+              >
+                Next <ChevronRight size={15} />
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

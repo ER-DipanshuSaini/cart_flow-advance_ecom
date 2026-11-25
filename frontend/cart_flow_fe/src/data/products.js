@@ -181,12 +181,15 @@ export const PRODUCTS = [
   },
 ];
 
+
+
 export const CATEGORIES = [
   { id: 'all', name: 'All Drops', count: 12 },
-  { id: 'old-money', name: 'Old Money', count: 3 },
+  { id: 'old-money', name: 'Old Money', count: 1 },
   { id: 'knitwear', name: 'Knitwear & Sweaters', count: 2 },
   { id: 'formal', name: 'Formal & Suiting', count: 3 },
   { id: 'linen', name: 'Linen & Resort', count: 2 },
   { id: 'trousers', name: 'Trousers', count: 1 },
   { id: 'coords', name: 'Co-Ords', count: 2 },
+  { id: 'footwear', name: 'Footwear', count: 1 },
 ];

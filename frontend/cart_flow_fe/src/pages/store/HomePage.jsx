@@ -188,8 +188,9 @@ export default function HomePage() {
             <span className="cf-section-pretitle">The Wardrobe Edit</span>
             <h2 className="cf-section-headline">Shop by Catalog</h2>
           </div>
-          <Link to="/shop" className="cf-section-view-all">
-            Browse All Drops <ArrowRight size={14} />
+
+          <Link to="/catalog" className="cf-section-view-all">
+            Browse All Catalogs <ArrowRight size={14} />
           </Link>
         </div>
 

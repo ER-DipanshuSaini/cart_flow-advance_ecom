@@ -10,8 +10,6 @@
   background-color: #09090b;
 }
 
-
-
 .cf-snitch-hero-media {
   position: absolute;
   inset: 0;
@@ -451,26 +449,6 @@
   line-height: 1.5;
 }
 
-.cf-shop-stats-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.cf-stat-tag {
-  display: inline-flex;
-  align-items: center;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: var(--cf-radius-pill);
-  background: var(--cf-bg-surface);
-  border: 1px solid var(--cf-border-subtle);
-  color: var(--cf-text-dim);
-}
-
 /* Category Pills Row */
 .cf-category-pills-row {
   display: flex;
@@ -726,13 +704,149 @@
 }
 
 /* Pagination Strip */
-.cf-shop-pagination-wrap {
-  margin-top: 3.5rem;
+.cf-shop-pagination-bar {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--cf-border-subtle);
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cf-shop-pagination-status {
+  font-size: 0.82rem;
+  color: var(--cf-text-dim);
+}
+
+.cf-shop-pagination-status strong {
+  color: var(--cf-text-main);
+}
+
+.cf-shop-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cf-shop-page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--cf-radius-pill);
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-text-main);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.cf-shop-page-btn:hover:not(:disabled) {
+  border-color: var(--cf-accent-primary);
+  color: var(--cf-accent-primary);
+}
+
+.cf-shop-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cf-shop-page-numbers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cf-shop-page-num {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.cf-shop-page-num:hover {
+  border-color: var(--cf-text-main);
+  color: var(--cf-text-main);
+}
+
+.cf-shop-page-num.is-active {
+  background-color: var(--cf-accent-primary);
+  border-color: var(--cf-accent-primary);
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 3px 10px var(--cf-accent-primary-glow);
 }
 
 /* Product Detail Page (PDP) */
+/* ==========================================================================
+   Dedicated Catalogs Page (/catalog)
+   ========================================================================== */
+.cf-catalog-page-wrap {
+  padding-top: 2rem;
+  padding-bottom: 5rem;
+}
+
+.cf-catalog-search-bar {
+  margin-bottom: 1.75rem;
+  max-width: 380px;
+}
+
+.cf-catalogs-page-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.75rem;
+}
+
+@media (min-width: 560px) {
+  .cf-catalogs-page-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 900px) {
+  .cf-catalogs-page-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1180px) {
+  .cf-catalogs-page-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.cf-catalog-archive-body {
+  padding-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.cf-catalog-archive-desc {
+  font-size: 0.8rem;
+  color: var(--cf-text-muted);
+  line-height: 1.45;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* ==========================================================================
    Full Luxury Product Detail Page (PDP) Experience
    ========================================================================== */

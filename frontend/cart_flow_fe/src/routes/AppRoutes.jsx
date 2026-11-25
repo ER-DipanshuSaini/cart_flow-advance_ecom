@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import StorefrontLayout from '../layouts/StorefrontLayout';
 import HomePage from '../pages/store/HomePage';
 import ShopPage from '../pages/store/ShopPage';
+import CatalogPage from '../pages/store/CatalogPage';
 import ProductDetailPage from '../pages/store/ProductDetailPage';
 import CartPage from '../pages/store/CartPage';
 import CheckoutPage from '../pages/store/CheckoutPage';
@@ -26,6 +27,7 @@ export default function AppRoutes() {
       <Route element={<StorefrontLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
+        <Route path="/catalog" element={<CatalogPage />} />
         <Route path="/product/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />

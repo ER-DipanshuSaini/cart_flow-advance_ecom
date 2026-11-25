@@ -123,7 +123,8 @@ export function Navbar() {
           {/* Desktop Navigation Links with Snitch/Flipkart Mega Menu Trigger */}
           <div className="cf-desktop-nav">
             <Link to="/" className="cf-nav-link">Home</Link>
-            <Link to="/shop" className="cf-nav-link">All Drops</Link>
+            <Link to="/shop" className="cf-nav-link">Shop</Link>
+            <Link to="/catalog" className="cf-nav-link">Catalogs</Link>
 
             {/* Collections Mega Menu Trigger */}
             <div
