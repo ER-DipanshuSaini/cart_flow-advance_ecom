@@ -9,9 +9,10 @@
   align-items: center;
 }
 
+
 .cf-cart-item-img-wrap {
-  width: 72px;
-  height: 84px;
+  width: 70px;
+  aspect-ratio: 5 / 6;
   flex-shrink: 0;
   border-radius: var(--cf-radius-sm);
   overflow: hidden;

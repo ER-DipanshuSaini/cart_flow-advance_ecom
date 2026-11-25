@@ -8,8 +8,8 @@
   border-radius: var(--cf-radius-md);
   overflow: hidden;
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.25s ease,
-              box-shadow 0.25s ease;
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .cf-product-card-root:hover {
@@ -18,11 +18,12 @@
   box-shadow: var(--cf-shadow-card);
 }
 
+
 /* Image Media Box */
 .cf-product-card-media {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 5 / 6;
   overflow: hidden;
   background-color: var(--cf-bg-elevated);
 }

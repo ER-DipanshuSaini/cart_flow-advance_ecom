@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
   Star,
@@ -13,14 +13,16 @@ import {
   Share2,
   Ruler,
   Check,
+  ChevronUp,
   ChevronDown,
-  Sparkles,
   MapPin,
   Flame,
   Award,
   Feather,
   Zap,
-  ChevronRight
+  ChevronLeft,
+  ChevronRight,
+  Maximize2
 } from 'lucide-react';
 import { PRODUCTS } from '../../data/products';
 import { useCart } from '../../context/CartContext';
@@ -38,15 +40,31 @@ export default function ProductDetailPage() {
 
   // Gallery Images (High-Resolution Multi-Angle Views)
   const galleryImages = useMemo(() => {
-    return [
+    const baseImages = [
       product.imageUrl,
       'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1000&q=85',
       'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=1000&q=85',
-      'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1000&q=85'
+      'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1000&q=85',
     ];
+
+    if (product.id === 1 || product.id === 2) {
+      return [
+        ...baseImages,
+        'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=1000&q=85',
+        'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1000&q=85',
+        'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=1000&q=85',
+        'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1000&q=85',
+      ];
+    }
+
+    return baseImages;
   }, [product]);
 
   const [activeImgIndex, setActiveImgIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveImgIndex(0);
+  }, [id]);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || '#111');
   const [quantity, setQuantity] = useState(1);
@@ -54,8 +72,31 @@ export default function ProductDetailPage() {
   const [pincode, setPincode] = useState('110001');
   const [pincodeChecked, setPincodeChecked] = useState(true);
   const [sizeModalOpen, setSizeModalOpen] = useState(false);
+  const [fullViewOpen, setFullViewOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('fabric');
   const [toasts, setToasts] = useState([]);
+  const [thumbsOverflow, setThumbsOverflow] = useState(false);
+  const thumbsListRef = useRef(null);
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      const el = thumbsListRef.current;
+      if (!el) return;
+      const isVertical = window.innerWidth >= 640;
+      setThumbsOverflow(
+        isVertical ? el.scrollHeight > el.clientHeight + 2 : el.scrollWidth > el.clientWidth + 2
+      );
+    };
+    checkOverflow();
+    window.addEventListener('resize', checkOverflow);
+    return () => window.removeEventListener('resize', checkOverflow);
+  }, [galleryImages]);
+
+  const scrollThumbnails = (direction) => {
+    if (!thumbsListRef.current) return;
+    const offset = direction === 'up' ? -150 : 150;
+    thumbsListRef.current.scrollBy({ top: offset, left: offset, behavior: 'smooth' });
+  };
 
   // Toast notifier
   const addToast = (type, title, message) => {
@@ -133,32 +174,104 @@ export default function ProductDetailPage() {
 
       {/* 2. Main Product Showcase Grid */}
       <div className="cf-pdp-grid">
-        {/* Gallery Column: Vertical Thumbnail Strip + High-Res Zoomable Hero */}
+        {/* Gallery Column: Vertical Thumbnail Strip (slider only on overflow) + Natural-Fit Hero */}
         <div className="cf-pdp-gallery-col">
-          <div className="cf-pdp-thumbnails">
-            {galleryImages.map((img, idx) => (
+          <div className="cf-pdp-thumbs-slider-col">
+            {thumbsOverflow && (
               <button
-                key={idx}
                 type="button"
-                className={`cf-pdp-thumb-btn ${idx === activeImgIndex ? 'is-active' : ''}`}
-                onClick={() => setActiveImgIndex(idx)}
-                aria-label={`View photo ${idx + 1}`}
+                className="cf-pdp-thumb-nav-btn"
+                onClick={() => scrollThumbnails('up')}
+                aria-label="Scroll thumbnails up"
               >
-                <img src={img} alt={`Angle ${idx + 1}`} />
+                <ChevronUp size={15} />
               </button>
-            ))}
+            )}
+
+            <div className="cf-pdp-thumbnails" ref={thumbsListRef}>
+              {galleryImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`cf-pdp-thumb-btn ${idx === activeImgIndex ? 'is-active' : ''}`}
+                  onClick={() => setActiveImgIndex(idx)}
+                  aria-label={`View photo ${idx + 1}`}
+                >
+                  <img src={img} alt={`Angle ${idx + 1}`} />
+                </button>
+              ))}
+            </div>
+
+            {thumbsOverflow && (
+              <button
+                type="button"
+                className="cf-pdp-thumb-nav-btn"
+                onClick={() => scrollThumbnails('down')}
+                aria-label="Scroll thumbnails down"
+              >
+                <ChevronDown size={15} />
+              </button>
+            )}
           </div>
 
-          <div className="cf-pdp-main-img-box">
-            <img
-              src={galleryImages[activeImgIndex]}
-              alt={product.title}
-              className="cf-pdp-hero-image"
-            />
-            {product.badge && <span className="cf-pdp-badge-tag">{product.badge}</span>}
-            <span className="cf-pdp-limited-batch-pill">
-              <Sparkles size={12} /> BATCH: 250 UNITS
-            </span>
+          <div className="cf-pdp-main-stage-wrap">
+            <div className="cf-pdp-main-img-box">
+              <img
+                src={galleryImages[activeImgIndex]}
+                alt={product.title}
+                className="cf-pdp-hero-image"
+                onClick={() => setFullViewOpen(true)}
+              />
+
+              <button
+                type="button"
+                className="cf-pdp-zoom-trigger-btn"
+                onClick={() => setFullViewOpen(true)}
+                aria-label="View full screen image"
+                title="Full View"
+              >
+                <Maximize2 size={15} />
+              </button>
+
+              {galleryImages.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    className="cf-pdp-slider-btn cf-pdp-slider-prev"
+                    onClick={() =>
+                      setActiveImgIndex((prev) =>
+                        (prev - 1 + galleryImages.length) % galleryImages.length
+                      )
+                    }
+                    aria-label="Previous product photo"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    className="cf-pdp-slider-btn cf-pdp-slider-next"
+                    onClick={() =>
+                      setActiveImgIndex((prev) => (prev + 1) % galleryImages.length)
+                    }
+                    aria-label="Next product photo"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+
+                  <div className="cf-pdp-slider-dots">
+                    {galleryImages.map((_, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        className={`cf-pdp-slider-dot ${idx === activeImgIndex ? 'is-active' : ''}`}
+                        onClick={() => setActiveImgIndex(idx)}
+                        aria-label={`Slide ${idx + 1}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -563,6 +676,67 @@ export default function ProductDetailPage() {
             <p><strong>Chest:</strong> Measure across the fullest part of your chest, keeping tape comfortably horizontal under arms.</p>
             <p><strong>Length:</strong> Measure from highest point of the shoulder seam down to the bottom hemline.</p>
           </div>
+        </div>
+      </Modal>
+
+      {/* 7. Full-View Product Image Lightbox Modal */}
+      <Modal
+        isOpen={fullViewOpen}
+        onClose={() => setFullViewOpen(false)}
+        title={product.title}
+        subtitle={`Image ${activeImgIndex + 1} of ${galleryImages.length}`}
+        maxWidth="820px"
+      >
+        <div className="cf-pdp-fullview-wrap">
+          <div className="cf-pdp-fullview-stage">
+            <img
+              src={galleryImages[activeImgIndex]}
+              alt={product.title}
+              className="cf-pdp-fullview-img"
+            />
+
+            {galleryImages.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  className="cf-pdp-fullview-nav cf-pdp-fullview-prev"
+                  onClick={() =>
+                    setActiveImgIndex((prev) =>
+                      (prev - 1 + galleryImages.length) % galleryImages.length
+                    )
+                  }
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft size={20} />
+                </button>
+                <button
+                  type="button"
+                  className="cf-pdp-fullview-nav cf-pdp-fullview-next"
+                  onClick={() =>
+                    setActiveImgIndex((prev) => (prev + 1) % galleryImages.length)
+                  }
+                  aria-label="Next image"
+                >
+                  <ChevronRight size={20} />
+                </button>
+              </>
+            )}
+          </div>
+
+          {galleryImages.length > 1 && (
+            <div className="cf-pdp-fullview-thumbs">
+              {galleryImages.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`cf-pdp-fullview-thumb-btn ${idx === activeImgIndex ? 'is-active' : ''}`}
+                  onClick={() => setActiveImgIndex(idx)}
+                >
+                  <img src={img} alt={`Preview ${idx + 1}`} />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </Modal>
     </div>

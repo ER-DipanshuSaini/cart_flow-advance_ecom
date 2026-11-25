@@ -744,6 +744,7 @@
   transition: transform 0.15s ease;
 }
 
+
 .cf-star-picker-btn:hover {
   transform: scale(1.12);
 }
@@ -754,6 +755,7 @@
   color: var(--cf-text-main);
   margin-left: 8px;
 }
+
 
 /* Photo Upload Controls in Modal */
 .cf-photo-dropzone-row {
