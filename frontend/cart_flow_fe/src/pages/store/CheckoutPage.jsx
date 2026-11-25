@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShieldCheck,
-  CheckCircle2,
   CreditCard,
   Banknote,
   Wallet,
@@ -18,7 +17,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { Button, Input, Select, Card, Modal, ToastContainer } from '../../components/ui';
+import { Button, Input, Select, Card, ToastContainer } from '../../components/ui';
 import './StorePages.css';
 
 const INITIAL_SAVED_ADDRESSES = [
@@ -120,11 +119,9 @@ export default function CheckoutPage() {
   // Coupon Input
   const [couponInput, setCouponInput] = useState('');
 
-  // Toasts & Order Success
+  // Toasts & Loading State
   const [toasts, setToasts] = useState([]);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [placedOrderId, setPlacedOrderId] = useState('');
 
   const addToast = (type, title, message) => {
     const id = Date.now() + Math.random();
@@ -228,17 +225,82 @@ export default function CheckoutPage() {
       return;
     }
 
+
     setLoading(true);
     setTimeout(() => {
       const orderId = 'CF-' + Math.floor(10000 + Math.random() * 90000);
-      setPlacedOrderId(orderId);
+      const gatewayMeta = {
+        cod: {
+          gateway: 'Cash on Delivery (COD)',
+          transactionId: `COD-${orderId}`,
+          method: 'Cash / UPI at Doorstep',
+          paymentState: 'Pay on Delivery',
+          status: 'SUCCESS',
+        },
+        razorpay: {
+          gateway: 'Razorpay',
+          transactionId: `pay_Rzp${Math.floor(10000000 + Math.random() * 90000000)}`,
+          method: 'UPI / Card / NetBanking',
+          paymentState: 'Captured',
+          status: 'SUCCESS',
+        },
+        cashfree: {
+          gateway: 'Cashfree',
+          transactionId: `cf_pay_${Math.floor(10000000 + Math.random() * 90000000)}`,
+          method: 'UPI / Card / Pay Later',
+          paymentState: 'Success',
+          status: 'SUCCESS',
+        },
+      }[paymentMethod];
+
+      const resolvedDeliveryAddress = activeSavedAddress
+        ? { ...activeSavedAddress, email: customer?.email || email }
+        : {
+          name: fullName.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          address: addressLine.trim(),
+          landmark: landmark.trim(),
+          city: city.trim(),
+          state: stateName.trim(),
+          postalCode: postalCode.trim(),
+          country,
+        };
+
+      const orderPayload = {
+        orderId,
+        items: cartItems,
+        subtotal: cartSubtotal,
+        shippingFee,
+        taxFee,
+        couponDiscount,
+        totalAmount,
+        paymentMethod,
+        gatewayResponse: gatewayMeta,
+        deliveryAddress: resolvedDeliveryAddress,
+        estimatedDeliveryDate,
+        createdAt: new Date().toLocaleString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      };
+
+      try {
+        sessionStorage.setItem('cf_last_order', JSON.stringify(orderPayload));
+      } catch {
+        // ignore storage errors
+      }
+
       setLoading(false);
       clearCart();
-      setIsSuccessModalOpen(true);
-    }, 850);
+      navigate('/order-confirmation', { state: orderPayload });
+    }, 750);
   };
 
-  if (cartItems.length === 0 && !isSuccessModalOpen) {
+  if (cartItems.length === 0) {
     return (
       <div className="cf-store-container cf-cart-page-wrap">
         <div className="cf-cart-empty-box">
@@ -599,35 +661,6 @@ export default function CheckoutPage() {
           </Card>
         </div>
       </form>
-
-      {/* Order Success Modal */}
-      <Modal
-        isOpen={isSuccessModalOpen}
-        onClose={() => navigate('/')}
-        eyebrow="ORDER CONFIRMED"
-        title="Order Successfully Placed!"
-        subtitle={`Order Reference ID: ${placedOrderId}`}
-        footer={
-          <>
-            <Button variant="outline" onClick={() => navigate('/shop')}>
-              Continue Shopping
-            </Button>
-            <Button variant="primary" onClick={() => navigate('/account?tab=orders')}>
-              Track in My Orders
-            </Button>
-          </>
-        }
-      >
-        <div style={{ textAlign: 'center', padding: '0.75rem 0' }}>
-          <CheckCircle2 size={52} style={{ color: 'var(--cf-accent-primary)', margin: '0 auto 1rem' }} />
-          <h4 style={{ marginBottom: '0.5rem', color: 'var(--cf-text-main)' }}>Thank you for shopping with CartFlow</h4>
-          <p style={{ color: 'var(--cf-text-muted)', fontSize: '0.86rem' }}>
-            Confirmation and tracking updates have been sent to <strong>{receiptEmail}</strong>.
-            <br />
-            Estimated Delivery: <strong>{estimatedDeliveryDate}</strong>
-          </p>
-        </div>
-      </Modal>
     </div>
   );
 }

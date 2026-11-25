@@ -2929,3 +2929,311 @@
 .cf-drop-radar-form .cf-ui-input-wrap {
   flex: 1;
 }
+
+/* ========================================================
+   ORDER CONFIRMATION PAGE
+   ======================================================== */
+.cf-order-confirm-wrap {
+  padding-top: 2rem;
+  padding-bottom: 4rem;
+}
+
+.cf-confirm-hero-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.75rem 2rem;
+  border-radius: var(--cf-radius-lg);
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  box-shadow: var(--cf-shadow-card);
+  margin-bottom: 1.75rem;
+}
+
+.cf-confirm-hero-card.is-success {
+  border-left: 4px solid #10b981;
+}
+
+.cf-confirm-hero-card.is-pending {
+  border-left: 4px solid #f59e0b;
+}
+
+.cf-confirm-hero-card.is-failed {
+  border-left: 4px solid #ef4444;
+}
+
+.cf-confirm-hero-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+.cf-confirm-status-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cf-confirm-hero-card.is-success .cf-confirm-status-icon {
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.cf-confirm-hero-card.is-pending .cf-confirm-status-icon {
+  background-color: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+.cf-confirm-hero-card.is-failed .cf-confirm-status-icon {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.cf-confirm-badge-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 0.45rem;
+}
+
+.cf-confirm-timestamp {
+  font-size: 0.78rem;
+  color: var(--cf-text-muted);
+}
+
+.cf-confirm-heading {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--cf-text-main);
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.cf-confirm-subtext {
+  font-size: 0.9rem;
+  color: var(--cf-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.cf-confirm-order-id-box {
+  padding: 0.9rem 1.15rem;
+  border-radius: var(--cf-radius-md);
+  background-color: var(--cf-bg-elevated);
+  border: 1px solid var(--cf-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.cf-confirm-id-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cf-text-muted);
+}
+
+.cf-confirm-id-val-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cf-confirm-id-val-row strong {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--cf-text-main);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.cf-confirm-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-text-main);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--cf-transition);
+}
+
+.cf-confirm-copy-btn:hover {
+  border-color: var(--cf-accent-primary);
+  color: var(--cf-accent-primary);
+}
+
+.cf-confirm-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.cf-confirm-left-col,
+.cf-confirm-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cf-confirm-kv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cf-confirm-kv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.88rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--cf-border-subtle);
+}
+
+.cf-confirm-kv-row:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.cf-confirm-kv-row span:first-child {
+  color: var(--cf-text-muted);
+}
+
+.cf-confirm-kv-row strong {
+  color: var(--cf-text-main);
+  font-weight: 600;
+  text-align: right;
+}
+
+.cf-mono-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+}
+
+.cf-confirm-status-text.is-success {
+  color: #059669;
+  font-weight: 700;
+}
+
+.cf-confirm-status-text.is-pending {
+  color: #d97706;
+  font-weight: 700;
+}
+
+.cf-confirm-status-text.is-failed {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.cf-confirm-address-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cf-confirm-addr-name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+}
+
+.cf-confirm-addr-icon {
+  color: var(--cf-accent-primary);
+  flex-shrink: 0;
+}
+
+.cf-confirm-addr-phone {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--cf-text-muted);
+}
+
+.cf-confirm-addr-lines {
+  font-size: 0.88rem;
+  color: var(--cf-text-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.cf-confirm-actions-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1.35rem;
+}
+
+.cf-confirm-continue-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cf-text-muted);
+  text-decoration: none;
+  transition: var(--cf-transition);
+}
+
+.cf-confirm-continue-link:hover {
+  color: var(--cf-accent-primary);
+}
+
+@media (max-width: 960px) {
+  .cf-confirm-hero-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cf-confirm-order-id-box {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .cf-confirm-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .cf-confirm-hero-card {
+    padding: 1.25rem;
+  }
+
+  .cf-confirm-hero-left {
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .cf-confirm-order-id-box {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media print {
+  .cf-confirm-actions-row,
+  .cf-confirm-copy-btn {
+    display: none !important;
+  }
+}
