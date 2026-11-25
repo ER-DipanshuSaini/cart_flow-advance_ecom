@@ -282,10 +282,6 @@ export default function ProductReviews({
   // Submit Review Handler
   const handleSubmitReview = (e) => {
     e.preventDefault();
-    if (formComment.trim().length < 15) {
-      setFormError('Please write at least 15 characters of review description.');
-      return;
-    }
 
     const newRev = {
       id: `rev-${Date.now()}`,
@@ -563,7 +559,7 @@ export default function ProductReviews({
                   </div>
 
                   {/* Description */}
-                  <p className="cf-review-body">{rev.comment}</p>
+                  {rev.comment && <p className="cf-review-body">{rev.comment}</p>}
 
                   {/* Individual Customer Images attached to this specific review */}
                   {rev.images && rev.images.length > 0 && (
@@ -819,16 +815,16 @@ export default function ProductReviews({
             </div>
           </div>
 
-          {/* Theme Textarea: Description */}
+
+          {/* Theme Textarea: Description (Optional) */}
           <Textarea
-            label="Review Description"
+            label="Review Description (Optional)"
             rows={4}
             placeholder="Share your experience with the fabric, fit, and overall quality..."
             value={formComment}
             onChange={(e) => setFormComment(e.target.value)}
-            required
             maxLength={600}
-            helperText={`${formComment.length} / 600 characters (minimum 15 characters required)`}
+            helperText={`${formComment.length} / 600 characters`}
           />
 
           {/* Individual Image Upload Section */}
