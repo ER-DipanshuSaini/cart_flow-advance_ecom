@@ -879,3 +879,25 @@
   border-top: 1px solid var(--cf-border-subtle);
   margin-top: 0.5rem;
 }
+
+.cf-your-review-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--cf-radius-pill);
+  background-color: var(--cf-accent-primary-tint);
+  border: 1px solid var(--cf-accent-primary);
+  color: var(--cf-accent-primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.cf-client-review-card.is-own-review {
+  border-left: 3px solid var(--cf-accent-primary);
+}
+
+.cf-client-review-card.is-highlighted-review {
+  border-color: var(--cf-accent-primary);
+  box-shadow: 0 0 0 3px var(--cf-accent-primary-tint);
+}

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Star,
   ThumbsUp,
@@ -17,7 +18,7 @@ import WriteReviewModal from './WriteReviewModal';
 import './ProductReviews.css';
 
 // Default Realistic Verified Reviews
-const INITIAL_MOCK_REVIEWS = [
+export const INITIAL_MOCK_REVIEWS = [
   {
     id: 'rev-101',
     userName: 'Armaan Khanna',
@@ -129,7 +130,7 @@ const INITIAL_MOCK_REVIEWS = [
 ];
 
 // Reusable 5-Star Visual Renderer with 0.5 Half-Star Support
-function StarRatingDisplay({ rating = 0, size = 15 }) {
+export function StarRatingDisplay({ rating = 0, size = 15 }) {
   return (
     <div className="cf-star-display-row" aria-label={`Rated ${rating} out of 5`}>
       {[1, 2, 3, 4, 5].map((starIndex) => {
@@ -206,10 +207,20 @@ export default function ProductReviews({
   const [helpfulVoted, setHelpfulVoted] = useState({});
 
   // Filters & Pagination State
-  const [activeStarFilter, setActiveStarFilter] = useState('ALL'); // 'ALL' | 5 | 4 | 3 | 2 | 1
+  const [searchParams] = useSearchParams();
+  const isUserReviewView = searchParams.get('view') === 'user-review';
+  const [activeStarFilter, setActiveStarFilter] = useState('ALL'); // 'ALL' | 'MINE' | 5 | 4 | 3 | 2 | 1
   const [sortBy, setSortBy] = useState('helpful'); // 'helpful' | 'recent' | 'highest' | 'lowest'
   const [currentPage, setCurrentPage] = useState(1);
   const REVIEWS_PER_PAGE = 3;
+
+  const isOwnReview = (rev) =>
+    Boolean(customer && (rev.userId ? rev.userId === customer.id : rev.userName === customer.name));
+
+  const ownReviewsCount = useMemo(
+    () => reviews.filter((r) => isOwnReview(r)).length,
+    [reviews, customer]
+  );
 
   // Modals State
   const [writeModalOpen, setWriteModalOpen] = useState(false);
@@ -228,6 +239,7 @@ export default function ProductReviews({
   const handleSubmitReview = ({ rating, comment, images }) => {
     const newRev = {
       id: `rev-${Date.now()}`,
+      userId: customer?.id,
       userName: customer?.name || 'Verified Buyer',
       avatar: (customer?.name || 'V').charAt(0).toUpperCase(),
       rating,
@@ -290,15 +302,21 @@ export default function ProductReviews({
     };
   }, [reviews, baseRating, baseReviewCount]);
 
-  // Filter and Sort Reviews
+  // Filter and Sort Reviews (always pin logged-in user's own review(s) on top)
   const filteredAndSortedReviews = useMemo(() => {
     let result = [...reviews];
 
-    if (activeStarFilter !== 'ALL') {
+    if (activeStarFilter === 'MINE') {
+      result = result.filter((r) => isOwnReview(r));
+    } else if (activeStarFilter !== 'ALL') {
       result = result.filter((r) => Math.round(r.rating) === activeStarFilter);
     }
 
     result.sort((a, b) => {
+      const aOwn = isOwnReview(a);
+      const bOwn = isOwnReview(b);
+      if (aOwn !== bOwn) return aOwn ? -1 : 1;
+
       if (sortBy === 'helpful') return b.helpfulCount - a.helpfulCount;
       if (sortBy === 'highest') return b.rating - a.rating;
       if (sortBy === 'lowest') return a.rating - b.rating;
@@ -306,7 +324,22 @@ export default function ProductReviews({
     });
 
     return result;
-  }, [reviews, activeStarFilter, sortBy]);
+  }, [reviews, activeStarFilter, sortBy, customer]);
+
+  // Deep-link scroll & highlight when navigated via ?view=user-review
+  useEffect(() => {
+    if (!isUserReviewView) return;
+    setActiveStarFilter('ALL');
+    setCurrentPage(1);
+    const ownRev = filteredAndSortedReviews.find((r) => isOwnReview(r));
+    const timer = setTimeout(() => {
+      const targetEl = ownRev
+        ? document.getElementById(`review-${ownRev.id}`)
+        : document.getElementById('cf-reviews-anchor');
+      if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [isUserReviewView]);
 
   // Pagination calculation
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedReviews.length / REVIEWS_PER_PAGE));
@@ -405,6 +438,18 @@ export default function ProductReviews({
               >
                 All ({reviews.length})
               </button>
+              {ownReviewsCount > 0 && (
+                <button
+                  type="button"
+                  className={`cf-filter-pill ${activeStarFilter === 'MINE' ? 'is-active' : ''}`}
+                  onClick={() => {
+                    setActiveStarFilter(activeStarFilter === 'MINE' ? 'ALL' : 'MINE');
+                    setCurrentPage(1);
+                  }}
+                >
+                  Your Review ({ownReviewsCount})
+                </button>
+              )}
               {[5, 4, 3].map((star) => (
                 <button
                   key={star}
@@ -441,7 +486,13 @@ export default function ProductReviews({
           {/* Active Filter Notice */}
           {activeStarFilter !== 'ALL' && (
             <div className="cf-active-filter-strip">
-              <span>Showing only <strong>{activeStarFilter}-Star</strong> reviews</span>
+              <span>
+                Showing only{' '}
+                <strong>
+                  {activeStarFilter === 'MINE' ? 'Your Review' : `${activeStarFilter}-Star`}
+                </strong>{' '}
+                reviews
+              </span>
               <button
                 type="button"
                 onClick={() => {
@@ -461,14 +512,23 @@ export default function ProductReviews({
               <div className="cf-reviews-empty">
                 <AlertCircle size={32} />
                 <h4>No reviews match this filter</h4>
-                <p>Try resetting the star filter to view all verified reviews.</p>
+                <p>Try resetting the filter to view all verified reviews.</p>
                 <Button variant="secondary" size="sm" onClick={() => setActiveStarFilter('ALL')}>
                   Reset Filter
                 </Button>
               </div>
             ) : (
-              paginatedReviews.map((rev) => (
-                <article key={rev.id} className="cf-client-review-card">
+              paginatedReviews.map((rev) => {
+                const own = isOwnReview(rev);
+                const isHighlighted = own && isUserReviewView;
+                return (
+                <article
+                  key={rev.id}
+                  id={`review-${rev.id}`}
+                  className={`cf-client-review-card ${own ? 'is-own-review' : ''} ${
+                    isHighlighted ? 'is-highlighted-review' : ''
+                  }`}
+                >
                   {/* Card Header: Avatar, Name, Date & Individual 5-Star Rating (with 0.5 fill) */}
                   <div className="cf-client-review-header">
                     <div className="cf-client-avatar-row">
@@ -476,6 +536,7 @@ export default function ProductReviews({
                       <div>
                         <div className="cf-client-name-row">
                           <span className="cf-client-name">{rev.userName}</span>
+                          {own && <span className="cf-your-review-pill">Your Review</span>}
                           {rev.verifiedBuyer && (
                             <span className="cf-verified-buyer-pill">
                               <Check size={11} strokeWidth={3} /> Verified Buyer
@@ -541,7 +602,8 @@ export default function ProductReviews({
                     </span>
                   </div>
                 </article>
-              ))
+                );
+              })
             )}
           </div>
 

@@ -21,6 +21,7 @@ import {
 } from '../../data/customerDefaults';
 import { useLocalStorageState } from '../../hooks/useLocalStorageState';
 import { Button, ToastContainer } from '../../components/ui';
+import { INITIAL_MOCK_REVIEWS } from '../../components/ui/Reviews/ProductReviews';
 import OrdersTab from './components/OrdersTab';
 import WishlistTab from './components/WishlistTab';
 import TicketsTab from './components/TicketsTab';
@@ -248,8 +249,8 @@ export default function CustomerDashboard() {
   };
 
   // Review & Complaint Handlers
-  const hasReviewedItem = (orderId, productId) =>
-    reviews.some((r) => r.orderId === orderId && r.productId === productId);
+  const getItemReview = (orderId, productId) =>
+    reviews.find((r) => r.orderId === orderId && r.productId === productId) || null;
 
   const handleSubmitReview = ({ rating, comment, images }) => {
     const productId = reviewModal.item?.id;
@@ -259,6 +260,7 @@ export default function CustomerDashboard() {
       orderId: reviewModal.orderId,
       productId,
       productTitle: reviewModal.item?.title,
+      userId: customer?.id,
       userName: customerName,
       avatar: customerName.charAt(0).toUpperCase(),
       rating,
@@ -274,7 +276,8 @@ export default function CustomerDashboard() {
     if (productId) {
       try {
         const key = `cf_reviews_p_${productId}`;
-        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        const savedRaw = localStorage.getItem(key);
+        const existing = savedRaw ? JSON.parse(savedRaw) : INITIAL_MOCK_REVIEWS;
         localStorage.setItem(key, JSON.stringify([newReview, ...existing]));
       } catch {
         // Ignore storage errors
@@ -500,9 +503,12 @@ export default function CustomerDashboard() {
             <OrdersTab
               orders={orders}
               complaints={complaints}
-              hasReviewedItem={hasReviewedItem}
+              getItemReview={getItemReview}
               onOpenProduct={handleOpenProduct}
               onOpenReview={(orderId, item) => setReviewModal({ open: true, orderId, item })}
+              onViewReview={(productId) =>
+                navigate(`/product/${productId}?view=user-review#cf-reviews-anchor`)
+              }
               onOpenComplaint={(order) => setComplaintModal({ open: true, order })}
               onOpenTicket={setActiveTicketId}
               onViewReceipt={handleViewReceipt}

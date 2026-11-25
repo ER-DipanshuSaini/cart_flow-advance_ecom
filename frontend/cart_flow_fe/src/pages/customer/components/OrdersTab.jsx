@@ -12,6 +12,7 @@ import {
   Ticket
 } from 'lucide-react';
 import { Button, Badge, Pagination } from '../../../components/ui';
+import { StarRatingDisplay } from '../../../components/ui/Reviews/ProductReviews';
 import EmptyState from '../../../components/common/EmptyState';
 import { usePaginatedList } from '../../../hooks/usePaginatedList';
 import { getOrderBadgeVariant, getTicketBadgeVariant } from '../../../data/customerDefaults';
@@ -28,9 +29,10 @@ const FULFILLMENT_STAGES = [
 export default function OrdersTab({
   orders,
   complaints,
-  hasReviewedItem,
+  getItemReview,
   onOpenProduct,
   onOpenReview,
+  onViewReview,
   onOpenComplaint,
   onOpenTicket,
   onViewReceipt,
@@ -130,7 +132,7 @@ export default function OrdersTab({
                   {/* Items Breakdown */}
                   <div className="cf-order-items-grid">
                     {order.items.map((item, idx) => {
-                      const reviewed = hasReviewedItem(order.id, item.id);
+                      const itemReview = getItemReview(order.id, item.id);
                       return (
                         <div
                           key={idx}
@@ -152,17 +154,29 @@ export default function OrdersTab({
                             className="cf-order-item-actions"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {order.status === 'Delivered' && (
-                              <Button
-                                size="sm"
-                                variant={reviewed ? 'ghost' : 'outline'}
-                                icon={Star}
-                                disabled={reviewed}
-                                onClick={() => onOpenReview(order.id, item)}
-                              >
-                                {reviewed ? 'Reviewed' : 'Write Review'}
-                              </Button>
-                            )}
+                            {order.status === 'Delivered' &&
+                              (itemReview ? (
+                                <button
+                                  type="button"
+                                  className="cf-order-rated-btn"
+                                  onClick={() => onViewReview(item.id)}
+                                  title="View your review on product page"
+                                >
+                                  <StarRatingDisplay rating={Number(itemReview.rating)} size={13} />
+                                  <span className="cf-order-rated-val">
+                                    {Number(itemReview.rating).toFixed(1)}
+                                  </span>
+                                </button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  icon={Star}
+                                  onClick={() => onOpenReview(order.id, item)}
+                                >
+                                  Write Review
+                                </Button>
+                              ))}
                             <Button
                               size="sm"
                               variant="outline"
