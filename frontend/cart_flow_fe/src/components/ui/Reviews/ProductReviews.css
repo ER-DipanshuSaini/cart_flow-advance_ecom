@@ -1,0 +1,862 @@
+/* ==========================================================================
+   Product Reviews Component - Clean Flipkart / Amazon Luxury Hybrid Styling
+   ========================================================================== */
+
+.cf-reviews-section {
+  margin-top: 5rem;
+  padding-top: 3.5rem;
+  border-top: 1px solid var(--cf-border-subtle);
+  scroll-margin-top: 80px;
+}
+
+.cf-reviews-head-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ==========================================================================
+   Half-Star & Star Rating Display
+   ========================================================================== */
+
+.cf-star-display-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.cf-half-star-wrap {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.cf-star-svg-fixed {
+  display: block;
+  flex-shrink: 0;
+}
+
+.cf-half-star-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  display: block;
+}
+
+/* 2-Column Responsive Layout */
+.cf-reviews-layout-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  margin-top: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 920px) {
+  .cf-reviews-layout-grid {
+    grid-template-columns: 330px 1fr;
+    gap: 3rem;
+  }
+}
+
+/* ==========================================================================
+   Left Column: Score Summary & Star Breakdown
+   ========================================================================== */
+
+.cf-score-summary-card {
+  padding: 1.75rem;
+  border-radius: var(--cf-radius-lg);
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  box-shadow: var(--cf-shadow-card);
+  position: sticky;
+  top: 90px;
+}
+
+.cf-score-main-flex {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--cf-border-subtle);
+}
+
+.cf-score-number {
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--cf-text-main);
+  letter-spacing: -0.04em;
+  font-family: var(--cf-font-display, inherit);
+}
+
+.cf-score-stars-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cf-score-total-txt {
+  font-size: 0.78rem;
+  color: var(--cf-text-dim);
+  font-weight: 500;
+}
+
+/* Star Breakdown Bar Rows (Clickable Filter) */
+.cf-star-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 1.25rem;
+}
+
+.cf-star-bar-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  padding: 5px 8px;
+  border-radius: var(--cf-radius-sm);
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.cf-star-bar-btn:hover {
+  background-color: var(--cf-bg-surface-hover);
+}
+
+.cf-star-bar-btn.is-selected {
+  background-color: var(--cf-accent-primary-tint);
+  font-weight: 700;
+}
+
+.cf-star-bar-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cf-text-muted);
+  width: 32px;
+  flex-shrink: 0;
+}
+
+.cf-star-bar-track {
+  flex: 1;
+  height: 7px;
+  background-color: var(--cf-border-subtle);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cf-star-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #059669);
+  border-radius: 999px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cf-star-bar-pct {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cf-text-dim);
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Right Column: Reviews Stack & Filters
+   ========================================================================== */
+
+.cf-reviews-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Controls Bar */
+.cf-reviews-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-bottom: 0.75rem;
+}
+
+.cf-reviews-filter-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cf-filter-pill {
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-text-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.cf-filter-pill:hover {
+  border-color: var(--cf-text-dim);
+  color: var(--cf-text-main);
+}
+
+.cf-filter-pill.is-active {
+  background-color: var(--cf-text-main);
+  color: var(--cf-bg-surface);
+  border-color: var(--cf-text-main);
+}
+
+.cf-reviews-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cf-sort-label {
+  font-size: 0.76rem;
+  color: var(--cf-text-dim);
+  font-weight: 500;
+}
+
+.cf-sort-select {
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: var(--cf-radius-sm);
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-text-main);
+  border: 1px solid var(--cf-border-subtle);
+  cursor: pointer;
+  outline: none;
+}
+
+.cf-active-filter-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background-color: var(--cf-accent-primary-tint);
+  border-radius: var(--cf-radius-sm);
+  font-size: 0.78rem;
+  color: var(--cf-text-main);
+}
+
+.cf-clear-filter-btn {
+  background: transparent;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cf-accent-primary);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* Reviews Stack */
+.cf-reviews-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cf-client-review-card {
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--cf-radius-lg);
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  box-shadow: var(--cf-shadow-card);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cf-client-review-card:hover {
+  box-shadow: var(--cf-shadow-lg);
+}
+
+/* Card Header */
+.cf-client-review-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.cf-client-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cf-client-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--cf-accent-primary-tint);
+  color: var(--cf-accent-primary);
+  border: 1px solid var(--cf-accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.cf-client-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cf-client-name {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+}
+
+.cf-verified-buyer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cf-client-meta-info {
+  font-size: 0.72rem;
+  color: var(--cf-text-dim);
+}
+
+/* Individual 5-Star Rating Wrapper on Top-Right of Card */
+.cf-review-card-stars-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cf-review-rating-num {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+}
+
+.cf-review-body {
+  font-size: 0.88rem;
+  color: var(--cf-text-muted);
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+/* Individual Review Images (Customer Photos per Review) */
+.cf-review-individual-images {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.15rem;
+  flex-wrap: wrap;
+}
+
+.cf-review-individual-thumb {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: var(--cf-radius-md);
+  overflow: hidden;
+  border: 1px solid var(--cf-border-subtle);
+  background: var(--cf-bg-body);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cf-review-individual-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cf-thumb-zoom-icon {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: rgba(15, 23, 42, 0.75);
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.cf-review-individual-thumb:hover {
+  transform: scale(1.05);
+  border-color: var(--cf-accent-primary);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.cf-review-individual-thumb:hover .cf-thumb-zoom-icon {
+  opacity: 1;
+}
+
+/* Card Footer */
+.cf-review-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--cf-border-subtle);
+  flex-wrap: wrap;
+}
+
+.cf-helpful-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--cf-border-subtle);
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  color: var(--cf-text-muted);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.cf-helpful-action-btn:hover:not(:disabled) {
+  border-color: var(--cf-text-dim);
+  color: var(--cf-text-main);
+}
+
+.cf-helpful-action-btn.is-voted {
+  background-color: var(--cf-accent-primary-tint);
+  border-color: var(--cf-accent-primary);
+  color: var(--cf-accent-primary);
+  cursor: default;
+}
+
+.cf-review-verified-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  color: var(--cf-text-dim);
+}
+
+/* Empty State */
+.cf-reviews-empty {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background-color: var(--cf-bg-surface);
+  border-radius: var(--cf-radius-lg);
+  border: 1px dashed var(--cf-border-subtle);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--cf-text-dim);
+}
+
+.cf-reviews-empty h4 {
+  font-size: 1rem;
+  color: var(--cf-text-main);
+  margin: 0;
+}
+
+.cf-reviews-empty p {
+  font-size: 0.82rem;
+  margin: 0 0 0.5rem;
+}
+
+/* ==========================================================================
+   Pagination Controls Bar
+   ========================================================================== */
+
+.cf-reviews-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.25rem 0 0;
+  border-top: 1px solid var(--cf-border-subtle);
+  margin-top: 0.5rem;
+}
+
+.cf-pagination-status {
+  font-size: 0.78rem;
+  color: var(--cf-text-dim);
+}
+
+.cf-pagination-status strong {
+  color: var(--cf-text-main);
+}
+
+.cf-pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cf-page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--cf-radius-sm);
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  color: var(--cf-text-main);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.cf-page-btn:hover:not(:disabled) {
+  border-color: var(--cf-text-main);
+}
+
+.cf-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cf-page-numbers-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cf-page-num-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--cf-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  color: var(--cf-text-muted);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.cf-page-num-btn:hover {
+  color: var(--cf-text-main);
+  border-color: var(--cf-text-dim);
+}
+
+.cf-page-num-btn.is-active {
+  background-color: var(--cf-text-main);
+  color: var(--cf-bg-surface);
+  border-color: var(--cf-text-main);
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Lightbox Modal for Full-Res Image Viewer
+   ========================================================================== */
+
+.cf-lightbox-modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cf-lightbox-image-box {
+  position: relative;
+  width: 100%;
+  max-height: 480px;
+  border-radius: var(--cf-radius-md);
+  overflow: hidden;
+  background-color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cf-lightbox-image-box img {
+  max-width: 100%;
+  max-height: 480px;
+  object-fit: contain;
+}
+
+.cf-lightbox-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.72);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  z-index: 2;
+}
+
+.cf-lightbox-nav-btn:hover {
+  background: rgba(15, 23, 42, 0.92);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.cf-lightbox-prev {
+  left: 12px;
+}
+
+.cf-lightbox-next {
+  right: 12px;
+}
+
+.cf-lightbox-thumbs-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cf-lightbox-thumb-btn {
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border-radius: var(--cf-radius-sm);
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: var(--cf-bg-body);
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.18s ease, border-color 0.18s ease;
+}
+
+.cf-lightbox-thumb-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cf-lightbox-thumb-btn:hover {
+  opacity: 0.9;
+}
+
+.cf-lightbox-thumb-btn.is-active {
+  opacity: 1;
+  border-color: var(--cf-accent-primary);
+}
+
+.cf-lightbox-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 4px 0;
+}
+
+.cf-lightbox-user {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cf-lightbox-user strong {
+  font-size: 0.88rem;
+  color: var(--cf-text-main);
+}
+
+.cf-lightbox-cap {
+  font-size: 0.78rem;
+  color: var(--cf-text-muted);
+}
+
+/* ==========================================================================
+   Write Review Form & Image Upload UI (Theme UI Components)
+   ========================================================================== */
+
+.cf-review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding-top: 0.25rem;
+}
+
+.cf-form-error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 8px 12px;
+  border-radius: var(--cf-radius-sm);
+  font-size: 0.78rem;
+}
+
+/* Interactive 0.5-Step Star Picker */
+.cf-star-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+}
+
+.cf-star-picker-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.15s ease;
+}
+
+.cf-star-picker-btn:hover {
+  transform: scale(1.12);
+}
+
+.cf-star-picker-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+  margin-left: 8px;
+}
+
+/* Photo Upload Controls in Modal */
+.cf-photo-dropzone-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cf-photo-upload-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--cf-radius-sm);
+  background-color: var(--cf-bg-body);
+  border: 1px dashed var(--cf-border-subtle);
+  color: var(--cf-text-main);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cf-photo-upload-trigger-btn:hover:not(:disabled) {
+  border-color: var(--cf-accent-primary);
+  background-color: var(--cf-accent-primary-tint);
+  color: var(--cf-accent-primary);
+}
+
+.cf-photo-upload-trigger-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Form Images Preview Grid */
+.cf-form-images-preview-grid {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.cf-form-image-preview-card {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: var(--cf-radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--cf-border-subtle);
+  background: var(--cf-bg-body);
+}
+
+.cf-form-image-preview-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cf-remove-image-btn {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.cf-remove-image-btn:hover {
+  background-color: #ef4444;
+}
+
+.cf-preview-img-tag {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.75);
+  color: #ffffff;
+  font-size: 0.6rem;
+  padding: 1px 3px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cf-form-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--cf-border-subtle);
+  margin-top: 0.5rem;
+}

@@ -207,6 +207,7 @@
   .cf-mega-menu-container {
     grid-template-columns: repeat(4, 1fr);
   }
+
   .cf-mega-promo-col {
     display: none;
   }
@@ -393,6 +394,7 @@
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -648,6 +650,7 @@
     opacity: 0;
     transform: translateY(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1016,6 +1019,7 @@
   font-style: italic;
   color: var(--cf-text-dim);
 }
+
 
 .cf-bottom-legal-links {
   display: flex;
