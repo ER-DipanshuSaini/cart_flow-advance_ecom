@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
             email: 'vikram.roy@cartflow.luxury',
             phone: '+91 98765 43210',
             avatar: 'V',
-            tier: 'VIP Club Member',
+            profilePic: '',
             joined: 'October 2025',
           };
     } catch {
@@ -104,6 +104,18 @@ export function AuthProvider({ children }) {
     setCustomer(null);
   };
 
+  const updateCustomer = (updates) => {
+    setCustomer((prev) => {
+      if (!prev) return prev;
+      const nextName = updates.name !== undefined ? updates.name : prev.name;
+      return {
+        ...prev,
+        ...updates,
+        avatar: nextName ? nextName.trim().charAt(0).toUpperCase() : prev.avatar,
+      };
+    });
+  };
+
   // Admin Login / Logout
   const loginAdmin = (workspaceKey, secretPasskey, role = 'super-admin') => {
     const newAdmin = {
@@ -147,6 +159,7 @@ export function AuthProvider({ children }) {
         loginCustomer,
         registerCustomer,
         logoutCustomer,
+        updateCustomer,
 
         // Admin & Operations
         adminUser,

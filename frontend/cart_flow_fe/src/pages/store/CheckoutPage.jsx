@@ -17,52 +17,9 @@ import {
 } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { INITIAL_SAVED_ADDRESSES, INDIAN_STATES } from '../../data/customerDefaults';
 import { Button, Input, Select, Card, ToastContainer } from '../../components/ui';
 import './StorePages.css';
-
-const INITIAL_SAVED_ADDRESSES = [
-  {
-    id: 'addr-1',
-    label: 'Primary Residence',
-    name: 'Vikramaditya Roy',
-    phone: '+91 98765 43210',
-    address: 'Suite 402, Imperial Heights, Worli',
-    landmark: 'Near Sea Face Promenade',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    postalCode: '400018',
-    country: 'India',
-  },
-  {
-    id: 'addr-2',
-    label: 'Office Studio',
-    name: 'Vikramaditya Roy',
-    phone: '+91 98765 43210',
-    address: 'Level 14, One BKC, Bandra East',
-    landmark: 'Opp. MCA Club',
-    city: 'Mumbai',
-    state: 'Maharashtra',
-    postalCode: '400051',
-    country: 'India',
-  },
-];
-
-const INDIAN_STATES = [
-  'Maharashtra',
-  'Delhi',
-  'Karnataka',
-  'Telangana',
-  'Tamil Nadu',
-  'Gujarat',
-  'Rajasthan',
-  'West Bengal',
-  'Uttar Pradesh',
-  'Punjab',
-  'Haryana',
-  'Kerala',
-  'Madhya Pradesh',
-  'Other',
-];
 
 export default function CheckoutPage() {
   const {
@@ -290,6 +247,33 @@ export default function CheckoutPage() {
 
       try {
         sessionStorage.setItem('cf_last_order', JSON.stringify(orderPayload));
+        const existingOrders = JSON.parse(localStorage.getItem('cf_customer_orders') || '[]');
+        const accountOrder = {
+          id: orderId,
+          date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+          total: Math.round(totalAmount),
+          status: 'Confirmed',
+          courier: 'CartFlow Express • Dispatching Soon',
+          estimatedDelivery: estimatedDeliveryDate,
+          currentStage: 1,
+          paymentMethod,
+          gatewayResponse: gatewayMeta,
+          deliveryAddress: resolvedDeliveryAddress,
+          subtotal: cartSubtotal,
+          shippingFee,
+          taxFee,
+          couponDiscount,
+          createdAt: orderPayload.createdAt,
+          items: cartItems.map((item) => ({
+            id: item.id,
+            title: item.title,
+            size: item.variant || 'Standard',
+            price: item.price,
+            qty: item.quantity,
+            image: item.imageUrl,
+          })),
+        };
+        localStorage.setItem('cf_customer_orders', JSON.stringify([accountOrder, ...existingOrders]));
       } catch {
         // ignore storage errors
       }

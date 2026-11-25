@@ -179,7 +179,17 @@ export function Navbar() {
                 onMouseLeave={handleUserLeave}
               >
                 <Link to="/account" className="cf-nav-user-chip" title="View Account">
-                  <span className="cf-user-avatar-badge">{avatarLetter}</span>
+                  <span className="cf-user-avatar-badge">
+                    {user?.profilePic ? (
+                      <img
+                        src={user.profilePic}
+                        alt={user?.name || 'User'}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                      />
+                    ) : (
+                      avatarLetter
+                    )}
+                  </span>
                   <span className="cf-user-name-text">Hi, {firstName}</span>
                   <ChevronDown size={13} className={`cf-user-chevron ${userDropdownOpen ? 'is-flipped' : ''}`} />
                 </Link>
@@ -188,7 +198,6 @@ export function Navbar() {
                   <div className="cf-user-editorial-dropdown">
                     <div className="cf-mega-col-heading cf-user-dd-heading">
                       <span>{user?.name || 'Account'}</span>
-                      <span className="cf-mega-badge">{user?.tier?.split(' ')[0] || 'VIP'}</span>
                     </div>
 
                     <ul className="cf-mega-links cf-user-dd-links">
@@ -200,6 +209,11 @@ export function Navbar() {
                       <li>
                         <Link to="/account?tab=orders" onClick={() => setUserDropdownOpen(false)}>
                           Orders &amp; Tracking
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/account?tab=wishlist" onClick={() => setUserDropdownOpen(false)}>
+                          Wishlist
                         </Link>
                       </li>
                       <li>

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Star,
   ThumbsUp,
@@ -8,14 +8,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Check,
-  UploadCloud,
-  X,
   Maximize2
 } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import Button from '../Button/Button';
 import Modal from '../Modal/Modal';
-import Textarea from '../Input/Textarea';
+import WriteReviewModal from './WriteReviewModal';
 import './ProductReviews.css';
 
 // Default Realistic Verified Reviews
@@ -173,7 +171,6 @@ export default function ProductReviews({
   baseReviewCount = 88,
 }) {
   const { customer } = useAuth();
-  const fileInputRef = useRef(null);
 
   // Storage keys per product
   const storageKey = `cf_reviews_p_${productId}`;
@@ -218,13 +215,6 @@ export default function ProductReviews({
   const [writeModalOpen, setWriteModalOpen] = useState(false);
   const [lightboxData, setLightboxData] = useState(null);
 
-  // Form State for New Review (Rating with 0.5 steps, Description, Images)
-  const [formRating, setFormRating] = useState(5);
-  const [formComment, setFormComment] = useState('');
-  const [formUploadedImages, setFormUploadedImages] = useState([]);
-  const [formError, setFormError] = useState('');
-  const [hoverRating, setHoverRating] = useState(0);
-
   // Sync reviews to localStorage
   useEffect(() => {
     try {
@@ -234,75 +224,22 @@ export default function ProductReviews({
     }
   }, [reviews, storageKey]);
 
-  // Image Upload Handlers for Individual Images
-  const handleFilesSelected = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-
-    if (formUploadedImages.length + files.length > 4) {
-      setFormError('You can attach a maximum of 4 images.');
-      return;
-    }
-
-    files.forEach((file) => {
-      if (!file.type.startsWith('image/')) return;
-      const reader = new FileReader();
-      reader.onload = (uploadEvent) => {
-        setFormUploadedImages((prev) => [
-          ...prev,
-          {
-            url: uploadEvent.target.result,
-            caption: file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '),
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    e.target.value = '';
-  };
-
-  const handleRemoveImage = (indexToRemove) => {
-    setFormUploadedImages((prev) => prev.filter((_, idx) => idx !== indexToRemove));
-  };
-
-  // Interactive 0.5-step Star Picker Handler
-  const handleStarPointerMove = (e, starIndex) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const isLeftHalf = e.clientX - rect.left < rect.width / 2;
-    setHoverRating(isLeftHalf ? starIndex - 0.5 : starIndex);
-  };
-
-  const handleStarClick = (e, starIndex) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const isLeftHalf = e.clientX - rect.left < rect.width / 2;
-    setFormRating(isLeftHalf ? starIndex - 0.5 : starIndex);
-  };
-
-  // Submit Review Handler
-  const handleSubmitReview = (e) => {
-    e.preventDefault();
-
+  // Submit Review Handler (called by shared WriteReviewModal)
+  const handleSubmitReview = ({ rating, comment, images }) => {
     const newRev = {
       id: `rev-${Date.now()}`,
       userName: customer?.name || 'Verified Buyer',
       avatar: (customer?.name || 'V').charAt(0).toUpperCase(),
-      rating: formRating,
-      comment: formComment.trim(),
+      rating,
+      comment,
       date: 'Just now',
       verifiedBuyer: true,
       helpfulCount: 1,
-      images: formUploadedImages,
+      images: images || [],
     };
 
     setReviews((prev) => [newRev, ...prev]);
     setWriteModalOpen(false);
-
-    // Reset form
-    setFormComment('');
-    setFormError('');
-    setFormRating(5);
-    setFormUploadedImages([]);
     setCurrentPage(1);
   };
 
@@ -385,8 +322,6 @@ export default function ProductReviews({
       if (elem) elem.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
-
-  const activeDisplayRating = hoverRating || formRating;
 
   return (
     <section className="cf-reviews-section" id="cf-reviews-anchor">
@@ -751,143 +686,13 @@ export default function ProductReviews({
         )}
       </Modal>
 
-      {/* 4. Write a Review Modal Form: ONLY Rating (0.5 steps), Description & Image Upload */}
-      <Modal
+      {/* 4. Shared Write a Review Modal */}
+      <WriteReviewModal
         isOpen={writeModalOpen}
         onClose={() => setWriteModalOpen(false)}
-        title="Write a Review"
-        subtitle={productTitle}
-        maxWidth="540px"
-      >
-        <form onSubmit={handleSubmitReview} className="cf-review-form">
-          {formError && (
-            <div className="cf-form-error-banner">
-              <AlertCircle size={15} />
-              <span>{formError}</span>
-            </div>
-          )}
-
-          {/* 0.5-Step Star Rating Picker */}
-          <div className="cf-ui-form-group">
-            <label className="cf-ui-label">
-              Rating <span className="cf-ui-required">*</span>
-            </label>
-            <div
-              className="cf-star-picker"
-              onMouseLeave={() => setHoverRating(0)}
-            >
-              {[1, 2, 3, 4, 5].map((starIndex) => {
-                const isFull = activeDisplayRating >= starIndex;
-                const isHalf = !isFull && activeDisplayRating >= starIndex - 0.5;
-
-                return (
-                  <button
-                    key={starIndex}
-                    type="button"
-                    className="cf-star-picker-btn"
-                    onMouseMove={(e) => handleStarPointerMove(e, starIndex)}
-                    onClick={(e) => handleStarClick(e, starIndex)}
-                    aria-label={`Rate ${starIndex} stars (click left half for ${starIndex - 0.5})`}
-                  >
-                    {isHalf ? (
-                      <span
-                        className="cf-half-star-wrap"
-                        style={{ width: 28, height: 28 }}
-                      >
-                        <Star size={28} fill="none" color="var(--cf-accent-warning)" className="cf-star-svg-fixed" />
-                        <span className="cf-half-star-fill">
-                          <Star size={28} fill="var(--cf-accent-warning)" color="var(--cf-accent-warning)" className="cf-star-svg-fixed" />
-                        </span>
-                      </span>
-                    ) : (
-                      <Star
-                        size={28}
-                        fill={isFull ? 'var(--cf-accent-warning)' : 'none'}
-                        color="var(--cf-accent-warning)"
-                      />
-                    )}
-                  </button>
-                );
-              })}
-              <span className="cf-star-picker-label">
-                {activeDisplayRating.toFixed(1)} / 5.0
-              </span>
-            </div>
-          </div>
-
-
-          {/* Theme Textarea: Description (Optional) */}
-          <Textarea
-            label="Review Description (Optional)"
-            rows={4}
-            placeholder="Share your experience with the fabric, fit, and overall quality..."
-            value={formComment}
-            onChange={(e) => setFormComment(e.target.value)}
-            maxLength={600}
-            helperText={`${formComment.length} / 600 characters`}
-          />
-
-          {/* Individual Image Upload Section */}
-          <div className="cf-ui-form-group">
-            <label className="cf-ui-label">
-              Upload Photos (Up to 4 images)
-            </label>
-
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept="image/*"
-              multiple
-              onChange={handleFilesSelected}
-              style={{ display: 'none' }}
-            />
-
-            <div className="cf-photo-dropzone-row">
-              <button
-                type="button"
-                className="cf-photo-upload-trigger-btn"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={formUploadedImages.length >= 4}
-              >
-                <UploadCloud size={18} />
-                <span>Choose Photos</span>
-              </button>
-            </div>
-
-            {formUploadedImages.length > 0 && (
-              <div className="cf-form-images-preview-grid">
-                {formUploadedImages.map((img, idx) => (
-                  <div key={idx} className="cf-form-image-preview-card">
-                    <img src={img.url} alt={`Upload ${idx + 1}`} />
-                    <button
-                      type="button"
-                      className="cf-remove-image-btn"
-                      onClick={() => handleRemoveImage(idx)}
-                      title="Remove image"
-                    >
-                      <X size={12} />
-                    </button>
-                    <span className="cf-preview-img-tag">{img.caption || `Photo ${idx + 1}`}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="cf-form-modal-footer">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setWriteModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary" icon={Check}>
-              Submit Review
-            </Button>
-          </div>
-        </form>
-      </Modal>
+        productTitle={productTitle}
+        onSubmitReview={handleSubmitReview}
+      />
     </section>
   );
 }

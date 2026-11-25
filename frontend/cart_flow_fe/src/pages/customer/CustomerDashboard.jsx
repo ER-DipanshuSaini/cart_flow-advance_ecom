@@ -1,176 +1,454 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import {
   User,
   Package,
-  Sparkles,
   MapPin,
   Shield,
   LogOut,
-  ChevronRight,
-  Truck,
-  CheckCircle2,
-  Clock,
   ArrowRight,
-  Download,
-  RotateCcw,
-  Plus,
-  Eye,
-  ShoppingBag,
-  ExternalLink,
-  Edit2,
-  Check
+  Heart,
+  Ticket
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
-import { Button, Card, Badge, Table, Input } from '../../components/ui';
+import { PRODUCTS } from '../../data/products';
+import {
+  DEFAULT_SAMPLE_ORDERS,
+  DEFAULT_SAMPLE_COMPLAINTS,
+  INITIAL_SAVED_ADDRESSES,
+  getTicketTimelogs,
+} from '../../data/customerDefaults';
+import { useLocalStorageState } from '../../hooks/useLocalStorageState';
+import { Button, ToastContainer } from '../../components/ui';
+import OrdersTab from './components/OrdersTab';
+import WishlistTab from './components/WishlistTab';
+import TicketsTab from './components/TicketsTab';
+import ProfileTab from './components/ProfileTab';
+import AddressesTab from './components/AddressesTab';
+import SecurityTab from './components/SecurityTab';
+import OrderSupportModals from './components/OrderSupportModals';
 import './CustomerDashboard.css';
 
-// Mock Customer Orders with tracking stages
-const CUSTOMER_ORDERS = [
-  {
-    id: 'CF-99418',
-    date: 'Nov 23, 2026',
-    total: 8198,
-    status: 'In Transit',
-    courier: 'BlueDart Express • AWB: 8847291039',
-    estimatedDelivery: 'Nov 26, 2026',
-    currentStage: 3, // 1: Confirmed, 2: Tailoring/Packed, 3: Shipped, 4: Delivered
-    items: [
-      {
-        title: 'Italian Double-Breasted Structured Blazer',
-        size: '40R',
-        color: 'Navy Blue',
-        price: 5999,
-        qty: 1,
-        image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=400&q=80',
-      },
-      {
-        title: 'The Riviera Textured Knit Polo',
-        size: 'M',
-        color: 'Ecru',
-        price: 2199,
-        qty: 1,
-        image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=400&q=80',
-      },
-    ],
-  },
-  {
-    id: 'CF-98102',
-    date: 'Nov 12, 2026',
-    total: 2699,
-    status: 'Delivered',
-    courier: 'Delhivery Surface • Delivered on Nov 15',
-    estimatedDelivery: 'Nov 15, 2026',
-    currentStage: 4,
-    items: [
-      {
-        title: 'Pleated Gurkha Trousers - Straight Cut',
-        size: '32',
-        color: 'Espresso',
-        price: 2699,
-        qty: 1,
-        image: 'https://images.unsplash.com/photo-1479064555552-3ef4979f8908?auto=format&fit=crop&w=400&q=80',
-      },
-    ],
-  },
-  {
-    id: 'CF-97430',
-    date: 'Oct 28, 2026',
-    total: 4499,
-    status: 'Delivered',
-    courier: 'Delhivery Express • Delivered on Oct 31',
-    estimatedDelivery: 'Oct 31, 2026',
-    currentStage: 4,
-    items: [
-      {
-        title: 'Minimalist Suede Tassel Loafers',
-        size: '42',
-        color: 'Dark Chocolate',
-        price: 4499,
-        qty: 1,
-        image: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?auto=format&fit=crop&w=400&q=80',
-      },
-    ],
-  },
-];
+const VALID_TABS = ['orders', 'wishlist', 'tickets', 'profile', 'addresses', 'security'];
 
 export default function CustomerDashboard() {
-  const { customer, logoutCustomer } = useAuth();
-  const { addToCart } = useCart();
+  const { customer, logoutCustomer, updateCustomer } = useAuth();
+  const { addToCart, cartItems } = useCart();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [activeTab, setActiveTab] = useState(() => {
     const tabParam = searchParams.get('tab');
-    return ['orders', 'profile', 'addresses', 'security'].includes(tabParam) ? tabParam : 'orders';
-  }); // 'orders' | 'profile' | 'addresses' | 'security'
+    return VALID_TABS.includes(tabParam) ? tabParam : 'orders';
+  });
 
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (['orders', 'profile', 'addresses', 'security'].includes(tabParam)) {
+    if (VALID_TABS.includes(tabParam)) {
       setActiveTab(tabParam);
     }
   }, [searchParams]);
-  const [selectedOrder, setSelectedOrder] = useState(CUSTOMER_ORDERS[0]);
-  const [copiedTracking, setCopiedTracking] = useState(false);
 
-  // Measurements Form state
-  const [measurements, setMeasurements] = useState({
-    height: "5'11\" (180 cm)",
-    weight: '74 kg',
-    chest: '40 inches',
-    waist: '32 inches',
-    shoulder: '18 inches',
-    preferredFit: 'Tailored / Slim Contemporary',
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+  };
+
+  // Toasts
+  const [toasts, setToasts] = useState([]);
+  const addToast = (type, title, message) => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, type, title, message }]);
+  };
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  // Shared persisted customer states via reusable hook
+  const [orders, setOrders] = useLocalStorageState('cf_customer_orders', DEFAULT_SAMPLE_ORDERS);
+  const [wishlistItems, setWishlistItems] = useLocalStorageState('cf_wishlist', () => PRODUCTS.slice(0, 3));
+  const [reviews, setReviews] = useLocalStorageState('cf_product_reviews', []);
+  const [complaints, setComplaints] = useLocalStorageState('cf_customer_complaints', DEFAULT_SAMPLE_COMPLAINTS);
+  const [addresses, setAddresses] = useLocalStorageState('cf_saved_addresses', INITIAL_SAVED_ADDRESSES);
+
+  // Seed defaults cleanly if localStorage held empty array for orders/complaints on initial demo visit
+  useEffect(() => {
+    if (Array.isArray(orders) && orders.length === 0) {
+      setOrders(DEFAULT_SAMPLE_ORDERS);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Array.isArray(complaints) && complaints.length === 0) {
+      setComplaints(DEFAULT_SAMPLE_COMPLAINTS);
+    }
+  }, []);
+
+  // Profile Form State (email is fixed/readOnly)
+  const [profileForm, setProfileForm] = useState({
+    name: customer?.name || '',
+    phone: customer?.phone || '',
+    profilePic: customer?.profilePic || '',
   });
-  const [isSavedNotice, setIsSavedNotice] = useState(false);
+
+  useEffect(() => {
+    setProfileForm({
+      name: customer?.name || '',
+      phone: customer?.phone || '',
+      profilePic: customer?.profilePic || '',
+    });
+  }, [customer]);
+
+  // Support & Review Modals State
+  const [reviewModal, setReviewModal] = useState({ open: false, orderId: '', item: null });
+  const [complaintModal, setComplaintModal] = useState({ open: false, order: null });
+  const [cancelModal, setCancelModal] = useState({ open: false, order: null });
+  const [activeTicketId, setActiveTicketId] = useState(null);
+
+  const activeTicket = useMemo(
+    () => complaints.find((t) => t.id === activeTicketId) || null,
+    [complaints, activeTicketId]
+  );
+
+  // KPIs
+  const totalSpent = useMemo(
+    () =>
+      orders
+        .filter((o) => o.status !== 'Cancelled')
+        .reduce((sum, o) => sum + (Number(o.total) || 0), 0),
+    [orders]
+  );
+  const defaultAddress = addresses[0] || null;
 
   const handleLogout = () => {
     logoutCustomer();
     navigate('/login');
   };
 
-  const handleSaveMeasurements = (e) => {
-    e.preventDefault();
-    setIsSavedNotice(true);
-    setTimeout(() => setIsSavedNotice(false), 2000);
+  // Profile Handlers
+  const handleProfilePicChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      addToast('error', 'Image Too Large', 'Please choose an image smaller than 2 MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      setProfileForm((prev) => ({ ...prev, profilePic: dataUrl }));
+      updateCustomer({ profilePic: dataUrl });
+      addToast('success', 'Photo Updated', 'Your profile photo has been updated.');
+    };
+    reader.readAsDataURL(file);
   };
+
+  const handleRemoveProfilePic = () => {
+    setProfileForm((prev) => ({ ...prev, profilePic: '' }));
+    updateCustomer({ profilePic: '' });
+    addToast('info', 'Photo Removed', 'Profile photo has been reset to your initials.');
+  };
+
+  const handleSaveProfile = (e) => {
+    e.preventDefault();
+    if (!profileForm.name.trim()) {
+      addToast('error', 'Name Required', 'Please enter your full name.');
+      return;
+    }
+    updateCustomer({
+      name: profileForm.name.trim(),
+      phone: profileForm.phone.trim(),
+      profilePic: profileForm.profilePic,
+    });
+    addToast('success', 'Profile Updated', 'Your name and phone number have been saved.');
+  };
+
+  // Product Redirect
+  const handleOpenProduct = (productId) => {
+    if (productId) navigate(`/product/${productId}`);
+  };
+
+  // Order Handlers
+  const handleViewReceipt = (order) => {
+    navigate('/order-confirmation', {
+      state: {
+        orderId: order.id,
+        items: order.items.map((item, idx) => ({
+          id: item.id || idx,
+          title: item.title,
+          variant: item.size || 'Standard',
+          price: item.price,
+          quantity: item.qty || 1,
+          imageUrl: item.image,
+        })),
+        subtotal: order.subtotal || order.total,
+        shippingFee: order.shippingFee ?? 0,
+        taxFee: order.taxFee ?? 0,
+        couponDiscount: order.couponDiscount ?? 0,
+        totalAmount: order.total,
+        paymentMethod: order.paymentMethod || 'cod',
+        gatewayResponse: order.gatewayResponse || {
+          gateway: 'CartFlow Checkout',
+          transactionId: `TXN-${order.id}`,
+          method: 'Standard',
+          paymentState: order.status === 'Cancelled' ? 'Refunded' : 'Captured',
+          status: 'SUCCESS',
+        },
+        deliveryAddress: order.deliveryAddress || defaultAddress || {
+          name: customer?.name || 'Customer',
+          address: 'Saved Delivery Address',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          postalCode: '400018',
+        },
+        estimatedDeliveryDate: order.estimatedDelivery,
+        createdAt: order.createdAt || order.date,
+      },
+    });
+  };
+
+  const handleConfirmCancelOrder = ({ reason, note }) => {
+    const orderId = cancelModal.order?.id;
+    if (!orderId) return;
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.id === orderId
+          ? {
+              ...o,
+              status: 'Cancelled',
+              cancelReason: reason,
+              cancelNote: note.trim(),
+              cancelledAt: new Date().toLocaleDateString('en-IN', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              }),
+              courier: `Order cancelled (${reason})`,
+            }
+          : o
+      )
+    );
+    setCancelModal({ open: false, order: null });
+    addToast('info', 'Order Cancelled', `Order ${orderId} cancelled: ${reason}`);
+  };
+
+  const handleBuyAgain = (item, idx) => {
+    addToCart(
+      {
+        id: item.id || `reorder-${idx}`,
+        title: item.title,
+        price: item.price,
+        imageUrl: item.image,
+      },
+      1,
+      item.size || 'Standard'
+    );
+    addToast('success', 'Added to Bag', `${item.title} added to your shopping bag.`);
+  };
+
+  // Review & Complaint Handlers
+  const hasReviewedItem = (orderId, productId) =>
+    reviews.some((r) => r.orderId === orderId && r.productId === productId);
+
+  const handleSubmitReview = ({ rating, comment, images }) => {
+    const productId = reviewModal.item?.id;
+    const customerName = customer?.name || 'Verified Buyer';
+    const newReview = {
+      id: `rev-${Date.now()}`,
+      orderId: reviewModal.orderId,
+      productId,
+      productTitle: reviewModal.item?.title,
+      userName: customerName,
+      avatar: customerName.charAt(0).toUpperCase(),
+      rating,
+      comment,
+      images: images || [],
+      verifiedBuyer: true,
+      helpfulCount: 1,
+      date: 'Just now',
+    };
+
+    // Track reviewed order items & sync with ProductReviews storage for that product
+    setReviews((prev) => [newReview, ...prev]);
+    if (productId) {
+      try {
+        const key = `cf_reviews_p_${productId}`;
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        localStorage.setItem(key, JSON.stringify([newReview, ...existing]));
+      } catch {
+        // Ignore storage errors
+      }
+    }
+
+    setReviewModal({ open: false, orderId: '', item: null });
+    addToast('success', 'Review Submitted', 'Thank you! Your review is now live on the product page.');
+  };
+
+  const handleSubmitComplaint = (complaintForm) => {
+    const orderId = complaintModal.order?.id;
+    if (!orderId) return;
+    if (!complaintForm.description.trim()) {
+      addToast('error', 'Message Required', 'Please briefly explain the issue.');
+      return;
+    }
+    const ticketId = `TKT-${Math.floor(1000 + Math.random() * 9000)}`;
+    const nowStr = new Date().toLocaleString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const newTicket = {
+      id: ticketId,
+      orderId,
+      affectedItem: complaintForm.affectedItem || 'Entire Order',
+      category: complaintForm.category,
+      description: complaintForm.description.trim(),
+      attachments: complaintForm.attachments || [],
+      status: 'Open',
+      createdAt: nowStr,
+      timelogs: [
+        {
+          id: `log-${Date.now()}`,
+          status: 'Open',
+          actor: customer?.name || 'Customer',
+          message: `Ticket raised for Order ${orderId} — ${complaintForm.category}.`,
+          timestamp: nowStr,
+          attachments: complaintForm.attachments || [],
+        },
+      ],
+    };
+    setComplaints((prev) => [newTicket, ...prev]);
+    setComplaintModal({ open: false, order: null });
+    addToast('success', 'Ticket Raised', `Ticket ${ticketId} created for Order ${orderId}.`);
+  };
+
+  const handleAddTicketReply = ({ message, attachments }) => {
+    if (!activeTicket) return;
+    const nowStr = new Date().toLocaleString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const newLog = {
+      id: `log-${Date.now()}`,
+      status: activeTicket.status,
+      actor: customer?.name || 'Customer',
+      message,
+      attachments: attachments || [],
+      timestamp: nowStr,
+    };
+    setComplaints((prev) =>
+      prev.map((t) =>
+        t.id === activeTicket.id
+          ? { ...t, timelogs: [...getTicketTimelogs(t), newLog] }
+          : t
+      )
+    );
+    addToast('success', 'Update Added', 'Your message has been added to the ticket timelog.');
+  };
+
+  // Wishlist Handlers
+  const handleMoveWishlistToCart = (item) => {
+    addToCart(
+      {
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        imageUrl: item.imageUrl,
+      },
+      1,
+      item.sizes?.[0] || 'Standard'
+    );
+    addToast('success', 'Added to Bag', `${item.title} added to your shopping bag.`);
+  };
+
+  const handleRemoveFromWishlist = (productId) => {
+    setWishlistItems((prev) => prev.filter((item) => item.id !== productId));
+    addToast('info', 'Removed', 'Item removed from your wishlist.');
+  };
+
+  // Address Handlers
+  const handleSaveAddress = ({ isDefault, isEdit, ...cleanAddr }) => {
+    setAddresses((prev) => {
+      const filtered = prev.filter((a) => a.id !== cleanAddr.id);
+      if (isDefault) return [cleanAddr, ...filtered];
+      if (isEdit) return prev.map((a) => (a.id === cleanAddr.id ? cleanAddr : a));
+      return [...filtered, cleanAddr];
+    });
+    addToast('success', isEdit ? 'Address Updated' : 'Address Added', 'Your saved addresses have been updated.');
+  };
+
+  const handleDeleteAddress = (id) => {
+    setAddresses((prev) => prev.filter((a) => a.id !== id));
+    addToast('info', 'Address Removed', 'Delivery address has been deleted.');
+  };
+
+  const handleSetDefaultAddress = (id) => {
+    setAddresses((prev) => {
+      const target = prev.find((a) => a.id === id);
+      return target ? [target, ...prev.filter((a) => a.id !== id)] : prev;
+    });
+    addToast('success', 'Default Updated', 'Primary delivery address updated.');
+  };
+
+  const sidebarItems = [
+    { id: 'orders', label: 'My Orders', icon: Package, count: orders.length },
+    { id: 'wishlist', label: 'Wishlist', icon: Heart, count: wishlistItems.length },
+    { id: 'tickets', label: 'Raised Tickets', icon: Ticket, count: complaints.length },
+    { id: 'profile', label: 'Profile Details', icon: User },
+    { id: 'addresses', label: 'Saved Addresses', icon: MapPin, count: addresses.length },
+    { id: 'security', label: 'Security', icon: Shield },
+  ];
 
   return (
     <div className="cf-store-container cf-customer-dashboard-wrap">
-      {/* 1. Header Profile Banner */}
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+
+      {/* Header Profile Banner */}
       <div className="cf-cust-header-banner">
         <div className="cf-cust-profile-cell">
           <div className="cf-cust-avatar-large">
-            {customer?.avatar || customer?.name?.charAt(0) || 'C'}
+            {customer?.profilePic ? (
+              <img src={customer.profilePic} alt={customer?.name || 'User'} className="cf-cust-avatar-img" />
+            ) : (
+              customer?.avatar || customer?.name?.charAt(0) || 'C'
+            )}
           </div>
           <div className="cf-cust-user-info">
             <div className="cf-cust-name-row">
-              <h1 className="cf-cust-name">{customer?.name || 'Valued Client'}</h1>
-              <span className="cf-cust-badge-vip">{customer?.tier || 'VIP MEMBER'}</span>
+              <h1 className="cf-cust-name">{customer?.name || 'CartFlow User'}</h1>
             </div>
             <p className="cf-cust-email-line">
-              {customer?.email || 'client@cartflow.luxury'} • Member since {customer?.joined || '2025'}
+              {customer?.email || 'customer@cartflow.in'}
+              {customer?.phone ? ` • ${customer.phone}` : ''}
             </p>
           </div>
         </div>
 
-        {/* Quick KPI Strip */}
         <div className="cf-cust-stats-strip">
           <div className="cf-cust-stat-item">
-            <span className="cf-cust-stat-val">3</span>
+            <span className="cf-cust-stat-val">{orders.length}</span>
             <span className="cf-cust-stat-label">Orders</span>
           </div>
           <div className="cf-cust-stat-divider" />
           <div className="cf-cust-stat-item">
-            <span className="cf-cust-stat-val">₹15,396</span>
-            <span className="cf-cust-stat-label">Lifetime Value</span>
+            <span className="cf-cust-stat-val">₹{totalSpent.toLocaleString('en-IN')}</span>
+            <span className="cf-cust-stat-label">Total Spent</span>
           </div>
           <div className="cf-cust-stat-divider" />
           <div className="cf-cust-stat-item">
-            <span className="cf-cust-stat-val">2</span>
-            <span className="cf-cust-stat-label">Saved Addresses</span>
+            <span className="cf-cust-stat-val">{wishlistItems.length}</span>
+            <span className="cf-cust-stat-label">Wishlist</span>
+          </div>
+          <div className="cf-cust-stat-divider" />
+          <div className="cf-cust-stat-item">
+            <span className="cf-cust-stat-val">{complaints.length}</span>
+            <span className="cf-cust-stat-label">Tickets</span>
           </div>
           <div className="cf-cust-stat-divider" />
           <Button
@@ -185,365 +463,121 @@ export default function CustomerDashboard() {
         </div>
       </div>
 
-      {/* 2. Main Dashboard Split Layout */}
+      {/* Dashboard Split Layout */}
       <div className="cf-cust-layout-grid">
-        {/* Left Navigation Sidebar */}
         <aside className="cf-cust-sidebar">
           <div className="cf-cust-nav-menu">
-            <button
-              type="button"
-              className={`cf-cust-nav-link ${activeTab === 'orders' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('orders')}
-            >
-              <Package size={17} />
-              <span>My Orders & Tracking</span>
-              <span className="cf-cust-nav-count">3</span>
-            </button>
-
-            <button
-              type="button"
-              className={`cf-cust-nav-link ${activeTab === 'profile' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('profile')}
-            >
-              <User size={17} />
-              <span>Profile & Sizing</span>
-            </button>
-
-            <button
-              type="button"
-              className={`cf-cust-nav-link ${activeTab === 'addresses' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('addresses')}
-            >
-              <MapPin size={17} />
-              <span>Saved Addresses</span>
-            </button>
-
-            <button
-              type="button"
-              className={`cf-cust-nav-link ${activeTab === 'security' ? 'is-active' : ''}`}
-              onClick={() => setActiveTab('security')}
-            >
-              <Shield size={17} />
-              <span>Security & Password</span>
-            </button>
+            {sidebarItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`cf-cust-nav-link ${activeTab === item.id ? 'is-active' : ''}`}
+                  onClick={() => handleTabChange(item.id)}
+                >
+                  <Icon size={17} />
+                  <span>{item.label}</span>
+                  {item.count !== undefined && (
+                    <span className="cf-cust-nav-count">{item.count}</span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Quick Concierge Support Box */}
           <div className="cf-cust-concierge-card">
-            <h4>Private Client Concierge</h4>
-            <p>Need bespoke tailoring alteration or delivery priority dispatch?</p>
-            <a href="mailto:concierge@cartflow.luxury" className="cf-cust-concierge-link">
-              Contact Stylist <ArrowRight size={13} />
-            </a>
+            <h4>Shopping Bag ({cartItems.length})</h4>
+            <p>Ready to checkout or explore new arrivals in the store?</p>
+            <Link to={cartItems.length > 0 ? '/cart' : '/shop'} className="cf-cust-concierge-link">
+              {cartItems.length > 0 ? 'Go to Cart' : 'Browse Store'} <ArrowRight size={13} />
+            </Link>
           </div>
         </aside>
 
-        {/* Right Tab Content Panel */}
         <main className="cf-cust-content-area">
-          {/* TAB 1: ORDERS & TRACKING */}
           {activeTab === 'orders' && (
-            <div className="cf-cust-tab-panel">
-              <div className="cf-panel-header">
-                <div>
-                  <h2 className="cf-panel-title">Order History & Live Tracking</h2>
-                  <p className="cf-panel-subtitle">Review shipments, tracking waybills, and invoice downloads.</p>
-                </div>
-              </div>
-
-              {/* Order Cards List */}
-              <div className="cf-orders-cards-list">
-                {CUSTOMER_ORDERS.map((order) => {
-                  const isExpanded = selectedOrder?.id === order.id;
-
-                  return (
-                    <div
-                      key={order.id}
-                      className={`cf-order-box-card ${isExpanded ? 'is-selected' : ''}`}
-                    >
-                      {/* Order Card Top Bar */}
-                      <div
-                        className="cf-order-box-header"
-                        onClick={() => setSelectedOrder(order)}
-                      >
-                        <div className="cf-order-id-meta">
-                          <span className="cf-order-ref">{order.id}</span>
-                          <span className="cf-order-date">Ordered on {order.date}</span>
-                        </div>
-
-                        <div className="cf-order-status-group">
-                          <span className="cf-order-amount">₹{order.total.toLocaleString('en-IN')}</span>
-                          <Badge
-                            variant={
-                              order.status === 'Delivered'
-                                ? 'completed'
-                                : order.status === 'In Transit'
-                                ? 'processing'
-                                : 'warning'
-                            }
-                            dot
-                          >
-                            {order.status}
-                          </Badge>
-                        </div>
-                      </div>
-
-                      {/* Live Fulfillment Progress Tracker */}
-                      <div className="cf-order-timeline-box">
-                        <div className="cf-timeline-steps">
-                          {[
-                            { step: 1, label: 'Confirmed' },
-                            { step: 2, label: 'Handcrafted' },
-                            { step: 3, label: 'In Transit' },
-                            { step: 4, label: 'Delivered' },
-                          ].map((s) => {
-                            const isDone = order.currentStage >= s.step;
-                            const isCurrent = order.currentStage === s.step;
-
-                            return (
-                              <div
-                                key={s.step}
-                                className={`cf-timeline-node ${isDone ? 'is-done' : ''} ${
-                                  isCurrent ? 'is-current' : ''
-                                }`}
-                              >
-                                <div className="cf-timeline-circle">
-                                  {isDone ? <Check size={12} /> : s.step}
-                                </div>
-                                <span className="cf-timeline-label">{s.label}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-
-                        <div className="cf-timeline-courier-line">
-                          <Truck size={15} color="var(--cf-accent-primary)" />
-                          <span>{order.courier}</span>
-                          <span className="cf-est-arrival">
-                            • Est. Arrival: <strong>{order.estimatedDelivery}</strong>
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Order Items Breakdown */}
-                      <div className="cf-order-items-grid">
-                        {order.items.map((item, idx) => (
-                          <div key={idx} className="cf-order-item-row">
-                            <img src={item.image} alt={item.title} className="cf-order-thumb" />
-                            <div className="cf-order-item-info">
-                              <h4 className="cf-order-item-title">{item.title}</h4>
-                              <p className="cf-order-item-spec">
-                                Size: {item.size} • Color: {item.color} • Qty: {item.qty}
-                              </p>
-                              <span className="cf-order-item-price">₹{item.price.toLocaleString('en-IN')}</span>
-                            </div>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => {
-                                addToCart({ id: idx, title: item.title, price: item.price, imageUrl: item.image }, 1);
-                              }}
-                            >
-                              Re-Order
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Order Footer Actions */}
-                      <div className="cf-order-footer-bar">
-                        <span className="cf-return-window-notice">
-                          Eligible for complimentary return / exchange until 30 days post delivery.
-                        </span>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            icon={Download}
-                            onClick={() => alert(`Downloading official PDF Invoice for ${order.id}`)}
-                          >
-                            Tax Invoice
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            icon={RotateCcw}
-                            onClick={() => alert(`Exchange ticket initiated for ${order.id}. Support concierge notified.`)}
-                          >
-                            Return / Exchange
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <OrdersTab
+              orders={orders}
+              complaints={complaints}
+              hasReviewedItem={hasReviewedItem}
+              onOpenProduct={handleOpenProduct}
+              onOpenReview={(orderId, item) => setReviewModal({ open: true, orderId, item })}
+              onOpenComplaint={(order) => setComplaintModal({ open: true, order })}
+              onOpenTicket={setActiveTicketId}
+              onViewReceipt={handleViewReceipt}
+              onCancelOrder={(order) => setCancelModal({ open: true, order })}
+              onBuyAgain={handleBuyAgain}
+            />
           )}
 
-          {/* TAB 2: PROFILE & SIZING PREFERENCES */}
+          {activeTab === 'wishlist' && (
+            <WishlistTab
+              wishlistItems={wishlistItems}
+              onOpenProduct={handleOpenProduct}
+              onMoveToCart={handleMoveWishlistToCart}
+              onRemove={handleRemoveFromWishlist}
+            />
+          )}
+
+          {activeTab === 'tickets' && (
+            <TicketsTab
+              complaints={complaints}
+              onOpenTicket={setActiveTicketId}
+              onGoToOrders={() => handleTabChange('orders')}
+            />
+          )}
+
           {activeTab === 'profile' && (
-            <div className="cf-cust-tab-panel">
-              <div className="cf-panel-header">
-                <div>
-                  <h2 className="cf-panel-title">Client Profile & Sizing Preferences</h2>
-                  <p className="cf-panel-subtitle">
-                    Manage your contact information, delivery defaults, and tailored garment fit preferences.
-                  </p>
-                </div>
-              </div>
-
-              <form onSubmit={handleSaveMeasurements} className="cf-measurements-form">
-                {isSavedNotice && (
-                  <div className="cf-measurements-saved-banner">
-                    <CheckCircle2 size={16} /> Measurement specifications updated successfully!
-                  </div>
-                )}
-
-                <div className="cf-form-row-2">
-                  <Input
-                    label="Full Name"
-                    value={customer?.name || 'Vikramaditya Roy'}
-                    readOnly
-                  />
-                  <Input
-                    label="Email Address"
-                    value={customer?.email || 'client@cartflow.luxury'}
-                    readOnly
-                  />
-                </div>
-
-                <div className="cf-form-row-2">
-                  <Input
-                    label="Height"
-                    value={measurements.height}
-                    onChange={(e) => setMeasurements({ ...measurements, height: e.target.value })}
-                  />
-                  <Input
-                    label="Weight"
-                    value={measurements.weight}
-                    onChange={(e) => setMeasurements({ ...measurements, weight: e.target.value })}
-                  />
-                </div>
-
-                <div className="cf-form-row-3">
-                  <Input
-                    label="Chest Circumference"
-                    value={measurements.chest}
-                    onChange={(e) => setMeasurements({ ...measurements, chest: e.target.value })}
-                  />
-                  <Input
-                    label="Waist Size"
-                    value={measurements.waist}
-                    onChange={(e) => setMeasurements({ ...measurements, waist: e.target.value })}
-                  />
-                  <Input
-                    label="Shoulder Width"
-                    value={measurements.shoulder}
-                    onChange={(e) => setMeasurements({ ...measurements, shoulder: e.target.value })}
-                  />
-                </div>
-
-                <div className="cf-form-actions-bar">
-                  <Button type="submit" variant="primary">
-                    Update Sizing Profile
-                  </Button>
-                </div>
-              </form>
-            </div>
+            <ProfileTab
+              customer={customer}
+              profileForm={profileForm}
+              setProfileForm={setProfileForm}
+              defaultAddress={defaultAddress}
+              onProfilePicChange={handleProfilePicChange}
+              onRemoveProfilePic={handleRemoveProfilePic}
+              onSaveProfile={handleSaveProfile}
+              onManageAddresses={() => handleTabChange('addresses')}
+            />
           )}
 
-          {/* TAB 4: SAVED ADDRESSES */}
           {activeTab === 'addresses' && (
-            <div className="cf-cust-tab-panel">
-              <div className="cf-panel-header">
-                <div>
-                  <h2 className="cf-panel-title">Saved Shipping Destinations</h2>
-                  <p className="cf-panel-subtitle">Manage domestic and international express delivery locations.</p>
-                </div>
-                <Button variant="outline" size="sm" icon={Plus} onClick={() => alert('New Address Modal')}>
-                  Add Address
-                </Button>
-              </div>
-
-              <div className="cf-addresses-grid">
-                <div className="cf-address-card is-default">
-                  <div className="cf-address-top">
-                    <span className="cf-address-type">PRIMARY RESIDENCE</span>
-                    <Badge variant="completed">DEFAULT SHIPPING</Badge>
-                  </div>
-                  <h4 className="cf-address-recipient">Vikramaditya Roy</h4>
-                  <p className="cf-address-text">
-                    Penthouse 4B, The Oberoi Sky Heights<br />
-                    Worli Sea Face, South Mumbai<br />
-                    Maharashtra - 400018<br />
-                    Phone: +91 98765 43210
-                  </p>
-                  <div className="cf-address-actions">
-                    <button type="button" className="cf-addr-btn"><Edit2 size={13} /> Edit</button>
-                  </div>
-                </div>
-
-                <div className="cf-address-card">
-                  <div className="cf-address-top">
-                    <span className="cf-address-type">OFFICE / EXECUTIVE STUDIO</span>
-                  </div>
-                  <h4 className="cf-address-recipient">Vikramaditya Roy</h4>
-                  <p className="cf-address-text">
-                    Suite 902, One Horizon Center<br />
-                    Golf Course Road, DLF Phase 5<br />
-                    Gurugram, Haryana - 122002<br />
-                    Phone: +91 98765 43210
-                  </p>
-                  <div className="cf-address-actions">
-                    <button type="button" className="cf-addr-btn"><Edit2 size={13} /> Edit</button>
-                    <button type="button" className="cf-addr-btn is-make-default">Set Default</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <AddressesTab
+              customer={customer}
+              addresses={addresses}
+              onSaveAddress={handleSaveAddress}
+              onDeleteAddress={handleDeleteAddress}
+              onSetDefaultAddress={handleSetDefaultAddress}
+            />
           )}
 
-          {/* TAB 5: SECURITY & PASSWORDS */}
           {activeTab === 'security' && (
-            <div className="cf-cust-tab-panel">
-              <div className="cf-panel-header">
-                <div>
-                  <h2 className="cf-panel-title">Security & Credential Management</h2>
-                  <p className="cf-panel-subtitle">Ensure your account and payment token credentials remain secure.</p>
-                </div>
-              </div>
-
-              <div className="cf-security-box">
-                <div className="cf-security-row">
-                  <div>
-                    <h4>Password Authentication</h4>
-                    <p>Last changed 24 days ago. Strong alphanumeric requirement active.</p>
-                  </div>
-                  <Button variant="outline" size="sm" onClick={() => alert('Change password modal')}>
-                    Update Password
-                  </Button>
-                </div>
-
-                <div className="cf-security-row">
-                  <div>
-                    <h4>Two-Factor Authentication (2FA)</h4>
-                    <p>Protect account orders with SMS and authenticator app confirmation.</p>
-                  </div>
-                  <Badge variant="completed">ACTIVE • SMS VERIFIED</Badge>
-                </div>
-
-                <div className="cf-security-row">
-                  <div>
-                    <h4>Connected Identity Providers</h4>
-                    <p>Google Workspace OAuth linked to {customer?.email || 'vikram.roy@cartflow.luxury'}</p>
-                  </div>
-                  <Badge variant="processing">GOOGLE LINKED</Badge>
-                </div>
-              </div>
-            </div>
+            <SecurityTab
+              customer={customer}
+              onPasswordUpdated={() =>
+                addToast('success', 'Password Updated', 'Your account password has been changed.')
+              }
+              onLogout={handleLogout}
+            />
           )}
         </main>
       </div>
+
+      <OrderSupportModals
+        reviewModal={reviewModal}
+        onCloseReview={() => setReviewModal({ open: false, orderId: '', item: null })}
+        onSubmitReview={handleSubmitReview}
+        complaintModal={complaintModal}
+        onCloseComplaint={() => setComplaintModal({ open: false, order: null })}
+        onSubmitComplaint={handleSubmitComplaint}
+        onUploadError={(msg) => addToast('error', 'Upload Error', msg)}
+        cancelModal={cancelModal}
+        onCloseCancel={() => setCancelModal({ open: false, order: null })}
+        onConfirmCancel={handleConfirmCancelOrder}
+        activeTicket={activeTicket}
+        onCloseTicket={() => setActiveTicketId(null)}
+        onAddTicketReply={handleAddTicketReply}
+      />
     </div>
   );
 }
