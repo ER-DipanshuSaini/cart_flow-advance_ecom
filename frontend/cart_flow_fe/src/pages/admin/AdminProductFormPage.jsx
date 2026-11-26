@@ -7,10 +7,8 @@ import {
   X,
   Upload,
   ExternalLink,
-  Image as ImageIcon,
   Tag,
   Clock,
-  Link2,
   HelpCircle,
   Sparkles,
   FileText,
@@ -59,6 +57,14 @@ import {
 } from '../../data/inventoryProducts';
 import './AdminConsole.css';
 
+const MAX_MEDIA_IMAGES = 20;
+const MAX_MEDIA_FILE_MB = 5;
+const MAX_MEDIA_FILE_BYTES = MAX_MEDIA_FILE_MB * 1024 * 1024;
+const STOREFRONT_IMAGE_RATIO = 5 / 6;
+const IMAGE_RATIO_TOLERANCE = 0.02;
+const ALLOWED_IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const ALLOWED_IMAGE_EXT_RE = /\.(jpe?g|png|webp)$/i;
+const MEDIA_INPUT_ACCEPT = '.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp';
 const MAX_CARE_POINTS = 20;
 const MAX_FAQS = 20;
 const MAX_CARE_HEADING_CHARS = 50;
@@ -78,6 +84,15 @@ function generateNextSku(products, category) {
   const nextNum =
     products.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0) + 1;
   return `CF-${prefix}-${String(nextNum).padStart(3, '0')}`;
+}
+
+function getImageDimensions(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
 }
 
 function toShortSnippet(text = '', limit = 140) {
@@ -109,10 +124,14 @@ function buildInitialForm(existingProduct, existingProducts) {
       reorderLevel: String(existingProduct.reorderLevel ?? 10),
       status: existingProduct.status || 'Active',
       imageUrl: existingProduct.imageUrl || '',
-      galleryImages: Array.isArray(existingProduct.galleryImages)
-        ? existingProduct.galleryImages
-        : [existingProduct.imageUrl].filter(Boolean),
-      colorImages: existingProduct.colorImages || {},
+      galleryImages: Array.from(
+        new Set(
+          [
+            existingProduct.imageUrl,
+            ...(Array.isArray(existingProduct.galleryImages) ? existingProduct.galleryImages : []),
+          ].filter(Boolean)
+        )
+      ).slice(0, MAX_MEDIA_IMAGES),
       tags: Array.isArray(existingProduct.tags) ? existingProduct.tags : [],
       variants: Array.isArray(existingProduct.variants) ? existingProduct.variants : [],
       careInstructions: normalizeCarePoints(
@@ -140,7 +159,6 @@ function buildInitialForm(existingProduct, existingProducts) {
     status: 'Draft',
     imageUrl: '',
     galleryImages: [],
-    colorImages: {},
     tags: ['New Drop', 'Menswear'],
     variants: [
       { key: 'S__#0f172a', size: 'S', color: '#0f172a', qty: 10 },
@@ -169,8 +187,6 @@ export default function AdminProductFormPage() {
   const [form, setForm] = useState(() => buildInitialForm(existingProduct, existingProducts));
 
   const [errors, setErrors] = useState({});
-  const [urlInputOpen, setUrlInputOpen] = useState(false);
-  const [newGalleryUrl, setNewGalleryUrl] = useState('');
 
   // Always default to first active size so every product renders the same compact 1-panel layout
   const [selectedSizeTab, setSelectedSizeTab] = useState(
@@ -186,10 +202,6 @@ export default function AdminProductFormPage() {
   const [detailTab, setDetailTab] = useState('specs');
   const [expandedCareIdx, setExpandedCareIdx] = useState(null);
   const [expandedFaqIdx, setExpandedFaqIdx] = useState(null);
-
-  // Color-Based Product Image Modal
-  const [editingColorHex, setEditingColorHex] = useState(null);
-  const [colorUrlDraft, setColorUrlDraft] = useState('');
 
   // Activity & Orders Modal
   const [activityModalOpen, setActivityModalOpen] = useState(false);
@@ -356,35 +368,103 @@ export default function AdminProductFormPage() {
     }));
   };
 
-  // Media Uploads
+  // Media Uploads (max 20 images, max 5MB each, JPG/PNG/WEBP only)
   const handleMultiFileUpload = async (e) => {
     const input = e.target;
-    const urls = await readFilesAsDataUrls(input.files);
+    const rawFiles = Array.from(input.files || []);
     input.value = '';
+    if (rawFiles.length === 0) return;
+
+    const availableSlots = Math.max(0, MAX_MEDIA_IMAGES - form.galleryImages.length);
+    if (availableSlots === 0) {
+      addToast('warning', 'Media Limit Reached', `Maximum ${MAX_MEDIA_IMAGES} images allowed per product.`);
+      return;
+    }
+
+    const validFiles = [];
+    let invalidTypeCount = 0;
+    let oversizedCount = 0;
+
+    rawFiles.forEach((file) => {
+      const mimeOk = ALLOWED_IMAGE_MIME_TYPES.has((file.type || '').toLowerCase());
+      const extOk = ALLOWED_IMAGE_EXT_RE.test(file.name || '');
+      if (!mimeOk && !extOk) {
+        invalidTypeCount += 1;
+        return;
+      }
+      if (file.size > MAX_MEDIA_FILE_BYTES) {
+        oversizedCount += 1;
+        return;
+      }
+      validFiles.push(file);
+    });
+
+    if (invalidTypeCount > 0) {
+      addToast(
+        'warning',
+        'Unsupported Format',
+        `${invalidTypeCount} file(s) skipped. Only JPG, JPEG, PNG, and WEBP images are supported.`
+      );
+    }
+    if (oversizedCount > 0) {
+      addToast(
+        'warning',
+        'File Too Large',
+        `${oversizedCount} file(s) exceeded the ${MAX_MEDIA_FILE_MB}MB size limit and were skipped.`
+      );
+    }
+    if (validFiles.length === 0) return;
+
+    const urls = await readFilesAsDataUrls(validFiles);
     if (urls.length === 0) return;
 
+    const dimensionChecks = await Promise.all(
+      urls.map(async (url) => {
+        const dims = await getImageDimensions(url);
+        if (!dims || !dims.width || !dims.height) return { url, valid: false };
+        const ratio = dims.width / dims.height;
+        return {
+          url,
+          valid: Math.abs(ratio - STOREFRONT_IMAGE_RATIO) <= IMAGE_RATIO_TOLERANCE,
+        };
+      })
+    );
+
+    const ratioValidUrls = dimensionChecks.filter((item) => item.valid).map((item) => item.url);
+    const invalidRatioCount = dimensionChecks.length - ratioValidUrls.length;
+    if (invalidRatioCount > 0) {
+      addToast(
+        'warning',
+        'Invalid Aspect Ratio',
+        `${invalidRatioCount} file(s) skipped. Storefront requires a 5:6 ratio (e.g. 1000×1200 px).`
+      );
+    }
+    if (ratioValidUrls.length === 0) return;
+
+    const uniqueNew = ratioValidUrls.filter((url) => !form.galleryImages.includes(url));
+    if (uniqueNew.length === 0) {
+      addToast('info', 'Duplicate Image', 'Selected image(s) are already in the gallery.');
+      return;
+    }
+
+    const accepted = uniqueNew.slice(0, availableSlots);
+    if (uniqueNew.length > availableSlots) {
+      addToast(
+        'warning',
+        'Media Limit Reached',
+        `Added ${accepted.length} image(s). Maximum ${MAX_MEDIA_IMAGES} images allowed per product.`
+      );
+    }
+
     setForm((prev) => {
-      const uniqueNew = urls.filter((url) => !prev.galleryImages.includes(url));
+      const nextUnique = accepted.filter((url) => !prev.galleryImages.includes(url));
+      const nextGallery = [...prev.galleryImages, ...nextUnique].slice(0, MAX_MEDIA_IMAGES);
       return {
         ...prev,
-        imageUrl: prev.imageUrl || urls[0],
-        galleryImages: [...prev.galleryImages, ...uniqueNew],
+        imageUrl: prev.imageUrl || nextGallery[0] || '',
+        galleryImages: nextGallery,
       };
     });
-  };
-
-  const handleAddGalleryUrl = () => {
-    const url = newGalleryUrl.trim();
-    if (!url) return;
-    setForm((prev) => ({
-      ...prev,
-      imageUrl: prev.imageUrl || url,
-      galleryImages: prev.galleryImages.includes(url)
-        ? prev.galleryImages
-        : [...prev.galleryImages, url],
-    }));
-    setNewGalleryUrl('');
-    setUrlInputOpen(false);
   };
 
   const handleRemoveGalleryImage = (url) => {
@@ -397,51 +477,6 @@ export default function AdminProductFormPage() {
         imageUrl: nextCover,
       };
     });
-  };
-
-  // Color-Based Image Assignment
-  const openColorImageModal = (hex) => {
-    const normalized = normalizeColorHex(hex);
-    setEditingColorHex(normalized);
-    setColorUrlDraft(form.colorImages?.[normalized] || '');
-  };
-
-  const assignColorImage = (url) => {
-    if (!editingColorHex) return;
-    const cleanUrl = String(url || '').trim();
-    setForm((prev) => {
-      const nextColorImages = { ...(prev.colorImages || {}) };
-      if (cleanUrl) {
-        nextColorImages[editingColorHex] = cleanUrl;
-      } else {
-        delete nextColorImages[editingColorHex];
-      }
-      const nextGallery =
-        cleanUrl && !prev.galleryImages.includes(cleanUrl)
-          ? [...prev.galleryImages, cleanUrl]
-          : prev.galleryImages;
-      return {
-        ...prev,
-        colorImages: nextColorImages,
-        galleryImages: nextGallery,
-        imageUrl: prev.imageUrl || cleanUrl,
-      };
-    });
-    addToast(
-      'success',
-      'Color Image Updated',
-      cleanUrl
-        ? `Updated image for ${getColorLabel(editingColorHex)}.`
-        : `Reset custom image for ${getColorLabel(editingColorHex)}.`
-    );
-    setEditingColorHex(null);
-  };
-
-  const handleColorFileUpload = async (e) => {
-    const input = e.target;
-    const [dataUrl] = await readFilesAsDataUrls(input.files);
-    input.value = '';
-    if (dataUrl) assignColorImage(dataUrl);
   };
 
   // Care Points & FAQs shared state helpers (max 20 each)
@@ -608,6 +643,7 @@ export default function AdminProductFormPage() {
 
   const statusMeta = getProductStatusMeta(form.status);
   const extraImages = form.galleryImages.filter((u) => u !== form.imageUrl);
+  const isMediaLimitReached = form.galleryImages.length >= MAX_MEDIA_IMAGES;
 
   const handleRequestStatusChange = (nextStatus) => {
     if (nextStatus === form.status) return;
@@ -762,8 +798,8 @@ export default function AdminProductFormPage() {
 
     const coverImg = form.imageUrl.trim() || form.galleryImages[0] || FALLBACK_IMAGE;
     const cleanedGallery = Array.from(
-      new Set([coverImg, ...form.galleryImages, ...Object.values(form.colorImages || {})].filter(Boolean))
-    );
+      new Set([coverImg, ...form.galleryImages].filter(Boolean))
+    ).slice(0, MAX_MEDIA_IMAGES);
     const cleanedFaqs = form.faqs
       .filter((f) => f.q.trim() && f.a.trim())
       .slice(0, MAX_FAQS)
@@ -812,7 +848,7 @@ export default function AdminProductFormPage() {
       inStock: finalStatus === 'Active' && totalVariantStock > 0,
       imageUrl: coverImg,
       galleryImages: cleanedGallery,
-      colorImages: form.colorImages || {},
+      colorImages: {},
       tags: form.tags,
       sizes: activeSizes,
       colors: activeColors,
@@ -974,41 +1010,18 @@ export default function AdminProductFormPage() {
           <Card>
             <Card.Header
               title="Media"
-              subtitle="First tile is the cover image. Upload photos or paste image URLs."
+              subtitle={`First tile is the cover image. 5:6 ratio • JPG, PNG, or WEBP up to ${MAX_MEDIA_FILE_MB}MB each (max ${MAX_MEDIA_IMAGES}).`}
               action={
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  icon={Link2}
-                  onClick={() => setUrlInputOpen((prev) => !prev)}
+                <span
+                  className={`cf-shopify-tag-counter ${
+                    isMediaLimitReached ? 'is-limit' : ''
+                  }`}
                 >
-                  {urlInputOpen ? 'Close URL' : 'Add from URL'}
-                </Button>
+                  {form.galleryImages.length} / {MAX_MEDIA_IMAGES}
+                </span>
               }
             />
             <Card.Body>
-              {urlInputOpen && (
-                <div className="cf-shopify-url-bar">
-                  <input
-                    type="text"
-                    placeholder="https://images.unsplash.com/..."
-                    value={newGalleryUrl}
-                    onChange={(e) => setNewGalleryUrl(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddGalleryUrl();
-                      }
-                    }}
-                    className="cf-ui-input"
-                  />
-                  <Button type="button" size="sm" variant="primary" onClick={handleAddGalleryUrl}>
-                    Add Image
-                  </Button>
-                </div>
-              )}
-
               <div className="cf-shopify-media-bento">
                 <div className="cf-shopify-media-primary">
                   {form.imageUrl ? (
@@ -1036,7 +1049,7 @@ export default function AdminProductFormPage() {
                       <span>Upload Primary Image</span>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept={MEDIA_INPUT_ACCEPT}
                         multiple
                         className="cf-admin-hidden-file-input"
                         onChange={handleMultiFileUpload}
@@ -1061,7 +1074,7 @@ export default function AdminProductFormPage() {
                           className="cf-shopify-tile-cover-btn"
                           onClick={() => updateField('imageUrl', imgUrl)}
                         >
-                          Cover
+                          Set Cover
                         </button>
                         <button
                           type="button"
@@ -1074,17 +1087,19 @@ export default function AdminProductFormPage() {
                     </div>
                   ))}
 
-                  <label className="cf-shopify-upload-dropzone">
-                    <Plus size={18} />
-                    <span>Add image</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="cf-admin-hidden-file-input"
-                      onChange={handleMultiFileUpload}
-                    />
-                  </label>
+                  {!isMediaLimitReached && (
+                    <label className="cf-shopify-upload-dropzone">
+                      <Plus size={18} />
+                      <span>Add image</span>
+                      <input
+                        type="file"
+                        accept={MEDIA_INPUT_ACCEPT}
+                        multiple
+                        className="cf-admin-hidden-file-input"
+                        onChange={handleMultiFileUpload}
+                      />
+                    </label>
+                  )}
                 </div>
               </div>
             </Card.Body>
@@ -1092,11 +1107,11 @@ export default function AdminProductFormPage() {
 
           {/* 3. Pricing — moved to right sidebar */}
 
-          {/* 4. Variants (Sizes -> Nested Colors -> Color Image + Qty) */}
+          {/* 4. Variants (Sizes -> Nested Colors -> Qty) */}
           <Card>
             <Card.Header
               title="Variants (Sizes → Colors & Stock)"
-              subtitle="Select a size filter tab or view all sizes. Add colors inside each size, click thumbnail to assign color image."
+              subtitle="Select a size filter tab or view all sizes. Add colors and stock quantities inside each size."
               action={
                 <Badge variant="processing">
                   {activeSizes.length} Sizes • {activeColors.length} Colors • {totalVariantStock} Units
@@ -1279,8 +1294,6 @@ export default function AdminProductFormPage() {
                       <div className="cf-shopify-variant-rows">
                         {rows.map((variant) => {
                           const qty = Number(variant.qty) || 0;
-                          const colorImg =
-                            form.colorImages?.[variant.color] || form.imageUrl || FALLBACK_IMAGE;
                           const vBadge =
                             qty <= 0
                               ? { label: 'Out', tone: 'failed' }
@@ -1290,15 +1303,6 @@ export default function AdminProductFormPage() {
 
                           return (
                             <div key={variant.key} className="cf-shopify-variant-row">
-                              <button
-                                type="button"
-                                className="cf-shopify-variant-thumb-btn"
-                                onClick={() => openColorImageModal(variant.color)}
-                                title={`Change image for ${getColorLabel(variant.color)}`}
-                              >
-                                <img src={colorImg} alt={getColorLabel(variant.color)} />
-                              </button>
-
                               <div className="cf-shopify-variant-label">
                                 <div className="cf-admin-variant-color-cell">
                                   <span
@@ -1699,85 +1703,6 @@ export default function AdminProductFormPage() {
 
         </div>
       </form>
-
-      {/* Color-Based Image Modal */}
-      <Modal
-        isOpen={Boolean(editingColorHex)}
-        onClose={() => setEditingColorHex(null)}
-        icon={ImageIcon}
-        title={editingColorHex ? `Color Image • ${getColorLabel(editingColorHex)}` : 'Color Image'}
-        subtitle="Upload a photo, paste a URL, or pick from Product Media. Syncs to storefront color swatches."
-        maxWidth="560px"
-      >
-        {editingColorHex && (
-          <div className="cf-admin-form-stack">
-            <div className="cf-shopify-color-modal-upload">
-              <label className="cf-admin-upload-label">
-                <Upload size={15} />
-                <span>Upload Photo for {getColorLabel(editingColorHex)}</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="cf-admin-hidden-file-input"
-                  onChange={handleColorFileUpload}
-                />
-              </label>
-
-              {form.colorImages?.[editingColorHex] && (
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="outline"
-                  onClick={() => assignColorImage('')}
-                >
-                  Reset to Default Cover
-                </Button>
-              )}
-            </div>
-
-            <div className="cf-shopify-url-bar">
-              <input
-                type="text"
-                placeholder="Or paste custom image URL for this color..."
-                value={colorUrlDraft}
-                onChange={(e) => setColorUrlDraft(e.target.value)}
-                className="cf-ui-input"
-              />
-              <Button
-                type="button"
-                size="sm"
-                variant="primary"
-                onClick={() => assignColorImage(colorUrlDraft)}
-              >
-                Apply URL
-              </Button>
-            </div>
-
-            {form.galleryImages.length > 0 && (
-              <div>
-                <span className="cf-ui-label" style={{ display: 'block', marginBottom: '0.5rem' }}>
-                  Pick from uploaded Product Media
-                </span>
-                <div className="cf-shopify-color-pick-grid">
-                  {form.galleryImages.map((imgUrl, idx) => {
-                    const isAssigned = form.colorImages?.[editingColorHex] === imgUrl;
-                    return (
-                      <button
-                        key={`${imgUrl.slice(0, 35)}-${idx}`}
-                        type="button"
-                        className={`cf-shopify-color-pick-item ${isAssigned ? 'is-selected' : ''}`}
-                        onClick={() => assignColorImage(imgUrl)}
-                      >
-                        <img src={imgUrl} alt={`Media option ${idx + 1}`} />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </Modal>
 
       {/* Product Orders & Activity Timeline Modal */}
       {isEditMode && existingProduct && (
