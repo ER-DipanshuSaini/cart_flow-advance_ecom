@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutGrid,
@@ -10,7 +10,11 @@ import {
   FolderKanban,
   LogOut,
   ChevronRight,
-  ExternalLink
+  ExternalLink,
+  Menu,
+  X,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle, Modal, Button, Badge } from '../../components/ui';
@@ -22,6 +26,30 @@ export default function AdminLayout() {
   const location = useLocation();
 
   const [adminUsersModalOpen, setAdminUsersModalOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('cf_admin_sidebar_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleSidebarCollapsed = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('cf_admin_sidebar_collapsed', String(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logoutAdmin();
@@ -72,27 +100,52 @@ export default function AdminLayout() {
 
   return (
     <div className="cf-bo-layout-root">
+      {mobileNavOpen && (
+        <div
+          className="cf-bo-sidebar-backdrop"
+          onClick={() => setMobileNavOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* 1. Left Sidebar: Pure E-Commerce Operations */}
-      <aside className="cf-bo-sidebar">
+      <aside
+        className={`cf-bo-sidebar ${mobileNavOpen ? 'is-open' : ''} ${
+          sidebarCollapsed ? 'is-collapsed' : ''
+        }`}
+      >
         {/* Brand Block */}
         <div className="cf-bo-brand-block">
-          <div className="cf-bo-brand-top">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="cf-bo-falcon-logo">
-              <path
-                d="M12 3C8 3 3 7 2 12C4 10 7 9 9 10C6 12 5 15 6 18C8 16 11 15 13 16C12 13 14 10 17 9C19 11 20 14 19 17C21 14 22 10 22 7C19 5 15 3 12 3Z"
-                fill="currentColor"
-              />
-            </svg>
-            <div className="cf-bo-brand-text">
-              <h2 className="cf-bo-title-text">CARTFLOW</h2>
-              <span className="cf-bo-subtitle-text">RETAIL & OPERATIONS CONSOLE</span>
+          <div className="cf-bo-brand-head-row">
+            <div className="cf-bo-brand-top">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="cf-bo-falcon-logo">
+                <path
+                  d="M12 3C8 3 3 7 2 12C4 10 7 9 9 10C6 12 5 15 6 18C8 16 11 15 13 16C12 13 14 10 17 9C19 11 20 14 19 17C21 14 22 10 22 7C19 5 15 3 12 3Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <div className="cf-bo-brand-text">
+                <h2 className="cf-bo-title-text">CARTFLOW</h2>
+                <span className="cf-bo-subtitle-text">RETAIL & OPERATIONS CONSOLE</span>
+              </div>
             </div>
-          </div>
-
-          {/* Status Row */}
-          <div className="cf-bo-console-status-row">
-            <Badge variant="completed" dot>LIVE STORE ENGINE</Badge>
-            <Badge variant="primary">ADMIN</Badge>
+            <button
+              type="button"
+              className="cf-bo-collapse-btn"
+              onClick={toggleSidebarCollapsed}
+              title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {sidebarCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}
+            </button>
+            <button
+              type="button"
+              className="cf-bo-sidebar-close-btn"
+              onClick={() => setMobileNavOpen(false)}
+              aria-label="Close navigation"
+            >
+              <X size={18} />
+            </button>
           </div>
         </div>
 
@@ -103,6 +156,7 @@ export default function AdminLayout() {
             <div className="cf-bo-nav-links">
               <NavLink
                 to="/admin/overview"
+                title="Overview"
                 className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
               >
                 <div className="cf-bo-item-left">
@@ -114,6 +168,7 @@ export default function AdminLayout() {
 
               <NavLink
                 to="/admin/orders"
+                title="Orders & Fulfillment"
                 className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
               >
                 <div className="cf-bo-item-left">
@@ -124,6 +179,7 @@ export default function AdminLayout() {
 
               <NavLink
                 to="/admin/inventory"
+                title="Inventory"
                 className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
               >
                 <div className="cf-bo-item-left">
@@ -134,6 +190,7 @@ export default function AdminLayout() {
 
               <NavLink
                 to="/admin/catalog"
+                title="Catalog"
                 className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
               >
                 <div className="cf-bo-item-left">
@@ -144,6 +201,7 @@ export default function AdminLayout() {
 
               <NavLink
                 to="/admin/logistics"
+                title="Logistics & Shipping"
                 className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
               >
                 <div className="cf-bo-item-left">
@@ -154,6 +212,7 @@ export default function AdminLayout() {
 
               <NavLink
                 to="/admin/customers"
+                title="Customer Directory"
                 className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
               >
                 <div className="cf-bo-item-left">
@@ -164,6 +223,7 @@ export default function AdminLayout() {
 
               <button
                 type="button"
+                title="Admin Users"
                 className="cf-bo-nav-item"
                 onClick={() => setAdminUsersModalOpen(true)}
               >
@@ -190,23 +250,33 @@ export default function AdminLayout() {
       <div className="cf-bo-main-viewport">
         {/* Top App Header */}
         <header className="cf-bo-topbar">
-          <div className="cf-bo-breadcrumbs">
-            <span>Workspace</span>
-            {breadcrumbs.map((crumb, idx) => {
-              const isLast = idx === breadcrumbs.length - 1;
-              return (
-                <React.Fragment key={crumb.label}>
-                  <ChevronRight size={13} className="cf-bo-bc-sep" />
-                  {crumb.to && !isLast ? (
-                    <Link to={crumb.to} className="cf-bo-bc-link">
-                      {crumb.label}
-                    </Link>
-                  ) : (
-                    <span className="cf-bo-bc-active">{crumb.label}</span>
-                  )}
-                </React.Fragment>
-              );
-            })}
+          <div className="cf-bo-topbar-left">
+            <button
+              type="button"
+              className="cf-bo-mobile-menu-btn"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label="Open navigation"
+            >
+              <Menu size={18} />
+            </button>
+            <div className="cf-bo-breadcrumbs">
+              <span className="cf-bo-bc-root">Workspace</span>
+              {breadcrumbs.map((crumb, idx) => {
+                const isLast = idx === breadcrumbs.length - 1;
+                return (
+                  <React.Fragment key={crumb.label}>
+                    <ChevronRight size={13} className="cf-bo-bc-sep" />
+                    {crumb.to && !isLast ? (
+                      <Link to={crumb.to} className="cf-bo-bc-link">
+                        {crumb.label}
+                      </Link>
+                    ) : (
+                      <span className="cf-bo-bc-active">{crumb.label}</span>
+                    )}
+                  </React.Fragment>
+                );
+              })}
+            </div>
           </div>
 
           <div className="cf-bo-topbar-controls">
