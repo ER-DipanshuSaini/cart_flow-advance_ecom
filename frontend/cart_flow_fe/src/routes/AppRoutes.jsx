@@ -21,6 +21,8 @@ import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
 import AdminOrdersPage from '../pages/admin/AdminOrdersPage';
 import AdminInventoryPage from '../pages/admin/AdminInventoryPage';
 import AdminLogisticsPage from '../pages/admin/AdminLogisticsPage';
+import AdminCustomersPage from '../pages/admin/AdminCustomersPage';
+import AdminCustomerDetailPage from '../pages/admin/AdminCustomerDetailPage';
 
 export default function AppRoutes() {
   return (
@@ -55,6 +57,8 @@ export default function AppRoutes() {
         <Route path="orders" element={<AdminOrdersPage />} />
         <Route path="inventory" element={<AdminInventoryPage />} />
         <Route path="logistics" element={<AdminLogisticsPage />} />
+        <Route path="customers" element={<AdminCustomersPage />} />
+        <Route path="customers/:id" element={<AdminCustomerDetailPage />} />
       </Route>
 
       {/* Fallback */}

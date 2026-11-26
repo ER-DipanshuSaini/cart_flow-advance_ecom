@@ -186,6 +186,16 @@ export const DEFAULT_SAMPLE_COMPLAINTS = [
   },
 ];
 
+export function formatDateTime(date = new Date()) {
+  return date.toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
 export function getOrderBadgeVariant(status) {
   if (status === 'Delivered') return 'completed';
   if (status === 'Cancelled') return 'failed';

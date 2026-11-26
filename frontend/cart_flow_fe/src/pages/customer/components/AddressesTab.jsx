@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { MapPin, Plus, Edit2, Trash2 } from 'lucide-react';
-import { Button, Badge, Input, Select, Modal, Pagination } from '../../../components/ui';
+import { Button, Badge, Pagination } from '../../../components/ui';
 import EmptyState from '../../../components/common/EmptyState';
+import AddressFormModal from '../../../components/common/AddressFormModal';
 import { usePaginatedList } from '../../../hooks/usePaginatedList';
-import { EMPTY_ADDRESS_FORM, INDIAN_STATES } from '../../../data/customerDefaults';
 
 const ADDRESSES_PER_PAGE = 4;
 
@@ -20,58 +20,19 @@ export default function AddressesTab({
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [addressForm, setAddressForm] = useState(EMPTY_ADDRESS_FORM);
-  const [addressError, setAddressError] = useState('');
+  const [editingAddress, setEditingAddress] = useState(null);
+  const [editingIsDefault, setEditingIsDefault] = useState(false);
 
   const openAddModal = () => {
-    setAddressError('');
-    setAddressForm({
-      ...EMPTY_ADDRESS_FORM,
-      name: customer?.name || '',
-      phone: customer?.phone || '',
-      isDefault: addresses.length === 0,
-    });
+    setEditingAddress(null);
+    setEditingIsDefault(addresses.length === 0);
     setIsModalOpen(true);
   };
 
   const openEditModal = (addr, globalIdx) => {
-    setAddressError('');
-    setAddressForm({
-      ...addr,
-      isDefault: globalIdx === 0,
-    });
+    setEditingAddress(addr);
+    setEditingIsDefault(globalIdx === 0);
     setIsModalOpen(true);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (
-      !addressForm.name.trim() ||
-      !addressForm.phone.trim() ||
-      !addressForm.address.trim() ||
-      !addressForm.city.trim() ||
-      !addressForm.state.trim() ||
-      !addressForm.postalCode.trim()
-    ) {
-      setAddressError('Please fill in all required address fields.');
-      return;
-    }
-
-    onSaveAddress({
-      id: addressForm.id || `addr-${Date.now()}`,
-      label: addressForm.label.trim() || 'Home',
-      name: addressForm.name.trim(),
-      phone: addressForm.phone.trim(),
-      address: addressForm.address.trim(),
-      landmark: addressForm.landmark.trim(),
-      city: addressForm.city.trim(),
-      state: addressForm.state.trim(),
-      postalCode: addressForm.postalCode.trim(),
-      country: addressForm.country || 'India',
-      isDefault: addressForm.isDefault,
-      isEdit: !!addressForm.id,
-    });
-    setIsModalOpen(false);
   };
 
   return (
@@ -164,95 +125,15 @@ export default function AddressesTab({
         </>
       )}
 
-      {/* Add / Edit Address Modal */}
-      <Modal
+      <AddressFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={addressForm.id ? 'Edit Delivery Address' : 'Add New Delivery Address'}
-        subtitle="Enter complete shipping details for doorstep delivery"
-        size="md"
-      >
-        <form onSubmit={handleSubmit} className="cf-modal-form-grid">
-          {addressError && <div className="cf-security-error-banner">{addressError}</div>}
-
-          <div className="cf-form-row-2">
-            <Input
-              label="Address Label"
-              value={addressForm.label}
-              onChange={(e) => setAddressForm({ ...addressForm, label: e.target.value })}
-              placeholder="e.g. Home, Office"
-            />
-            <Input
-              label="Recipient Name *"
-              value={addressForm.name}
-              onChange={(e) => setAddressForm({ ...addressForm, name: e.target.value })}
-              placeholder="Full name"
-            />
-          </div>
-
-          <div className="cf-form-row-2">
-            <Input
-              label="Phone Number *"
-              value={addressForm.phone}
-              onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
-              placeholder="+91 98765 43210"
-            />
-            <Input
-              label="Postal / PIN Code *"
-              value={addressForm.postalCode}
-              onChange={(e) => setAddressForm({ ...addressForm, postalCode: e.target.value })}
-              placeholder="400001"
-            />
-          </div>
-
-          <Input
-            label="House / Flat / Street Address *"
-            value={addressForm.address}
-            onChange={(e) => setAddressForm({ ...addressForm, address: e.target.value })}
-            placeholder="Flat No, Building, Street"
-          />
-
-          <Input
-            label="Landmark (Optional)"
-            value={addressForm.landmark}
-            onChange={(e) => setAddressForm({ ...addressForm, landmark: e.target.value })}
-            placeholder="Near park, metro station, etc."
-          />
-
-          <div className="cf-form-row-2">
-            <Input
-              label="City *"
-              value={addressForm.city}
-              onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
-              placeholder="Mumbai"
-            />
-            <Select
-              label="State *"
-              value={addressForm.state}
-              onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })}
-              options={INDIAN_STATES.map((st) => ({ value: st, label: st }))}
-            />
-          </div>
-
-          <label className="cf-modal-checkbox-row">
-            <input
-              type="checkbox"
-              checked={addressForm.isDefault}
-              onChange={(e) => setAddressForm({ ...addressForm, isDefault: e.target.checked })}
-            />
-            <span>Set as default delivery address</span>
-          </label>
-
-          <div className="cf-form-actions-bar">
-            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary">
-              {addressForm.id ? 'Save Address' : 'Add Address'}
-            </Button>
-          </div>
-        </form>
-      </Modal>
+        onSave={onSaveAddress}
+        initialAddress={editingAddress}
+        defaultName={customer?.name || ''}
+        defaultPhone={customer?.phone || ''}
+        defaultAsPrimary={editingIsDefault}
+      />
     </div>
   );
 }

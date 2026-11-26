@@ -18,8 +18,10 @@ import {
   DEFAULT_SAMPLE_COMPLAINTS,
   INITIAL_SAVED_ADDRESSES,
   getTicketTimelogs,
+  formatDateTime,
 } from '../../data/customerDefaults';
 import { useLocalStorageState } from '../../hooks/useLocalStorageState';
+import { useToasts } from '../../hooks/useToasts';
 import { Button, ToastContainer } from '../../components/ui';
 import { INITIAL_MOCK_REVIEWS } from '../../components/ui/Reviews/ProductReviews';
 import OrdersTab from './components/OrdersTab';
@@ -56,15 +58,7 @@ export default function CustomerDashboard() {
     setSearchParams({ tab });
   };
 
-  // Toasts
-  const [toasts, setToasts] = useState([]);
-  const addToast = (type, title, message) => {
-    const id = Date.now() + Math.random();
-    setToasts((prev) => [...prev, { id, type, title, message }]);
-  };
-  const removeToast = (id) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+  const { toasts, addToast, removeToast } = useToasts();
 
   // Shared persisted customer states via reusable hook
   const [orders, setOrders] = useLocalStorageState('cf_customer_orders', DEFAULT_SAMPLE_ORDERS);
@@ -296,13 +290,7 @@ export default function CustomerDashboard() {
       return;
     }
     const ticketId = `TKT-${Math.floor(1000 + Math.random() * 9000)}`;
-    const nowStr = new Date().toLocaleString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const nowStr = formatDateTime();
     const newTicket = {
       id: ticketId,
       orderId,
@@ -330,13 +318,7 @@ export default function CustomerDashboard() {
 
   const handleAddTicketReply = ({ message, attachments }) => {
     if (!activeTicket) return;
-    const nowStr = new Date().toLocaleString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const nowStr = formatDateTime();
     const newLog = {
       id: `log-${Date.now()}`,
       status: activeTicket.status,

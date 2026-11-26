@@ -1,0 +1,100 @@
+.cf-common-timeline {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cf-border-subtle) transparent;
+}
+
+.cf-common-timeline::-webkit-scrollbar {
+  width: 5px;
+}
+
+.cf-common-timeline::-webkit-scrollbar-thumb {
+  background-color: var(--cf-border-subtle);
+  border-radius: 999px;
+}
+
+.cf-common-timeline-item {
+  position: relative;
+  padding-left: 24px;
+  padding-bottom: 0.95rem;
+}
+
+.cf-common-timeline-item:last-child {
+  padding-bottom: 0;
+}
+
+.cf-common-timeline-item:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 15px;
+  bottom: -4px;
+  width: 2px;
+  background-color: var(--cf-border-subtle);
+}
+
+.cf-common-timeline-dot {
+  position: absolute;
+  left: 1px;
+  top: 4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--cf-accent-primary);
+}
+
+.cf-common-timeline-dot.is-completed,
+.cf-common-timeline-dot.is-delivered {
+  background-color: var(--cf-accent-success);
+}
+
+.cf-common-timeline-dot.is-processing,
+.cf-common-timeline-dot.is-order {
+  background-color: var(--cf-accent-info);
+}
+
+.cf-common-timeline-dot.is-warning,
+.cf-common-timeline-dot.is-ticket,
+.cf-common-timeline-dot.is-review {
+  background-color: var(--cf-accent-warning);
+}
+
+.cf-common-timeline-dot.is-failed,
+.cf-common-timeline-dot.is-blocked {
+  background-color: var(--cf-accent-danger);
+}
+
+.cf-common-timeline-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cf-common-timeline-title-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.cf-common-timeline-title-row strong {
+  font-size: 0.82rem;
+  color: var(--cf-text-main);
+}
+
+.cf-common-timeline-top > span {
+  font-size: 0.72rem;
+  color: var(--cf-text-dim);
+}
+
+.cf-common-timeline-msg {
+  font-size: 0.8rem;
+  color: var(--cf-text-muted);
+  margin: 3px 0 0;
+  line-height: 1.45;
+}

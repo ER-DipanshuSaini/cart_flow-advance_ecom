@@ -1,38 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Send, Ticket, MessageSquareWarning, Film, XCircle } from 'lucide-react';
+import { Clock, Send, Ticket, MessageSquareWarning, XCircle } from 'lucide-react';
 import { Button, Badge, Textarea, Modal, WriteReviewModal } from '../../../components/ui';
 import MediaAttachmentField from '../../../components/common/MediaAttachmentField';
 import OrderActionModal from '../../../components/common/OrderActionModal';
+import ActivityTimeline from '../../../components/common/ActivityTimeline';
+import TicketAttachments from '../../../components/common/TicketAttachments';
 import {
   CANCEL_ORDER_REASONS,
   COMPLAINT_CATEGORIES,
   getTicketBadgeVariant,
   getTicketTimelogs,
 } from '../../../data/customerDefaults';
-
-function AttachmentsPreviewList({ attachments = [] }) {
-  if (!attachments || attachments.length === 0) return null;
-
-  return (
-    <div className="cf-ticket-attachments-grid">
-      {attachments.map((file, idx) => (
-        <div key={file.id || idx} className="cf-ticket-attachment-item">
-          {file.type === 'video' ? (
-            <video src={file.url} controls className="cf-ticket-attachment-video" />
-          ) : (
-            <a href={file.url} target="_blank" rel="noopener noreferrer" title={file.name}>
-              <img src={file.url} alt={file.name || `Attachment ${idx + 1}`} />
-            </a>
-          )}
-          <span className="cf-ticket-attachment-name">
-            {file.type === 'video' && <Film size={11} />}
-            {file.name || `File ${idx + 1}`}
-          </span>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 export default function OrderSupportModals({
   reviewModal,
@@ -74,6 +52,23 @@ export default function OrderSupportModals({
   const lastUpdated =
     timelogs.length > 0 ? timelogs[timelogs.length - 1].timestamp : activeTicket?.createdAt;
   const activeTicketTone = activeTicket ? getTicketBadgeVariant(activeTicket.status) : 'warning';
+
+  const timelineItems = timelogs.map((log, idx) => {
+    const prevStatus = idx > 0 ? timelogs[idx - 1].status : null;
+    const logTone = getTicketBadgeVariant(log.status || activeTicket?.status);
+    const showStatusBadge = log.status && log.status !== prevStatus;
+
+    return {
+      id: log.id,
+      title: log.actor,
+      tone: logTone,
+      badgeText: showStatusBadge ? log.status : null,
+      badgeVariant: logTone,
+      timestamp: log.timestamp,
+      description: log.message,
+      extra: <TicketAttachments attachments={log.attachments} />,
+    };
+  });
 
   return (
     <>
@@ -133,7 +128,7 @@ export default function OrderSupportModals({
         submitIcon={XCircle}
       />
 
-      {/* Ticket Details & Timelog Modal — Wide 2-Column Theme Layout */}
+      {/* Ticket Details & Timelog Modal */}
       <Modal
         isOpen={!!activeTicket}
         onClose={onCloseTicket}
@@ -148,7 +143,6 @@ export default function OrderSupportModals({
       >
         {activeTicket && (
           <div className="cf-ticket-modal-grid">
-            {/* Left Column: Issue + Activity Timeline */}
             <div className="cf-ticket-modal-main">
               <div className={`cf-ticket-detail-summary is-${activeTicketTone}`}>
                 <div className="cf-ticket-issue-head">
@@ -158,47 +152,17 @@ export default function OrderSupportModals({
                   </Badge>
                 </div>
                 <p className="cf-ticket-detail-desc">{activeTicket.description}</p>
-                {activeTicket.attachments?.length > 0 && (
-                  <AttachmentsPreviewList attachments={activeTicket.attachments} />
-                )}
+                <TicketAttachments attachments={activeTicket.attachments} />
               </div>
 
               <div className="cf-ticket-timelog-section">
                 <h4 className="cf-ticket-timelog-heading">
                   <Clock size={14} /> Time Logs ({timelogs.length})
                 </h4>
-                <div className="cf-ticket-timelog-list">
-                  {timelogs.map((log, idx) => {
-                    const prevStatus = idx > 0 ? timelogs[idx - 1].status : null;
-                    const logTone = getTicketBadgeVariant(log.status || activeTicket.status);
-                    const showStatusBadge = log.status && log.status !== prevStatus;
-
-                    return (
-                      <div key={log.id} className="cf-ticket-timelog-item">
-                        <div className={`cf-timelog-dot is-${logTone}`} />
-                        <div className="cf-timelog-body">
-                          <div className="cf-timelog-top">
-                            <div className="cf-timelog-actor-row">
-                              <strong>{log.actor}</strong>
-                              {showStatusBadge && (
-                                <Badge variant={logTone} size="sm">
-                                  {log.status}
-                                </Badge>
-                              )}
-                            </div>
-                            <span>{log.timestamp}</span>
-                          </div>
-                          <p className="cf-timelog-msg">{log.message}</p>
-                          <AttachmentsPreviewList attachments={log.attachments} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                <ActivityTimeline items={timelineItems} style={{ maxHeight: '280px' }} />
               </div>
             </div>
 
-            {/* Right Column: Ticket Info + Theme-Styled Composer */}
             <div className="cf-ticket-modal-side">
               <div className="cf-ticket-kv-card">
                 <div className="cf-ticket-kv-row">

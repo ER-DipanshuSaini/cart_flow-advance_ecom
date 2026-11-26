@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutGrid,
   Users,
@@ -9,21 +9,17 @@ import {
   Boxes,
   LogOut,
   ChevronRight,
-  ExternalLink,
-  Key,
-  Shield,
-  UserCheck
+  ExternalLink
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { ThemeToggle, Modal, Button, Badge } from '../../components/ui';
 import './AdminConsole.css';
 
 export default function AdminLayout() {
-  const { adminUser, logoutAdmin } = useAuth();
+  const { logoutAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [customerModalOpen, setCustomerModalOpen] = useState(false);
   const [adminUsersModalOpen, setAdminUsersModalOpen] = useState(false);
 
   const handleLogout = () => {
@@ -31,13 +27,22 @@ export default function AdminLayout() {
     navigate('/admin-portal');
   };
 
-  const getBreadcrumb = () => {
+  const getBreadcrumbs = () => {
     const p = location.pathname;
-    if (p.includes('/admin/orders')) return 'Orders & Fulfillment';
-    if (p.includes('/admin/inventory')) return 'Supplier Warehouse';
-    if (p.includes('/admin/logistics')) return 'Logistics & Shipping';
-    return 'Operations Overview';
+    if (p.includes('/admin/orders')) return [{ label: 'Orders & Fulfillment' }];
+    if (p.includes('/admin/inventory')) return [{ label: 'Supplier Warehouse' }];
+    if (p.includes('/admin/logistics')) return [{ label: 'Logistics & Shipping' }];
+    if (p.includes('/admin/customers/')) {
+      return [
+        { label: 'Customer Directory', to: '/admin/customers' },
+        { label: 'Customer Profile' },
+      ];
+    }
+    if (p.includes('/admin/customers')) return [{ label: 'Customer Directory' }];
+    return [{ label: 'Operations Overview' }];
   };
+
+  const breadcrumbs = getBreadcrumbs();
 
   return (
     <div className="cf-bo-layout-root">
@@ -111,16 +116,15 @@ export default function AdminLayout() {
                 </div>
               </NavLink>
 
-              <button
-                type="button"
-                className="cf-bo-nav-item"
-                onClick={() => setCustomerModalOpen(true)}
+              <NavLink
+                to="/admin/customers"
+                className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
               >
                 <div className="cf-bo-item-left">
                   <Users size={16} />
                   <span>Customer Directory</span>
                 </div>
-              </button>
+              </NavLink>
 
               <button
                 type="button"
@@ -152,8 +156,21 @@ export default function AdminLayout() {
         <header className="cf-bo-topbar">
           <div className="cf-bo-breadcrumbs">
             <span>Workspace</span>
-            <ChevronRight size={13} className="cf-bo-bc-sep" />
-            <span className="cf-bo-bc-active">{getBreadcrumb()}</span>
+            {breadcrumbs.map((crumb, idx) => {
+              const isLast = idx === breadcrumbs.length - 1;
+              return (
+                <React.Fragment key={crumb.label}>
+                  <ChevronRight size={13} className="cf-bo-bc-sep" />
+                  {crumb.to && !isLast ? (
+                    <Link to={crumb.to} className="cf-bo-bc-link">
+                      {crumb.label}
+                    </Link>
+                  ) : (
+                    <span className="cf-bo-bc-active">{crumb.label}</span>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </div>
 
           <div className="cf-bo-topbar-controls">
@@ -194,30 +211,6 @@ export default function AdminLayout() {
           <Outlet />
         </div>
       </div>
-
-      {/* Customer Directory Modal */}
-      <Modal
-        isOpen={customerModalOpen}
-        onClose={() => setCustomerModalOpen(false)}
-        title="Customer Directory & VIP Ledger"
-        subtitle="437 registered customer profiles across 18 metro hubs"
-        footer={
-          <Button variant="primary" onClick={() => setCustomerModalOpen(false)}>
-            Close Directory
-          </Button>
-        }
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Badge variant="completed" dot>437 Total Accounts</Badge>
-            <Badge variant="processing" dot>92 VIP Tier Shoppers</Badge>
-            <Badge variant="neutral">Retention: 78%</Badge>
-          </div>
-          <div style={{ fontSize: '0.82rem', color: 'var(--cf-text-muted)', lineHeight: 1.6 }}>
-            Customer profiles sync in real time with Django Rest Framework auth guards and Razorpay/Stripe customer tokens. VIP tier shoppers receive priority dispatch manifests.
-          </div>
-        </div>
-      </Modal>
 
       {/* Admin Users Modal */}
       <Modal

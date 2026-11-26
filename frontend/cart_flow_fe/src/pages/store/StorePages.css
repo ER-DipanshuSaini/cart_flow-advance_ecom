@@ -2538,35 +2538,6 @@
   gap: 1rem;
 }
 
-.cf-payment-options-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.cf-payment-choice-btn {
-  flex: 1;
-  padding: 1rem;
-  border-radius: var(--cf-radius-md);
-  border: 1px solid var(--cf-border-subtle);
-  background-color: var(--cf-bg-input);
-  color: var(--cf-text-main);
-  font-weight: 600;
-  font-size: 0.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: var(--cf-transition);
-}
-
-.cf-payment-choice-btn.is-selected {
-  border-color: var(--cf-accent-primary);
-  background-color: var(--cf-accent-primary-tint);
-  color: var(--cf-accent-primary);
-}
-
 .cf-checkout-items-preview {
   display: flex;
   flex-direction: column;
