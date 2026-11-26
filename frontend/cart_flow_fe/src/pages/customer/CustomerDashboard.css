@@ -1,4 +1,4 @@
-/* Customer Account Dashboard Styling - Modern Luxury & Old Money */
+  /* Customer Account Dashboard Styling - Modern Luxury & Old Money */
 .cf-customer-dashboard-wrap {
   padding-top: 2rem;
   padding-bottom: 5rem;
@@ -66,18 +66,6 @@
   letter-spacing: -0.02em;
   color: var(--cf-text-main);
   margin: 0;
-}
-
-.cf-cust-badge-vip {
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: var(--cf-radius-pill);
-  background: rgba(0, 63, 127, 0.15);
-  color: var(--cf-accent-primary);
-  border: 1px solid var(--cf-accent-primary);
 }
 
 .cf-cust-email-line {
@@ -216,17 +204,6 @@
 .cf-cust-nav-link.is-active .cf-cust-nav-count {
   background-color: var(--cf-accent-primary);
   color: #ffffff;
-}
-
-.cf-cust-nav-badge {
-  margin-left: auto;
-  font-size: 0.6rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  background-color: #ef4444;
-  color: #ffffff;
-  padding: 2px 6px;
-  border-radius: var(--cf-radius-pill);
 }
 
 .cf-cust-concierge-card {
@@ -517,7 +494,7 @@
   color: var(--cf-text-dim);
 }
 
-/* Measurements Form */
+/* Account & Profile Forms */
 .cf-measurements-form {
   background-color: var(--cf-bg-surface);
   border: 1px solid var(--cf-border-subtle);
@@ -526,19 +503,6 @@
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-}
-
-.cf-measurements-saved-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: rgba(16, 185, 129, 0.15);
-  border: 1px solid #10b981;
-  color: #10b981;
-  padding: 8px 14px;
-  border-radius: var(--cf-radius-md);
-  font-size: 0.82rem;
-  font-weight: 600;
 }
 
 .cf-form-row-2 {
@@ -550,18 +514,6 @@
 @media (min-width: 640px) {
   .cf-form-row-2 {
     grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.cf-form-row-3 {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-@media (min-width: 640px) {
-  .cf-form-row-3 {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -743,12 +695,6 @@
   font-weight: 600;
   color: var(--cf-text-main);
   cursor: pointer;
-}
-
-.cf-security-box {
-  background-color: var(--cf-bg-surface);
-  border: 1px solid var(--cf-border-subtle);
-  border-radius: var(--cf-radius-lg);
 }
 
 /* Avatar Image */
@@ -954,17 +900,6 @@
 }
 
 /* Complaints & Tickets */
-.cf-complaints-section {
-  margin-top: 2rem;
-}
-
-.cf-complaints-heading {
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--cf-text-main);
-  margin: 0 0 0.85rem;
-}
-
 .cf-complaints-list {
   display: flex;
   flex-direction: column;

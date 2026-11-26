@@ -4,7 +4,6 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
-  CreditCard,
   MapPin,
   Truck,
   ArrowRight,
@@ -13,6 +12,7 @@ import {
   Copy,
   Check
 } from 'lucide-react';
+
 import { Button, Card, Badge } from '../../components/ui';
 import './StorePages.css';
 

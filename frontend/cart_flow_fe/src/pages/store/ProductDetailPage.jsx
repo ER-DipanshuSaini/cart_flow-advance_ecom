@@ -57,13 +57,16 @@ export default function ProductDetailPage() {
   }, [product]);
 
   const [activeImgIndex, setActiveImgIndex] = useState(0);
-
-  useEffect(() => {
-    setActiveImgIndex(0);
-  }, [id]);
   const [selectedSize, setSelectedSize] = useState(product.sizes[0] || 'M');
   const [selectedColor, setSelectedColor] = useState(product.colors[0] || '#111');
   const [quantity, setQuantity] = useState(1);
+
+  useEffect(() => {
+    setActiveImgIndex(0);
+    setSelectedSize(product.sizes[0] || 'M');
+    setSelectedColor(product.colors[0] || '#111');
+    setQuantity(1);
+  }, [id, product]);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [sizeModalOpen, setSizeModalOpen] = useState(false);
   const [fullViewOpen, setFullViewOpen] = useState(false);
