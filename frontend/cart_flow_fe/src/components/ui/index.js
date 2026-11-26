@@ -9,6 +9,7 @@ export { default as Input } from './Input/Input';
 export { default as Select } from './Input/Select';
 export { default as Toggle } from './Input/Toggle';
 export { default as Textarea } from './Input/Textarea';
+export { default as RichTextEditor, stripHtmlTags, sanitizeRichHtml } from './Input/RichTextEditor';
 export { default as Dropdown } from './Input/Dropdown';
 export { default as DatePicker } from './Input/DatePicker';
 export { default as OtpVerification } from './Input/OtpVerification';
@@ -17,6 +18,7 @@ export { default as OtpVerification } from './Input/OtpVerification';
 export { default as Card, MetricCard } from './Card/Card';
 export { default as Table } from './Table/Table';
 export { default as Pagination } from './Table/Pagination';
+
 
 // Loaders & Skeletons
 export { default as WaveLoader, OverlayLoader } from './Loader/Loader';

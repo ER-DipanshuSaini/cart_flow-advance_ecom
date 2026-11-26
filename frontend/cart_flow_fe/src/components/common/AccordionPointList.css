@@ -1,0 +1,180 @@
+.cf-acc-list-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.cf-acc-scroll-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 350px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.cf-acc-item {
+  flex-shrink: 0;
+  border-radius: var(--cf-radius-md);
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-elevated);
+  transition: var(--cf-transition);
+}
+
+.cf-acc-item.is-expanded {
+  border-color: var(--cf-accent-primary);
+  background-color: var(--cf-bg-surface);
+  box-shadow: 0 0 0 2px var(--cf-accent-primary-glow);
+}
+
+.cf-acc-item.has-error {
+  border-color: var(--cf-accent-danger);
+}
+
+.cf-acc-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cf-acc-trigger:hover {
+  background-color: var(--cf-bg-surface);
+}
+
+.cf-acc-idx {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--cf-bg-surface);
+  border: 1px solid var(--cf-border-subtle);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--cf-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cf-acc-idx.is-active {
+  background-color: var(--cf-accent-primary);
+  border-color: var(--cf-accent-primary);
+  color: #ffffff;
+}
+
+.cf-acc-summary {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cf-acc-summary strong {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+  line-height: 1.3;
+}
+
+.cf-acc-summary span {
+  font-size: 0.77rem;
+  color: var(--cf-text-muted);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cf-acc-req-dot {
+  font-style: normal;
+  color: var(--cf-accent-danger);
+  margin-left: 3px;
+}
+
+.cf-acc-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.cf-acc-actions .cf-admin-icon-action-btn {
+  width: 28px;
+  height: 28px;
+}
+
+.cf-acc-actions .cf-admin-icon-action-btn.is-confirm {
+  background-color: var(--cf-accent-primary-tint);
+  border-color: var(--cf-accent-primary);
+  color: var(--cf-accent-primary-light);
+}
+
+.cf-acc-actions .cf-admin-icon-action-btn.is-confirm:hover {
+  background-color: var(--cf-accent-primary);
+  color: #ffffff;
+}
+
+.cf-acc-actions .cf-admin-icon-action-btn.is-danger:hover {
+  background-color: var(--cf-accent-danger-tint);
+  border-color: var(--cf-accent-danger);
+  color: var(--cf-accent-danger);
+}
+
+.cf-acc-edit-box {
+  padding: 0.65rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.cf-acc-edit-top {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.cf-acc-edit-title {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.cf-acc-edit-desc {
+  width: 100%;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  padding: 0.5rem 0.65rem;
+  resize: vertical;
+}
+
+.cf-acc-char-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.71rem;
+  font-weight: 600;
+  color: var(--cf-text-muted);
+}
+
+.cf-acc-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.cf-acc-counter {
+  font-size: 0.71rem;
+  font-weight: 600;
+  color: var(--cf-text-muted);
+}

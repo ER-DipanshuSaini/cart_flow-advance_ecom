@@ -2,87 +2,35 @@ import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Search, X } from 'lucide-react';
 import { Input } from '../../components/ui';
+import { getActiveCatalogs, getListedStoreProducts } from '../../data/inventoryProducts';
 import './StorePages.css';
-
-// Backend-ready Catalogs schema: image, title/name, description, category filter key, count
-const CATALOGS = [
-  {
-    id: 'old-money',
-    name: 'Old Money',
-    category: 'Old Money',
-    itemCount: '48 Pieces',
-    description: 'Timeless quiet-luxury silhouettes crafted in Egyptian combed cotton and bespoke tailoring.',
-    image: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=900&auto=format&fit=crop',
-    fallback: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=900&auto=format&fit=crop',
-  },
-  {
-    id: 'knitwear',
-    name: 'Knitwear & Sweaters',
-    category: 'Knitwear & Sweaters',
-    itemCount: '28 Pieces',
-    description: 'Heavyweight Peruvian cotton and cable-knit weaves engineered for structured drape.',
-    image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?q=80&w=900&auto=format&fit=crop',
-    fallback: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=900&auto=format&fit=crop',
-  },
-  {
-    id: 'formal',
-    name: 'Formal & Suiting',
-    category: 'Formal & Suiting',
-    itemCount: '36 Pieces',
-    description: 'Double-breasted blazers, Italian pinpoint shirts, and sharp architectural suiting.',
-    image: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?q=80&w=900&auto=format&fit=crop',
-    fallback: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=900&auto=format&fit=crop',
-  },
-  {
-    id: 'linen',
-    name: 'Linen & Resort',
-    category: 'Linen & Resort',
-    itemCount: '42 Pieces',
-    description: 'Breathable Normandy flax linen and relaxed Mediterranean resort tailoring.',
-    image: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=900&auto=format&fit=crop',
-    fallback: 'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?q=80&w=900&auto=format&fit=crop',
-  },
-  {
-    id: 'trousers',
-    name: 'Trousers',
-    category: 'Trousers',
-    itemCount: '26 Pieces',
-    description: 'High-rise Gurkha trousers and pleated cuts with tailored horn waist adjusters.',
-    image: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?q=80&w=900&auto=format&fit=crop',
-    fallback: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=900&auto=format&fit=crop',
-  },
-  {
-    id: 'coords',
-    name: 'Co-Ords',
-    category: 'Co-Ords',
-    itemCount: '32 Pieces',
-    description: 'Matched shacket and trouser sets for effortless contemporary styling.',
-    image: 'https://images.unsplash.com/photo-1525507119028-ed4c629a60a3?q=80&w=900&auto=format&fit=crop',
-    fallback: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?q=80&w=900&auto=format&fit=crop',
-  },
-  {
-    id: 'footwear',
-    name: 'Footwear',
-    category: 'Footwear',
-    itemCount: '24 Pieces',
-    description: 'Goodyear-welted artisanal suede loafers and Italian leather footwear.',
-    image: 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?q=80&w=900&auto=format&fit=crop',
-    fallback: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=900&auto=format&fit=crop',
-  },
-];
 
 export default function CatalogPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const catalogs = useMemo(() => {
+    const active = getActiveCatalogs();
+    const listed = getListedStoreProducts();
+    return active.map((cat) => {
+      const count = listed.filter(
+        (p) => String(p.category || '').toLowerCase() === cat.name.toLowerCase()
+      ).length;
+      return {
+        ...cat,
+        category: cat.name,
+        itemCount: `${count} ${count === 1 ? 'Piece' : 'Pieces'}`,
+      };
+    });
+  }, []);
 
   const filteredCatalogs = useMemo(() => {
-    if (!searchQuery.trim()) return CATALOGS;
+    if (!searchQuery.trim()) return catalogs;
     const q = searchQuery.toLowerCase().trim();
-    return CATALOGS.filter(
+    return catalogs.filter(
       (cat) =>
         cat.name.toLowerCase().includes(q) ||
-        cat.description.toLowerCase().includes(q)
+        (cat.description || '').toLowerCase().includes(q)
     );
-  }, [searchQuery]);
+  }, [catalogs, searchQuery]);
 
   return (
     <div className="cf-store-container cf-catalog-page-wrap">

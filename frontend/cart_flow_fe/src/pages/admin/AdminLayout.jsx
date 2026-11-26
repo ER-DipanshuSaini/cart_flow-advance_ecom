@@ -7,6 +7,7 @@ import {
   ShoppingBag,
   Truck,
   Boxes,
+  FolderKanban,
   LogOut,
   ChevronRight,
   ExternalLink
@@ -30,7 +31,20 @@ export default function AdminLayout() {
   const getBreadcrumbs = () => {
     const p = location.pathname;
     if (p.includes('/admin/orders')) return [{ label: 'Orders & Fulfillment' }];
-    if (p.includes('/admin/inventory')) return [{ label: 'Supplier Warehouse' }];
+    if (p.includes('/admin/catalog')) return [{ label: 'Catalog' }];
+    if (p.includes('/admin/inventory/new')) {
+      return [
+        { label: 'Inventory', to: '/admin/inventory' },
+        { label: 'Add Product' },
+      ];
+    }
+    if (p.includes('/admin/inventory/')) {
+      return [
+        { label: 'Inventory', to: '/admin/inventory' },
+        { label: 'Product Workspace' },
+      ];
+    }
+    if (p.includes('/admin/inventory')) return [{ label: 'Inventory' }];
     if (p.includes('/admin/logistics')) return [{ label: 'Logistics & Shipping' }];
     if (p.includes('/admin/customers/')) {
       return [
@@ -102,7 +116,17 @@ export default function AdminLayout() {
               >
                 <div className="cf-bo-item-left">
                   <Boxes size={16} />
-                  <span>Supplier Warehouse</span>
+                  <span>Inventory</span>
+                </div>
+              </NavLink>
+
+              <NavLink
+                to="/admin/catalog"
+                className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
+              >
+                <div className="cf-bo-item-left">
+                  <FolderKanban size={16} />
+                  <span>Catalog</span>
                 </div>
               </NavLink>
 

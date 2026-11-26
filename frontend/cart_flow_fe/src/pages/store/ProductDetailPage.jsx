@@ -18,10 +18,10 @@ import {
   Info,
   HelpCircle
 } from 'lucide-react';
-import { PRODUCTS } from '../../data/products';
+import { getColorLabel, getListedStoreProducts, loadInventoryProducts, normalizeCarePoints, normalizeColorHex } from '../../data/inventoryProducts';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
-import { Button, ProductCard, ProductReviews, ToastContainer, Modal } from '../../components/ui';
+import { Button, ProductCard, ProductReviews, ToastContainer, Modal, sanitizeRichHtml, stripHtmlTags } from '../../components/ui';
 import './StorePages.css';
 
 export default function ProductDetailPage() {
@@ -30,18 +30,33 @@ export default function ProductDetailPage() {
   const { addToCart } = useCart();
   const { customer } = useAuth();
 
-  const product = useMemo(() => {
-    return PRODUCTS.find((p) => p.id === Number(id)) || PRODUCTS[0];
-  }, [id]);
+  const allProducts = useMemo(() => loadInventoryProducts(), []);
+  const listedProducts = useMemo(() => getListedStoreProducts(), []);
 
-  // Gallery Images (High-Resolution Multi-Angle Views)
+  const product = useMemo(() => {
+    return (
+      allProducts.find((p) => p.id === Number(id)) ||
+      listedProducts[0] ||
+      allProducts[0]
+    );
+  }, [allProducts, listedProducts, id]);
+
+  // Gallery Images (Admin uploaded gallery + color-specific images + Multi-Angle Views)
   const galleryImages = useMemo(() => {
+    const colorImgList = product.colorImages ? Object.values(product.colorImages) : [];
+    const customList = Array.from(
+      new Set([product.imageUrl, ...colorImgList, ...(product.galleryImages || [])].filter(Boolean))
+    );
+    if (customList.length > 1) {
+      return customList;
+    }
+
     const baseImages = [
       product.imageUrl,
       'https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=1000&q=85',
       'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=1000&q=85',
       'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?auto=format&fit=crop&w=1000&q=85',
-    ];
+    ].filter(Boolean);
 
     if (product.id === 1 || product.id === 2) {
       return [
@@ -76,15 +91,32 @@ export default function ProductDetailPage() {
   const [thumbsOverflow, setThumbsOverflow] = useState(false);
   const thumbsListRef = useRef(null);
 
-  // Stock & Short Description (max 20 words)
-  const stockCount = typeof product.stockCount === 'number' ? product.stockCount : product.inStock ? 5 : 0;
-  const isOutOfStock = !product.inStock || stockCount <= 0;
+  // Stock & Short Description (variant-aware)
+  const selectedVariant = Array.isArray(product.variants)
+    ? product.variants.find(
+        (v) =>
+          v.size === selectedSize &&
+          normalizeColorHex(v.color) === normalizeColorHex(selectedColor)
+      )
+    : null;
+  const stockCount = selectedVariant
+    ? Number(selectedVariant.qty) || 0
+    : typeof product.stockCount === 'number'
+    ? product.stockCount
+    : product.inStock
+    ? 5
+    : 0;
+  const isOutOfStock = product.status !== 'Active' || !product.inStock || stockCount <= 0;
 
   const shortDescription = useMemo(() => {
-    if (!product.description) return 'No short description available for this item.';
-    const words = product.description.trim().split(/\s+/);
-    return words.length > 20 ? `${words.slice(0, 20).join(' ')}...` : product.description;
-  }, [product.description]);
+    if (product.shortDescription && product.shortDescription.trim()) {
+      return product.shortDescription.trim();
+    }
+    const plain = stripHtmlTags(product.description);
+    if (!plain) return 'No short description available for this item.';
+    const words = plain.split(/\s+/);
+    return words.length > 20 ? `${words.slice(0, 20).join(' ')}...` : plain;
+  }, [product.description, product.shortDescription]);
 
   // Delivery Address Lookup (Selected address from profile or null)
   const deliveryAddress = useMemo(() => {
@@ -204,12 +236,12 @@ export default function ProductDetailPage() {
 
   // Related & Complete the Look Products
   const relatedProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
-  }, [product.id]);
+    return listedProducts.filter((p) => p.id !== product.id).slice(0, 4);
+  }, [listedProducts, product.id]);
 
   const completeLookProducts = useMemo(() => {
-    return PRODUCTS.filter((p) => p.id !== product.id && p.category !== product.category).slice(0, 2);
-  }, [product.id, product.category]);
+    return listedProducts.filter((p) => p.id !== product.id && p.category !== product.category).slice(0, 2);
+  }, [listedProducts, product.id, product.category]);
 
   const discountPercent = product.originalPrice
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
@@ -405,20 +437,30 @@ export default function ProductDetailPage() {
           <div className="cf-pdp-selector-group">
             <div className="cf-selector-label-row">
               <span className="cf-selector-label">
-                Color Palette: <strong>{selectedColor}</strong>
+                Color Palette: <strong>{getColorLabel(selectedColor)}</strong>
               </span>
             </div>
             <div className="cf-color-dots-row">
-              {product.colors.map((c, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className={`cf-color-dot ${selectedColor === c ? 'is-selected' : ''}`}
-                  style={{ backgroundColor: c }}
-                  onClick={() => setSelectedColor(c)}
-                  title={`Color variant ${i + 1}`}
-                />
-              ))}
+              {product.colors.map((c, i) => {
+                const hex = normalizeColorHex(c);
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`cf-color-dot ${normalizeColorHex(selectedColor) === hex ? 'is-selected' : ''}`}
+                    style={{ backgroundColor: hex }}
+                    onClick={() => {
+                      setSelectedColor(hex);
+                      const mappedImg = product.colorImages?.[hex];
+                      if (mappedImg) {
+                        const matchIdx = galleryImages.indexOf(mappedImg);
+                        if (matchIdx >= 0) setActiveImgIndex(matchIdx);
+                      }
+                    }}
+                    title={getColorLabel(hex)}
+                  />
+                );
+              })}
             </div>
           </div>
 
@@ -547,8 +589,11 @@ export default function ProductDetailPage() {
             <div className="cf-full-details-grid">
               <div className="cf-full-desc-block">
                 <h3 className="cf-full-block-title">Product Description</h3>
-                {product.description ? (
-                  <p className="cf-full-desc-text">{product.description}</p>
+                {stripHtmlTags(product.description) ? (
+                  <div
+                    className="cf-full-desc-text cf-pdp-rich-desc"
+                    dangerouslySetInnerHTML={{ __html: sanitizeRichHtml(product.description) }}
+                  />
                 ) : (
                   <div className="cf-pdp-fallback-box">
                     <Info size={16} />
@@ -561,25 +606,45 @@ export default function ProductDetailPage() {
                 <h3 className="cf-full-block-title">Specifications</h3>
                 <ul className="cf-spec-list">
                   <li><span>Category:</span> {product.category || 'Menswear'}</li>
-                  <li><span>Textile:</span> 100% Normandy Flax Linen &amp; Long-Staple Combed Cotton</li>
-                  <li><span>Weave Gauge:</span> 280 GSM Structured Luxury Drape</li>
-                  <li><span>Cut &amp; Fit:</span> Tailored Modern Proportions</li>
+                  <li>
+                    <span>Textile:</span>{' '}
+                    {product.specs?.textile || '100% Normandy Flax Linen & Long-Staple Combed Cotton'}
+                  </li>
+                  <li>
+                    <span>Weave Gauge:</span>{' '}
+                    {product.specs?.weave || '280 GSM Structured Luxury Drape'}
+                  </li>
+                  <li>
+                    <span>Cut &amp; Fit:</span>{' '}
+                    {product.specs?.fit || 'Tailored Modern Proportions'}
+                  </li>
                 </ul>
               </div>
             </div>
           )}
 
-          {activeTab === 'instructions' && (
-            <div className="cf-full-instructions-block">
-              <h3 className="cf-full-block-title">Garment Care &amp; Handling Instructions</h3>
-              <ul className="cf-spec-list">
-                <li><span>Washing:</span> Machine wash cold on delicate cycle or dry clean for best longevity.</li>
-                <li><span>Drying:</span> Lay flat to dry in shade. Avoid tumble dry to preserve natural fibers.</li>
-                <li><span>Ironing:</span> Warm steam iron inside-out while garment is slightly damp.</li>
-                <li><span>Storage:</span> Hang on wide-shouldered wooden hangers to maintain collar and shoulder line.</li>
-              </ul>
-            </div>
-          )}
+          {activeTab === 'instructions' && (() => {
+            const carePoints = normalizeCarePoints(product.careInstructions, product.care);
+            return (
+              <div className="cf-full-instructions-block">
+                <h3 className="cf-full-block-title">Garment Care &amp; Handling Instructions</h3>
+                {carePoints.length === 0 ? (
+                  <div className="cf-pdp-fallback-box">
+                    <Info size={16} />
+                    <span>No care instructions added for this product yet.</span>
+                  </div>
+                ) : (
+                  <ul className="cf-spec-list">
+                    {carePoints.map((pt, idx) => (
+                      <li key={`${pt.title}-${idx}`}>
+                        <span>{pt.title}:</span> {pt.description}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })()}
 
           {activeTab === 'faq' && (
             <div className="cf-full-faq-block">
@@ -713,36 +778,28 @@ export default function ProductDetailPage() {
                   <th>Sleeve (in)</th>
                 </tr>
               </thead>
-              <tbody>
-                <tr className={selectedSize === 'S' ? 'is-selected' : ''}>
-                  <td><strong>S</strong></td>
-                  <td>38</td>
-                  <td>17.5</td>
-                  <td>27.5</td>
-                  <td>8.5</td>
-                </tr>
-                <tr className={selectedSize === 'M' ? 'is-selected' : ''}>
-                  <td><strong>M</strong></td>
-                  <td>40</td>
-                  <td>18.0</td>
-                  <td>28.5</td>
-                  <td>9.0</td>
-                </tr>
-                <tr className={selectedSize === 'L' ? 'is-selected' : ''}>
-                  <td><strong>L</strong></td>
-                  <td>42</td>
-                  <td>18.5</td>
-                  <td>29.5</td>
-                  <td>9.5</td>
-                </tr>
-                <tr className={selectedSize === 'XL' ? 'is-selected' : ''}>
-                  <td><strong>XL</strong></td>
-                  <td>44</td>
-                  <td>19.0</td>
-                  <td>30.5</td>
-                  <td>10.0</td>
-                </tr>
-              </tbody>
+                <tbody>
+                  {(Array.isArray(product.sizeChart) && product.sizeChart.length > 0
+                    ? product.sizeChart
+                    : [
+                        { size: 'S', chest: '38', shoulder: '17.5', length: '27.5', sleeve: '8.5' },
+                        { size: 'M', chest: '40', shoulder: '18.0', length: '28.5', sleeve: '9.0' },
+                        { size: 'L', chest: '42', shoulder: '18.5', length: '29.5', sleeve: '9.5' },
+                        { size: 'XL', chest: '44', shoulder: '19.0', length: '30.5', sleeve: '10.0' },
+                      ]
+                  ).map((row) => (
+                    <tr
+                      key={row.size}
+                      className={selectedSize === row.size ? 'is-selected' : ''}
+                    >
+                      <td><strong>{row.size}</strong></td>
+                      <td>{row.chest}</td>
+                      <td>{row.shoulder}</td>
+                      <td>{row.length}</td>
+                      <td>{row.sleeve}</td>
+                    </tr>
+                  ))}
+                </tbody>
             </table>
           </div>
 

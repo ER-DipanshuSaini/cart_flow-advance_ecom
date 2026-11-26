@@ -20,6 +20,8 @@ import AdminLayout from '../pages/admin/AdminLayout';
 import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
 import AdminOrdersPage from '../pages/admin/AdminOrdersPage';
 import AdminInventoryPage from '../pages/admin/AdminInventoryPage';
+import AdminCatalogPage from '../pages/admin/AdminCatalogPage';
+import AdminProductFormPage from '../pages/admin/AdminProductFormPage';
 import AdminLogisticsPage from '../pages/admin/AdminLogisticsPage';
 import AdminCustomersPage from '../pages/admin/AdminCustomersPage';
 import AdminCustomerDetailPage from '../pages/admin/AdminCustomerDetailPage';
@@ -56,6 +58,10 @@ export default function AppRoutes() {
         <Route path="console" element={<Navigate to="/admin/overview" replace />} />
         <Route path="orders" element={<AdminOrdersPage />} />
         <Route path="inventory" element={<AdminInventoryPage />} />
+        <Route path="catalog" element={<AdminCatalogPage />} />
+        <Route path="inventory/new" element={<AdminProductFormPage />} />
+        <Route path="inventory/:id" element={<AdminProductFormPage />} />
+        <Route path="inventory/:id/edit" element={<AdminProductFormPage />} />
         <Route path="logistics" element={<AdminLogisticsPage />} />
         <Route path="customers" element={<AdminCustomersPage />} />
         <Route path="customers/:id" element={<AdminCustomerDetailPage />} />

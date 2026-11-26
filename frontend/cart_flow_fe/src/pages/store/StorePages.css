@@ -300,17 +300,14 @@
 }
 
 /* 5. Compact Product Cards (4 per row on Desktop) */
-.cf-products-compact-grid,
-.cf-products-catalog-grid {
+.cf-products-compact-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.25rem;
 }
 
 @media (min-width: 960px) {
-
-  .cf-products-compact-grid,
-  .cf-products-catalog-grid {
+  .cf-products-compact-grid {
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
   }
@@ -360,42 +357,6 @@
 .cf-promo-callout-content p {
   font-size: 0.9rem;
   color: #bfdbfe;
-}
-
-/* 8. Craftsmanship Pillars */
-.cf-pillars-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-  padding: 1rem 0;
-}
-
-@media (min-width: 768px) {
-  .cf-pillars-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.cf-pillar-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
-}
-
-.cf-pillar-icon {
-  color: var(--cf-accent-primary);
-}
-
-.cf-pillar-item h4 {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--cf-text-main);
-}
-
-.cf-pillar-item p {
-  font-size: 0.85rem;
-  color: var(--cf-text-muted);
-  line-height: 1.55;
 }
 
 /* Shop Page Layout & Snitch/Shopify Polish */
@@ -1786,6 +1747,34 @@
   margin: 0;
 }
 
+.cf-pdp-rich-desc h2 {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+  margin: 0.55rem 0 0.35rem;
+}
+
+.cf-pdp-rich-desc h3 {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+  margin: 0.45rem 0 0.3rem;
+}
+
+.cf-pdp-rich-desc p {
+  margin: 0 0 0.55rem;
+}
+
+.cf-pdp-rich-desc ul,
+.cf-pdp-rich-desc ol {
+  padding-left: 1.35rem;
+  margin: 0.35rem 0 0.65rem;
+}
+
+.cf-pdp-rich-desc li {
+  margin-bottom: 0.25rem;
+}
+
 .cf-pdp-fallback-box {
   display: inline-flex;
   align-items: center;
@@ -1883,10 +1872,6 @@
   color: var(--cf-accent-primary);
   background-color: var(--cf-accent-primary-tint);
   font-weight: 700;
-}
-
-.cf-pdp-tab-content {
-  padding-top: 1.25rem;
 }
 
 .cf-spec-list {
@@ -2487,8 +2472,7 @@
   margin-top: 2px;
 }
 
-.cf-saved-addr-line,
-.cf-saved-addr-phone {
+.cf-saved-addr-line {
   font-size: 0.76rem;
   color: var(--cf-text-muted);
   line-height: 1.4;
@@ -2579,54 +2563,6 @@
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--cf-accent-primary);
-}
-
-/* Account Page */
-.cf-account-page-wrap {
-  padding-top: 2.5rem;
-  padding-bottom: 5rem;
-}
-
-.cf-account-header-card {
-  padding: 1.5rem 2rem;
-  background-color: var(--cf-bg-surface);
-  border: 1px solid var(--cf-border-subtle);
-  border-radius: var(--cf-radius-lg);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: var(--cf-shadow-card);
-}
-
-.cf-account-user-meta {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.cf-account-avatar {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: var(--cf-accent-primary-tint);
-  border: 1px solid var(--cf-accent-primary);
-  color: var(--cf-accent-primary);
-  font-size: 1.35rem;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cf-account-name {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--cf-text-main);
-}
-
-.cf-account-email {
-  font-size: 0.82rem;
-  color: var(--cf-text-muted);
 }
 
 

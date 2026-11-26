@@ -37,21 +37,6 @@ button {
     display: block;
   }
 
-
-    /* Base Responsive Container */
-    .cf-container {
-      width: 100%;
-      max-width: var(--cf-max-width);
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-
-        @media (min-width: 1024px) {
-          .cf-container {
-            padding: 0 2.5rem;
-          }
-        }
-
 /* ==========================================================================
    Global Custom Theme Scrollbar (Applied Across Entire Website)
    ========================================================================== */

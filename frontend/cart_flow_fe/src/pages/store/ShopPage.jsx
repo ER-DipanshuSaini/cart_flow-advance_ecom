@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Search, Filter, X, Grid3X3, LayoutGrid, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { PRODUCTS, CATEGORIES } from '../../data/products';
+import { getActiveCatalogs, getListedStoreProducts } from '../../data/inventoryProducts';
 import { useCart } from '../../context/CartContext';
 import { Button, Input, Dropdown, ProductCard } from '../../components/ui';
 import './StorePages.css';
@@ -23,6 +23,20 @@ export default function ShopPage() {
   const [addedItemNotice, setAddedItemNotice] = useState(null);
 
   const { addToCart } = useCart();
+  const storeProducts = useMemo(() => getListedStoreProducts(), []);
+  const catalogPills = useMemo(() => {
+    const activeCats = getActiveCatalogs();
+    return [
+      { id: 'all', name: 'All Drops', count: storeProducts.length },
+      ...activeCats.map((c) => ({
+        id: c.id,
+        name: c.name,
+        count: storeProducts.filter(
+          (p) => String(p.category || '').toLowerCase() === c.name.toLowerCase()
+        ).length,
+      })),
+    ];
+  }, [storeProducts]);
 
   useEffect(() => {
     setSearchFilter(urlQuery);
@@ -32,16 +46,16 @@ export default function ShopPage() {
   // Unique sizes across all products for filter dropdown
   const availableSizes = useMemo(() => {
     const sizeSet = new Set();
-    PRODUCTS.forEach((p) => (p.sizes || []).forEach((s) => sizeSet.add(s)));
+    storeProducts.forEach((p) => (p.sizes || []).forEach((s) => sizeSet.add(s)));
     return [
       { label: 'All Sizes', value: 'all' },
       ...Array.from(sizeSet).map((s) => ({ label: `Size: ${s}`, value: s })),
     ];
-  }, []);
+  }, [storeProducts]);
 
   // Filter & Sort Logic
   const filteredProducts = useMemo(() => {
-    let list = [...PRODUCTS];
+    let list = [...storeProducts];
 
     // Catalog / Category filter
     if (activeCategory !== 'all') {
@@ -99,7 +113,7 @@ export default function ShopPage() {
     }
 
     return list;
-  }, [activeCategory, searchFilter, sizeFilter, ratingFilter, stockFilter, priceRange, sortBy]);
+  }, [storeProducts, activeCategory, searchFilter, sizeFilter, ratingFilter, stockFilter, priceRange, sortBy]);
 
   const paginatedList = filteredProducts.slice(
     (currentPage - 1) * pageSize,
@@ -179,7 +193,7 @@ export default function ShopPage() {
 
       {/* Category Pills Strip */}
       <div className="cf-category-pills-row">
-        {CATEGORIES.map((cat) => {
+        {catalogPills.map((cat) => {
           const isActive =
             (cat.id === 'all' && activeCategory === 'all') ||
             cat.name.toLowerCase() === activeCategory.toLowerCase();

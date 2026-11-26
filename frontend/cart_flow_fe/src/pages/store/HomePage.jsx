@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -12,7 +12,7 @@ import {
   Layers,
   CheckCircle2
 } from 'lucide-react';
-import { PRODUCTS } from '../../data/products';
+import { getListedStoreProducts, loadInventoryProducts } from '../../data/inventoryProducts';
 import { useCart } from '../../context/CartContext';
 import { Button, Badge, ProductCard, Input } from '../../components/ui';
 import './StorePages.css';
@@ -121,7 +121,11 @@ export default function HomePage() {
     }
   };
 
-  const spotlightProduct = PRODUCTS.find((p) => p.id === 6) || PRODUCTS[0];
+  const storeProducts = useMemo(() => getListedStoreProducts(), []);
+  const spotlightProduct =
+    storeProducts.find((p) => p.id === 6) ||
+    storeProducts[0] ||
+    loadInventoryProducts()[0];
 
   return (
     <div className="cf-store-page">
@@ -230,13 +234,13 @@ export default function HomePage() {
             <h2 className="cf-section-headline">Trending Essentials</h2>
           </div>
           <Link to="/shop" className="cf-section-view-all">
-            View All ({PRODUCTS.length}) <ArrowRight size={14} />
+            View All ({storeProducts.length}) <ArrowRight size={14} />
           </Link>
         </div>
 
         {/* 4 Cards in 1 Row (Compact & Modern) */}
         <div className="cf-products-compact-grid">
-          {PRODUCTS.slice(0, 8).map((product) => (
+          {storeProducts.slice(0, 8).map((product) => (
             <ProductCard
               key={product.id}
               product={product}
