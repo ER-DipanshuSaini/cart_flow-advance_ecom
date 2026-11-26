@@ -1095,9 +1095,9 @@
 }
 
 .cf-admin-gallery-remove-btn {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--cf-radius-md);
   border: 1px solid var(--cf-border-subtle);
   background-color: var(--cf-bg-elevated);
   color: var(--cf-text-muted);
@@ -1105,21 +1105,16 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  transition: var(--cf-transition);
 }
 
 .cf-admin-gallery-remove-btn:hover {
   color: var(--cf-accent-danger);
   border-color: var(--cf-accent-danger);
+  background-color: var(--cf-accent-danger-tint);
 }
 
 /* Sizes & Color Chips */
-.cf-admin-chip-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.45rem;
-  margin-top: 0.45rem;
-}
-
 .cf-admin-size-chip {
   min-width: 42px;
   height: 32px;
@@ -1145,75 +1140,146 @@
   color: #ffffff;
 }
 
+.cf-admin-color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 0.5rem;
+}
+
 .cf-admin-color-chip {
-  height: 32px;
-  padding: 0 0.75rem;
-  border-radius: var(--cf-radius-pill);
+  padding: 0.45rem 0.6rem;
+  border-radius: 12px;
   border: 1px solid var(--cf-border-subtle);
-  background-color: var(--cf-bg-elevated);
-  color: var(--cf-text-muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-  display: inline-flex;
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-text-main);
+  display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.6rem;
+  text-align: left;
   cursor: pointer;
   transition: var(--cf-transition);
 }
 
-.cf-admin-color-chip:hover {
+.cf-admin-color-chip:hover:not(:disabled) {
   border-color: var(--cf-border-hover);
-  color: var(--cf-text-main);
+  transform: translateY(-1px);
 }
 
 .cf-admin-color-chip.is-selected {
   border-color: var(--cf-accent-primary);
   background-color: var(--cf-accent-primary-tint);
-  color: var(--cf-text-main);
+  cursor: default;
 }
 
-.cf-admin-color-swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 1px solid var(--cf-border-hover);
+.cf-admin-color-chip-block {
+  width: 34px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
   flex-shrink: 0;
 }
 
-.cf-admin-inline-adder {
+.cf-admin-color-chip-text {
+  min-width: 0;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.65rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1px;
 }
 
-.cf-admin-color-picker {
-  width: 34px;
-  height: 34px;
-  padding: 2px;
-  border-radius: var(--cf-radius-md);
-  border: 1px solid var(--cf-border-subtle);
-  background-color: var(--cf-bg-input);
+.cf-admin-color-chip-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--cf-text-main);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cf-admin-color-chip-hex {
+  font-family: var(--cf-font-mono);
+  font-size: 0.66rem;
+  color: var(--cf-text-muted);
+  line-height: 1.2;
+}
+
+.cf-admin-custom-color-card {
+  position: relative;
+  cursor: default;
+}
+
+.cf-admin-custom-color-card.is-empty {
+  border-style: dashed;
+  background-color: var(--cf-bg-elevated);
+  opacity: 0.78;
   cursor: pointer;
 }
 
-.cf-admin-hex-pill {
-  font-family: var(--cf-font-mono);
-  font-size: 0.76rem;
+.cf-admin-custom-color-card.is-empty:hover {
+  opacity: 1;
+  border-color: var(--cf-accent-primary);
+}
+
+.cf-admin-custom-color-placeholder {
+  border: 1px dashed var(--cf-border-hover);
+  background-color: var(--cf-bg-surface);
   color: var(--cf-text-muted);
-  padding: 0.25rem 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cf-admin-custom-color-swatch {
+  cursor: pointer;
+}
+
+.cf-admin-color-native-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  border: none;
+  padding: 0;
+  margin: 0;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.cf-admin-color-native-overlay.is-swatch-only {
+  inset: auto;
+  left: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 22px;
+}
+
+.cf-admin-custom-color-card .cf-admin-color-chip-text {
+  flex: 1;
+}
+
+.cf-admin-custom-color-plus {
+  width: 22px;
+  height: 22px;
+  border: none;
   border-radius: var(--cf-radius-sm);
-  background-color: var(--cf-bg-elevated);
-  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-accent-primary-tint);
+  color: var(--cf-accent-primary-light);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: var(--cf-transition);
+}
+
+.cf-admin-custom-color-plus:hover {
+  background-color: var(--cf-accent-primary);
+  color: #ffffff;
 }
 
 /* Variant Matrix Helpers */
-.cf-admin-bulk-input {
-  width: 78px;
-  height: 32px;
-  text-align: center;
-}
 
 .cf-admin-variant-size-pill {
   display: inline-flex;
@@ -1231,13 +1297,7 @@
 .cf-admin-variant-color-cell {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-}
-
-.cf-admin-variant-sku {
-  font-family: var(--cf-font-mono);
-  font-size: 0.75rem;
-  color: var(--cf-text-muted);
+  gap: 0.6rem;
 }
 
 .cf-admin-variant-qty-input {
@@ -1245,17 +1305,6 @@
   height: 32px;
   text-align: center;
   font-weight: 600;
-}
-
-.cf-admin-status-summary-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 0.55rem;
-  border-top: 1px solid var(--cf-border-subtle);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--cf-text-muted);
 }
 
 /* =========================================================
@@ -1485,12 +1534,6 @@
   background-color: var(--cf-accent-primary-tint);
 }
 
-/* Sidebar Mini Input */
-.cf-shopify-mini-input {
-  width: 170px;
-  height: 32px;
-}
-
 .cf-shopify-size-groups {
   display: flex;
   flex-direction: column;
@@ -1535,10 +1578,97 @@
   gap: 0.45rem;
 }
 
+.cf-shopify-tab-default-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--cf-accent-primary-light);
+  color: #ffffff;
+  border: 1.5px solid var(--cf-bg-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+  pointer-events: none;
+}
+
+.cf-shopify-tab-default-badge svg {
+  fill: currentColor;
+}
+
+.cf-shopify-default-size-badge {
+  height: 28px;
+  padding: 0 0.6rem;
+  border-radius: var(--cf-radius-md);
+  border: 1px solid var(--cf-accent-primary);
+  background-color: var(--cf-accent-primary-tint);
+  color: var(--cf-accent-primary-light);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cf-shopify-default-size-badge svg {
+  fill: currentColor;
+}
+
+.cf-shopify-set-default-btn {
+  height: 28px;
+  padding: 0 0.6rem;
+  border-radius: var(--cf-radius-md);
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-text-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: var(--cf-transition);
+}
+
+.cf-shopify-set-default-btn:hover {
+  border-color: var(--cf-accent-primary);
+  color: var(--cf-accent-primary-light);
+  background-color: var(--cf-accent-primary-tint);
+}
+
 .cf-shopify-size-color-adder {
   padding: 0.75rem 0.85rem;
   background-color: var(--cf-bg-elevated);
-  border-bottom: 1px solid var(--cf-border-subtle);
+  border-top: 1px solid var(--cf-border-subtle);
+}
+
+.cf-shopify-size-group-footer {
+  border-top: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-elevated);
+}
+
+.cf-shopify-add-color-footer-btn {
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  border: none;
+  background: transparent;
+  color: var(--cf-accent-primary-light);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: var(--cf-transition);
+}
+
+.cf-shopify-add-color-footer-btn:hover,
+.cf-shopify-add-color-footer-btn.is-open {
+  background-color: var(--cf-accent-primary-tint);
 }
 
 .cf-shopify-variant-rows {
@@ -1826,10 +1956,12 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.55rem;
+  padding-top: 4px;
 }
 
 .cf-shopify-size-tab {
+  position: relative;
   height: 32px;
   padding: 0 0.7rem;
   border-radius: var(--cf-radius-md);
@@ -1862,19 +1994,113 @@
   opacity: 0.85;
 }
 
-.cf-shopify-size-add-controls {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+.cf-shopify-variants-card {
+  overflow: visible;
 }
 
-.cf-shopify-preset-drawer {
-  margin-top: 0.65rem;
-  padding: 0.7rem;
-  border-radius: var(--cf-radius-md);
-  background-color: var(--cf-bg-elevated);
-  border: 1px solid var(--cf-border-subtle);
+.cf-shopify-size-adder-wrap {
+  position: relative;
 }
+
+.cf-shopify-add-size-trigger {
+  height: 32px;
+  padding: 0 0.75rem;
+  border-radius: var(--cf-radius-md);
+  border: 1px dashed var(--cf-border-hover);
+  background-color: var(--cf-bg-surface);
+  color: var(--cf-accent-primary-light);
+  font-size: 0.76rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: var(--cf-transition);
+}
+
+.cf-shopify-add-size-trigger:hover,
+.cf-shopify-add-size-trigger.is-open {
+  border-style: solid;
+  border-color: var(--cf-accent-primary);
+  background-color: var(--cf-accent-primary-tint);
+}
+
+.cf-shopify-size-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 280px;
+  max-width: calc(100vw - 3rem);
+  padding: 0.85rem;
+  border-radius: var(--cf-radius-lg);
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-surface);
+  box-shadow: var(--cf-shadow-float);
+  z-index: 30;
+}
+
+.cf-shopify-size-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.55rem;
+}
+
+.cf-shopify-size-popover-head span {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--cf-text-main);
+}
+
+.cf-shopify-size-popover-head small {
+  font-size: 0.68rem;
+  color: var(--cf-text-muted);
+}
+
+.cf-shopify-size-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  max-height: 152px;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.cf-shopify-size-popover-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0.6rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--cf-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.cf-shopify-size-popover-divider::before,
+.cf-shopify-size-popover-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: var(--cf-border-subtle);
+}
+
+.cf-shopify-size-popover-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.cf-shopify-size-popover-input {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  font-size: 0.78rem;
+}
+
+
 
 .cf-shopify-section-tabs {
   display: flex;

@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   ChevronLeft,
   Save,
   Plus,
+  Trash2,
   X,
   Upload,
   ExternalLink,
@@ -16,6 +17,7 @@ import {
   Building2,
   AlertTriangle,
   Lock,
+  Star,
 } from 'lucide-react';
 import {
   Badge,
@@ -45,7 +47,6 @@ import {
   getColorLabel,
   getProductOrdersSample,
   getProductStatusMeta,
-  getStockStatus,
   loadCatalogs,
   loadInventoryProducts,
   loadSuppliers,
@@ -133,6 +134,7 @@ function buildInitialForm(existingProduct, existingProducts) {
         )
       ).slice(0, MAX_MEDIA_IMAGES),
       tags: Array.isArray(existingProduct.tags) ? existingProduct.tags : [],
+      defaultSize: existingProduct.defaultSize || existingProduct.sizes?.[0] || 'S',
       variants: Array.isArray(existingProduct.variants) ? existingProduct.variants : [],
       careInstructions: normalizeCarePoints(
         existingProduct.careInstructions,
@@ -160,6 +162,7 @@ function buildInitialForm(existingProduct, existingProducts) {
     imageUrl: '',
     galleryImages: [],
     tags: ['New Drop', 'Menswear'],
+    defaultSize: 'S',
     variants: [
       { key: 'S__#0f172a', size: 'S', color: '#0f172a', qty: 10 },
       { key: 'M__#0f172a', size: 'M', color: '#0f172a', qty: 15 },
@@ -192,10 +195,12 @@ export default function AdminProductFormPage() {
   const [selectedSizeTab, setSelectedSizeTab] = useState(
     () => (existingProduct?.sizes?.[0] || 'S')
   );
-  const [presetSizesOpen, setPresetSizesOpen] = useState(false);
+  const [sizePopoverOpen, setSizePopoverOpen] = useState(false);
   const [customSizeInput, setCustomSizeInput] = useState('');
+  const sizePopoverRef = useRef(null);
   const [colorPickerSize, setColorPickerSize] = useState(null);
-  const [customColorHex, setCustomColorHex] = useState('#1e3a8a');
+  const [customColorHex, setCustomColorHex] = useState('');
+  const customColorInputRef = useRef(null);
   const [tagInput, setTagInput] = useState('');
 
   // Storefront parity tabs: 'specs' | 'care' | 'faqs'
@@ -224,6 +229,21 @@ export default function AdminProductFormPage() {
     [form.variants]
   );
 
+  const presetHexSet = useMemo(
+    () => new Set(PRESET_COLORS.map((c) => normalizeColorHex(c.hex))),
+    []
+  );
+
+  const customGridColors = useMemo(
+    () => activeColors.filter((hex) => !presetHexSet.has(hex)),
+    [activeColors, presetHexSet]
+  );
+
+  const quickSizeOptions = useMemo(
+    () => Array.from(new Set([...PRESET_SIZES, ...activeSizes])),
+    [activeSizes]
+  );
+
   const groupedBySize = useMemo(() => {
     return activeSizes.map((sz) => {
       const rows = form.variants.filter((v) => v.size === sz);
@@ -232,18 +252,23 @@ export default function AdminProductFormPage() {
     });
   }, [activeSizes, form.variants]);
 
-  const activeSizeKey = useMemo(() => {
-    if (selectedSizeTab === 'all') return 'all';
-    return activeSizes.includes(selectedSizeTab) ? selectedSizeTab : activeSizes[0] || '';
-  }, [activeSizes, selectedSizeTab]);
+  const activeSizeKey = useMemo(
+    () => (activeSizes.includes(selectedSizeTab) ? selectedSizeTab : activeSizes[0] || ''),
+    [activeSizes, selectedSizeTab]
+  );
+
+  const activeDefaultSize = useMemo(
+    () => (activeSizes.includes(form.defaultSize) ? form.defaultSize : activeSizes[0] || ''),
+    [activeSizes, form.defaultSize]
+  );
 
   useEffect(() => {
     setForm(buildInitialForm(existingProduct, existingProducts));
     setPersistedStatus(existingProduct?.status || 'Draft');
     setStatusConfirmModal(null);
-    setSelectedSizeTab(existingProduct?.sizes?.[0] || 'S');
+    setSelectedSizeTab(existingProduct?.defaultSize || existingProduct?.sizes?.[0] || 'S');
     setColorPickerSize(null);
-    setPresetSizesOpen(false);
+    setSizePopoverOpen(false);
     setDetailTab('specs');
     setExpandedCareIdx(null);
     setExpandedFaqIdx(null);
@@ -251,7 +276,6 @@ export default function AdminProductFormPage() {
   }, [id, existingProduct, existingProducts]);
 
   const visibleSizeGroups = useMemo(() => {
-    if (activeSizeKey === 'all') return groupedBySize;
     const match = groupedBySize.find((g) => g.size === activeSizeKey);
     return match ? [match] : groupedBySize.slice(0, 1);
   }, [groupedBySize, activeSizeKey]);
@@ -292,6 +316,24 @@ export default function AdminProductFormPage() {
     }
   };
 
+  useEffect(() => {
+    if (!sizePopoverOpen) return undefined;
+    const handleOutside = (e) => {
+      if (sizePopoverRef.current && !sizePopoverRef.current.contains(e.target)) {
+        setSizePopoverOpen(false);
+      }
+    };
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') setSizePopoverOpen(false);
+    };
+    document.addEventListener('pointerdown', handleOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('pointerdown', handleOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, [sizePopoverOpen]);
+
   // Add/Remove Sizes
   const handleAddSize = (sizeLabel) => {
     const clean = String(sizeLabel || '').trim().toUpperCase();
@@ -317,11 +359,17 @@ export default function AdminProductFormPage() {
       addToast('warning', 'Minimum Size Required', 'A product needs at least one size.');
       return;
     }
-    setForm((prev) => ({
-      ...prev,
-      variants: prev.variants.filter((v) => v.size !== sizeLabel),
-    }));
-    if (selectedSizeTab === sizeLabel) setSelectedSizeTab('all');
+    setForm((prev) => {
+      const nextVariants = prev.variants.filter((v) => v.size !== sizeLabel);
+      const nextSizes = Array.from(new Set(nextVariants.map((v) => v.size)));
+      return {
+        ...prev,
+        variants: nextVariants,
+        defaultSize:
+          prev.defaultSize === sizeLabel ? nextSizes[0] || '' : prev.defaultSize,
+      };
+    });
+    if (selectedSizeTab === sizeLabel) setSelectedSizeTab('');
     if (colorPickerSize === sizeLabel) setColorPickerSize(null);
   };
 
@@ -360,13 +408,24 @@ export default function AdminProductFormPage() {
     }));
   };
 
-  const handleSetSizeQtyAll = (sizeLabel, rawQty) => {
-    const safeQty = Math.max(0, Math.floor(Number(rawQty) || 0));
-    setForm((prev) => ({
-      ...prev,
-      variants: prev.variants.map((v) => (v.size === sizeLabel ? { ...v, qty: safeQty } : v)),
-    }));
+  const commitCustomColorRef = useRef(null);
+  commitCustomColorRef.current = () => {
+    if (!customColorHex || !colorPickerSize) return;
+    handleAddColorToSize(colorPickerSize, customColorHex);
+    setCustomColorHex('');
   };
+
+  useEffect(() => {
+    if (!customColorHex || !colorPickerSize) return undefined;
+    const handleOutsideClick = (e) => {
+      if (customColorInputRef.current && e.target === customColorInputRef.current) {
+        return;
+      }
+      commitCustomColorRef.current?.();
+    };
+    document.addEventListener('pointerdown', handleOutsideClick);
+    return () => document.removeEventListener('pointerdown', handleOutsideClick);
+  }, [customColorHex, colorPickerSize]);
 
   // Media Uploads (max 20 images, max 5MB each, JPG/PNG/WEBP only)
   const handleMultiFileUpload = async (e) => {
@@ -635,12 +694,6 @@ export default function AdminProductFormPage() {
     errors.price ||
     (isSellingExceedingMrp ? 'Selling price cannot be greater than MRP.' : '');
 
-  const stockHealth = getStockStatus({
-    stockCount: totalVariantStock,
-    variants: form.variants,
-    reorderLevel: reorderNum,
-  });
-
   const statusMeta = getProductStatusMeta(form.status);
   const extraImages = form.galleryImages.filter((u) => u !== form.imageUrl);
   const isMediaLimitReached = form.galleryImages.length >= MAX_MEDIA_IMAGES;
@@ -851,6 +904,7 @@ export default function AdminProductFormPage() {
       colorImages: {},
       tags: form.tags,
       sizes: activeSizes,
+      defaultSize: activeDefaultSize || activeSizes[0] || 'M',
       colors: activeColors,
       variants: form.variants,
       specs: existingProduct?.specs,
@@ -1108,10 +1162,10 @@ export default function AdminProductFormPage() {
           {/* 3. Pricing — moved to right sidebar */}
 
           {/* 4. Variants (Sizes -> Nested Colors -> Qty) */}
-          <Card>
+          <Card className="cf-shopify-variants-card">
             <Card.Header
               title="Variants (Sizes → Colors & Stock)"
-              subtitle="Select a size filter tab or view all sizes. Add colors and stock quantities inside each size."
+              subtitle="Select a size tab to manage its colors and stock quantities."
               action={
                 <Badge variant="processing">
                   {activeSizes.length} Sizes • {activeColors.length} Colors • {totalVariantStock} Units
@@ -1122,79 +1176,92 @@ export default function AdminProductFormPage() {
               {/* Clean Size Tabs & Adder Row */}
               <div className="cf-shopify-size-tabs-bar">
                 <div className="cf-shopify-size-tabs">
-                  {groupedBySize.map(({ size, sizeQty }) => (
+                  {groupedBySize.map(({ size, sizeQty }) => {
+                    const isDefault = activeDefaultSize === size;
+                    return (
+                      <button
+                        key={size}
+                        type="button"
+                        className={`cf-shopify-size-tab ${activeSizeKey === size ? 'is-active' : ''}`}
+                        onClick={() => setSelectedSizeTab(size)}
+                        title={isDefault ? `${size} (Default storefront size)` : size}
+                      >
+                        {isDefault && (
+                          <span className="cf-shopify-tab-default-badge" aria-label="Default size">
+                            <Star size={9} />
+                          </span>
+                        )}
+                        <span>{size}</span>
+                        <span className="cf-shopify-tab-qty">{sizeQty}</span>
+                      </button>
+                    );
+                  })}
+
+                  <div className="cf-shopify-size-adder-wrap" ref={sizePopoverRef}>
                     <button
-                      key={size}
                       type="button"
-                      className={`cf-shopify-size-tab ${activeSizeKey === size ? 'is-active' : ''}`}
-                      onClick={() => setSelectedSizeTab(size)}
+                      className={`cf-shopify-add-size-trigger ${sizePopoverOpen ? 'is-open' : ''}`}
+                      onClick={() => setSizePopoverOpen((p) => !p)}
                     >
-                      <span>{size}</span>
-                      <span className="cf-shopify-tab-qty">{sizeQty}</span>
+                      <Plus size={13} />
+                      <span>Add Size</span>
                     </button>
-                  ))}
-                  <button
-                    type="button"
-                    className={`cf-shopify-size-tab ${activeSizeKey === 'all' ? 'is-active' : ''}`}
-                    onClick={() => setSelectedSizeTab('all')}
-                  >
-                    All ({activeSizes.length})
-                  </button>
-                </div>
 
-                <div className="cf-shopify-size-add-controls">
-                  <input
-                    type="text"
-                    placeholder="Add size (e.g. XS)"
-                    value={customSizeInput}
-                    onChange={(e) => setCustomSizeInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleAddSize(customSizeInput);
-                      }
-                    }}
-                    className="cf-ui-input cf-shopify-mini-input"
-                  />
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="secondary"
-                    icon={Plus}
-                    onClick={() => handleAddSize(customSizeInput)}
-                  >
-                    Add
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setPresetSizesOpen((p) => !p)}
-                  >
-                    Presets
-                  </Button>
-                </div>
-              </div>
+                    {sizePopoverOpen && (
+                      <div className="cf-shopify-size-popover">
+                        <div className="cf-shopify-size-popover-head">
+                          <span>Quick Sizes</span>
+                          <small>Click to toggle</small>
+                        </div>
 
-              {presetSizesOpen && (
-                <div className="cf-shopify-preset-drawer">
-                  <div className="cf-admin-chip-grid" style={{ marginTop: 0 }}>
-                    {PRESET_SIZES.map((sz) => {
-                      const active = activeSizes.includes(sz);
-                      return (
-                        <button
-                          key={sz}
-                          type="button"
-                          onClick={() => (active ? handleRemoveSize(sz) : handleAddSize(sz))}
-                          className={`cf-admin-size-chip ${active ? 'is-selected' : ''}`}
-                        >
-                          {sz}
-                        </button>
-                      );
-                    })}
+                        <div className="cf-shopify-size-preset-grid">
+                          {quickSizeOptions.map((sz) => {
+                            const active = activeSizes.includes(sz);
+                            return (
+                              <button
+                                key={sz}
+                                type="button"
+                                onClick={() => (active ? handleRemoveSize(sz) : handleAddSize(sz))}
+                                className={`cf-admin-size-chip ${active ? 'is-selected' : ''}`}
+                              >
+                                {sz}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        <div className="cf-shopify-size-popover-divider">
+                          <span>or custom size</span>
+                        </div>
+
+                        <div className="cf-shopify-size-popover-custom">
+                          <input
+                            type="text"
+                            placeholder="e.g. 32, Free Size"
+                            value={customSizeInput}
+                            onChange={(e) => setCustomSizeInput(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleAddSize(customSizeInput);
+                              }
+                            }}
+                            className="cf-ui-input cf-shopify-size-popover-input"
+                          />
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="primary"
+                            onClick={() => handleAddSize(customSizeInput)}
+                          >
+                            Add
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
-              )}
+              </div>
 
               {/* Nested Size -> Color Rows */}
               <div className="cf-shopify-size-groups" style={{ marginTop: '0.85rem' }}>
@@ -1211,85 +1278,38 @@ export default function AdminProductFormPage() {
                         </div>
 
                         <div className="cf-shopify-size-group-actions">
-                          <Button
-                            type="button"
-                            size="sm"
-                            variant="outline"
-                            icon={Plus}
-                            onClick={() => setColorPickerSize(isPickerOpen ? null : size)}
-                          >
-                            Add Color
-                          </Button>
+                          {activeDefaultSize === size ? (
+                            <span
+                              className="cf-shopify-default-size-badge"
+                              title="This size is shown selected by default on the product page"
+                            >
+                              <Star size={11} />
+                              Default
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              className="cf-shopify-set-default-btn"
+                              onClick={() => updateField('defaultSize', size)}
+                              title="Visitors will see this size selected by default on the product page"
+                            >
+                              <Star size={11} />
+                              Set Default
+                            </button>
+                          )}
                           {activeSizes.length > 1 && (
                             <button
                               type="button"
                               className="cf-admin-gallery-remove-btn"
                               onClick={() => handleRemoveSize(size)}
-                              title={`Remove size ${size}`}
+                              title={`Delete size ${size}`}
+                              aria-label={`Delete size ${size}`}
                             >
-                              <X size={12} />
+                              <Trash2 size={13} />
                             </button>
                           )}
                         </div>
                       </div>
-
-                      {isPickerOpen && (
-                        <div className="cf-shopify-size-color-adder">
-                          <div className="cf-admin-chip-grid" style={{ marginTop: 0 }}>
-                            {PRESET_COLORS.map((c) => {
-                              const hex = normalizeColorHex(c.hex);
-                              const added = rows.some((r) => r.color === hex);
-                              return (
-                                <button
-                                  key={hex}
-                                  type="button"
-                                  disabled={added}
-                                  onClick={() => handleAddColorToSize(size, hex)}
-                                  className={`cf-admin-color-chip ${added ? 'is-selected' : ''}`}
-                                >
-                                  <span
-                                    className="cf-admin-color-swatch"
-                                    style={{ backgroundColor: hex }}
-                                  />
-                                  <span>{c.name}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                          <div className="cf-admin-inline-adder">
-                            <input
-                              type="color"
-                              value={customColorHex}
-                              onChange={(e) => setCustomColorHex(e.target.value)}
-                              className="cf-admin-color-picker"
-                            />
-                            <span className="cf-admin-hex-pill">
-                              {customColorHex.toUpperCase()}
-                            </span>
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="secondary"
-                              icon={Plus}
-                              onClick={() => handleAddColorToSize(size, customColorHex)}
-                            >
-                              Add Custom Color
-                            </Button>
-                            <input
-                              type="number"
-                              min={0}
-                              placeholder="Set all qty (Enter)"
-                              className="cf-ui-input cf-admin-bulk-input"
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  handleSetSizeQtyAll(size, e.currentTarget.value);
-                                }
-                              }}
-                            />
-                          </div>
-                        </div>
-                      )}
 
                       <div className="cf-shopify-variant-rows">
                         {rows.map((variant) => {
@@ -1306,15 +1326,18 @@ export default function AdminProductFormPage() {
                               <div className="cf-shopify-variant-label">
                                 <div className="cf-admin-variant-color-cell">
                                   <span
-                                    className="cf-admin-color-swatch"
+                                    className="cf-admin-color-chip-block"
                                     style={{ backgroundColor: variant.color }}
                                   />
-                                  <strong>{getColorLabel(variant.color)}</strong>
+                                  <span className="cf-admin-color-chip-text">
+                                    <span className="cf-admin-color-chip-name">
+                                      {getColorLabel(variant.color)}
+                                    </span>
+                                    <span className="cf-admin-color-chip-hex">
+                                      {variant.color.toUpperCase()}
+                                    </span>
+                                  </span>
                                 </div>
-                                <code className="cf-admin-variant-sku">
-                                  {(form.sku || 'CF-SKU').toUpperCase()}-{size}-
-                                  {variant.color.replace('#', '').toUpperCase().slice(0, 4)}
-                                </code>
                               </div>
 
                               <div className="cf-shopify-variant-right">
@@ -1337,13 +1360,135 @@ export default function AdminProductFormPage() {
                                   type="button"
                                   className="cf-admin-gallery-remove-btn"
                                   onClick={() => handleRemoveColorFromSize(size, variant.color)}
+                                  title={`Delete ${getColorLabel(variant.color)}`}
+                                  aria-label={`Delete ${getColorLabel(variant.color)}`}
                                 >
-                                  <X size={12} />
+                                  <Trash2 size={13} />
                                 </button>
                               </div>
                             </div>
                           );
                         })}
+                      </div>
+
+                      {isPickerOpen && (
+                        <div className="cf-shopify-size-color-adder">
+                          <div className="cf-admin-color-grid">
+                            {PRESET_COLORS.map((c) => {
+                              const hex = normalizeColorHex(c.hex);
+                              const added = rows.some((r) => r.color === hex);
+                              return (
+                                <button
+                                  key={hex}
+                                  type="button"
+                                  disabled={added}
+                                  onClick={() => handleAddColorToSize(size, hex)}
+                                  className={`cf-admin-color-chip ${added ? 'is-selected' : ''}`}
+                                >
+                                  <span
+                                    className="cf-admin-color-chip-block"
+                                    style={{ backgroundColor: hex }}
+                                  />
+                                  <span className="cf-admin-color-chip-text">
+                                    <span className="cf-admin-color-chip-name">{c.name}</span>
+                                    <span className="cf-admin-color-chip-hex">{hex.toUpperCase()}</span>
+                                  </span>
+                                </button>
+                              );
+                            })}
+
+                            {customGridColors.map((hex) => {
+                              const added = rows.some((r) => r.color === hex);
+                              return (
+                                <button
+                                  key={hex}
+                                  type="button"
+                                  disabled={added}
+                                  onClick={() => handleAddColorToSize(size, hex)}
+                                  className={`cf-admin-color-chip ${added ? 'is-selected' : ''}`}
+                                >
+                                  <span
+                                    className="cf-admin-color-chip-block"
+                                    style={{ backgroundColor: hex }}
+                                  />
+                                  <span className="cf-admin-color-chip-text">
+                                    <span className="cf-admin-color-chip-name">
+                                      {getColorLabel(hex)}
+                                    </span>
+                                    <span className="cf-admin-color-chip-hex">{hex.toUpperCase()}</span>
+                                  </span>
+                                </button>
+                              );
+                            })}
+
+                            {/* Custom Color Card (single mounted input so picker never jumps/closes while sliding) */}
+                            <div
+                              className={`cf-admin-color-chip cf-admin-custom-color-card ${
+                                !customColorHex ? 'is-empty' : ''
+                              }`}
+                            >
+                              <input
+                                ref={customColorInputRef}
+                                type="color"
+                                value={customColorHex || '#1e3a8a'}
+                                onChange={(e) => setCustomColorHex(e.target.value)}
+                                className={`cf-admin-color-native-overlay ${
+                                  customColorHex ? 'is-swatch-only' : ''
+                                }`}
+                                title={customColorHex ? 'Change custom color' : 'Pick a custom color'}
+                              />
+                              <span
+                                className={`cf-admin-color-chip-block ${
+                                  customColorHex
+                                    ? 'cf-admin-custom-color-swatch'
+                                    : 'cf-admin-custom-color-placeholder'
+                                }`}
+                                style={customColorHex ? { backgroundColor: customColorHex } : undefined}
+                              >
+                                {!customColorHex && <Plus size={13} />}
+                              </span>
+                              <span className="cf-admin-color-chip-text">
+                                <span className="cf-admin-color-chip-name">Custom</span>
+                                <span className="cf-admin-color-chip-hex">
+                                  {customColorHex ? customColorHex.toUpperCase() : 'Pick color'}
+                                </span>
+                              </span>
+                              {customColorHex && (
+                                <button
+                                  type="button"
+                                  className="cf-admin-custom-color-plus"
+                                  onClick={() => {
+                                    handleAddColorToSize(size, customColorHex);
+                                    setCustomColorHex('');
+                                  }}
+                                  title={`Add ${customColorHex.toUpperCase()}`}
+                                >
+                                  <Plus size={13} />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="cf-shopify-size-group-footer">
+                        <button
+                          type="button"
+                          className={`cf-shopify-add-color-footer-btn ${isPickerOpen ? 'is-open' : ''}`}
+                          onClick={() => setColorPickerSize(isPickerOpen ? null : size)}
+                        >
+                          {isPickerOpen ? (
+                            <>
+                              <CheckCircle2 size={14} />
+                              <span>Done</span>
+                            </>
+                          ) : (
+                            <>
+                              <Plus size={14} />
+                              <span>Add Color</span>
+                            </>
+                          )}
+                        </button>
                       </div>
                     </div>
                   );

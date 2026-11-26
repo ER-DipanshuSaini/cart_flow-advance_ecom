@@ -366,6 +366,8 @@ function enrichProduct(p) {
       : syncVariantsMatrix(fallbackSizes, fallbackColors, [], seedStock);
 
   const { sizes, colors } = deriveSizesAndColors(variants, fallbackSizes, fallbackColors);
+  const defaultSize =
+    p.defaultSize && sizes.includes(p.defaultSize) ? p.defaultSize : sizes[0] || 'M';
   const stockCount = getTotalVariantStock({ variants, stockCount: seedStock });
   const status = normalizeStatus(p.status || meta.status, p.isListed);
   const colorImages = normalizeColorImages(p.colorImages);
@@ -375,6 +377,7 @@ function enrichProduct(p) {
     sku: p.sku || meta.sku || `CF-PRD-${String(p.id).padStart(3, '0')}`,
     colors,
     sizes,
+    defaultSize,
     variants,
     colorImages,
     tags: Array.isArray(p.tags)
