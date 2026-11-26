@@ -598,7 +598,20 @@ export function saveSuppliers(list) {
   }
 }
 
-export function readFilesAsDataUrls(fileList) {
+export const STOREFRONT_IMAGE_ACCEPT = '.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp';
+const ALLOWED_IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const ALLOWED_IMAGE_EXT_RE = /\.(jpe?g|png|webp)$/i;
+
+function getImageDimensions(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+function readFilesAsDataUrls(fileList) {
   const files = Array.from(fileList || []);
   return Promise.all(
     files.map(
@@ -611,5 +624,49 @@ export function readFilesAsDataUrls(fileList) {
         })
     )
   ).then((urls) => urls.filter(Boolean));
+}
+
+export async function validateStorefrontImageFiles(
+  fileList,
+  { maxFileMb = 5, targetRatio = 5 / 6, ratioTolerance = 0.02 } = {}
+) {
+  const rawFiles = Array.from(fileList || []);
+  const maxBytes = maxFileMb * 1024 * 1024;
+  const validFiles = [];
+  let invalidTypeCount = 0;
+  let oversizedCount = 0;
+
+  rawFiles.forEach((file) => {
+    const mimeOk = ALLOWED_IMAGE_MIME_TYPES.has((file.type || '').toLowerCase());
+    const extOk = ALLOWED_IMAGE_EXT_RE.test(file.name || '');
+    if (!mimeOk && !extOk) {
+      invalidTypeCount += 1;
+      return;
+    }
+    if (file.size > maxBytes) {
+      oversizedCount += 1;
+      return;
+    }
+    validFiles.push(file);
+  });
+
+  if (validFiles.length === 0) {
+    return { validUrls: [], invalidTypeCount, oversizedCount, invalidRatioCount: 0 };
+  }
+
+  const urls = await readFilesAsDataUrls(validFiles);
+  const checks = await Promise.all(
+    urls.map(async (url) => {
+      const dims = await getImageDimensions(url);
+      if (!dims || !dims.width || !dims.height) return { url, valid: false };
+      const ratio = dims.width / dims.height;
+      return { url, valid: Math.abs(ratio - targetRatio) <= ratioTolerance };
+    })
+  );
+
+  const validUrls = checks.filter((c) => c.valid).map((c) => c.url);
+  const invalidRatioCount = checks.length - validUrls.length;
+
+  return { validUrls, invalidTypeCount, oversizedCount, invalidRatioCount };
 }
 

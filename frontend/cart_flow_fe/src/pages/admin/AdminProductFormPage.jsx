@@ -42,6 +42,7 @@ import {
   PRESET_COLORS,
   PRESET_SIZES,
   PRODUCT_STATUSES,
+  STOREFRONT_IMAGE_ACCEPT,
   deriveSizesAndColors,
   getCatalogTagSuggestions,
   getColorLabel,
@@ -52,20 +53,14 @@ import {
   loadSuppliers,
   normalizeCarePoints,
   normalizeColorHex,
-  readFilesAsDataUrls,
   saveInventoryProducts,
   saveSuppliers,
+  validateStorefrontImageFiles,
 } from '../../data/inventoryProducts';
 import './AdminConsole.css';
 
 const MAX_MEDIA_IMAGES = 20;
 const MAX_MEDIA_FILE_MB = 5;
-const MAX_MEDIA_FILE_BYTES = MAX_MEDIA_FILE_MB * 1024 * 1024;
-const STOREFRONT_IMAGE_RATIO = 5 / 6;
-const IMAGE_RATIO_TOLERANCE = 0.02;
-const ALLOWED_IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
-const ALLOWED_IMAGE_EXT_RE = /\.(jpe?g|png|webp)$/i;
-const MEDIA_INPUT_ACCEPT = '.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp';
 const MAX_CARE_POINTS = 20;
 const MAX_FAQS = 20;
 const MAX_CARE_HEADING_CHARS = 50;
@@ -85,15 +80,6 @@ function generateNextSku(products, category) {
   const nextNum =
     products.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0) + 1;
   return `CF-${prefix}-${String(nextNum).padStart(3, '0')}`;
-}
-
-function getImageDimensions(src) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
-    img.onerror = () => resolve(null);
-    img.src = src;
-  });
 }
 
 function toShortSnippet(text = '', limit = 140) {
@@ -427,7 +413,7 @@ export default function AdminProductFormPage() {
     return () => document.removeEventListener('pointerdown', handleOutsideClick);
   }, [customColorHex, colorPickerSize]);
 
-  // Media Uploads (max 20 images, max 5MB each, JPG/PNG/WEBP only)
+  // Media Uploads (max 20 images, max 5MB each, JPG/PNG/WEBP only, 5:6 ratio)
   const handleMultiFileUpload = async (e) => {
     const input = e.target;
     const rawFiles = Array.from(input.files || []);
@@ -440,23 +426,8 @@ export default function AdminProductFormPage() {
       return;
     }
 
-    const validFiles = [];
-    let invalidTypeCount = 0;
-    let oversizedCount = 0;
-
-    rawFiles.forEach((file) => {
-      const mimeOk = ALLOWED_IMAGE_MIME_TYPES.has((file.type || '').toLowerCase());
-      const extOk = ALLOWED_IMAGE_EXT_RE.test(file.name || '');
-      if (!mimeOk && !extOk) {
-        invalidTypeCount += 1;
-        return;
-      }
-      if (file.size > MAX_MEDIA_FILE_BYTES) {
-        oversizedCount += 1;
-        return;
-      }
-      validFiles.push(file);
-    });
+    const { validUrls, invalidTypeCount, oversizedCount, invalidRatioCount } =
+      await validateStorefrontImageFiles(rawFiles, { maxFileMb: MAX_MEDIA_FILE_MB });
 
     if (invalidTypeCount > 0) {
       addToast(
@@ -472,25 +443,6 @@ export default function AdminProductFormPage() {
         `${oversizedCount} file(s) exceeded the ${MAX_MEDIA_FILE_MB}MB size limit and were skipped.`
       );
     }
-    if (validFiles.length === 0) return;
-
-    const urls = await readFilesAsDataUrls(validFiles);
-    if (urls.length === 0) return;
-
-    const dimensionChecks = await Promise.all(
-      urls.map(async (url) => {
-        const dims = await getImageDimensions(url);
-        if (!dims || !dims.width || !dims.height) return { url, valid: false };
-        const ratio = dims.width / dims.height;
-        return {
-          url,
-          valid: Math.abs(ratio - STOREFRONT_IMAGE_RATIO) <= IMAGE_RATIO_TOLERANCE,
-        };
-      })
-    );
-
-    const ratioValidUrls = dimensionChecks.filter((item) => item.valid).map((item) => item.url);
-    const invalidRatioCount = dimensionChecks.length - ratioValidUrls.length;
     if (invalidRatioCount > 0) {
       addToast(
         'warning',
@@ -498,9 +450,9 @@ export default function AdminProductFormPage() {
         `${invalidRatioCount} file(s) skipped. Storefront requires a 5:6 ratio (e.g. 1000×1200 px).`
       );
     }
-    if (ratioValidUrls.length === 0) return;
+    if (validUrls.length === 0) return;
 
-    const uniqueNew = ratioValidUrls.filter((url) => !form.galleryImages.includes(url));
+    const uniqueNew = validUrls.filter((url) => !form.galleryImages.includes(url));
     if (uniqueNew.length === 0) {
       addToast('info', 'Duplicate Image', 'Selected image(s) are already in the gallery.');
       return;
@@ -1103,7 +1055,7 @@ export default function AdminProductFormPage() {
                       <span>Upload Primary Image</span>
                       <input
                         type="file"
-                        accept={MEDIA_INPUT_ACCEPT}
+                        accept={STOREFRONT_IMAGE_ACCEPT}
                         multiple
                         className="cf-admin-hidden-file-input"
                         onChange={handleMultiFileUpload}
@@ -1147,7 +1099,7 @@ export default function AdminProductFormPage() {
                       <span>Add image</span>
                       <input
                         type="file"
-                        accept={MEDIA_INPUT_ACCEPT}
+                        accept={STOREFRONT_IMAGE_ACCEPT}
                         multiple
                         className="cf-admin-hidden-file-input"
                         onChange={handleMultiFileUpload}

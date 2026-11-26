@@ -1376,13 +1376,6 @@
 }
 
 /* Bento Media Grid */
-.cf-shopify-url-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.85rem;
-}
-
 .cf-shopify-media-bento {
   display: grid;
   grid-template-columns: minmax(150px, 195px) minmax(0, 1fr);
@@ -2243,4 +2236,89 @@
   border-color: var(--cf-accent-primary);
   color: var(--cf-accent-primary-light);
   background-color: var(--cf-accent-primary-tint);
+}
+
+/* Catalog Form Workspace */
+.cf-catalog-editor-grid {
+  display: grid;
+  grid-template-columns: minmax(240px, 285px) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .cf-catalog-editor-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cf-catalog-photo-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.cf-catalog-dropzone small {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--cf-text-dim);
+}
+
+.cf-catalog-replace-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.cf-catalog-visibility-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+@media (max-width: 560px) {
+  .cf-catalog-visibility-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cf-catalog-vis-option {
+  border: 1px solid var(--cf-border-subtle);
+  border-radius: var(--cf-radius-md);
+}
+
+.cf-catalog-vis-option:last-child {
+  border-bottom: 1px solid var(--cf-border-subtle);
+}
+
+.cf-catalog-vis-option.is-selected {
+  border-color: var(--cf-accent-primary);
+}
+
+.cf-catalog-vis-note {
+  margin-top: 0.55rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: var(--cf-radius-md);
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-elevated);
+  color: var(--cf-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.cf-catalog-vis-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cf-catalog-vis-note.is-warning {
+  border-color: var(--cf-accent-warning);
+  background-color: var(--cf-accent-warning-tint);
+  color: var(--cf-text-main);
+}
+
+.cf-catalog-vis-note.is-warning svg {
+  color: var(--cf-accent-warning);
 }

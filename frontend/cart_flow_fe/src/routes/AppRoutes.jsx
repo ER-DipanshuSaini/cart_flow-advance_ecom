@@ -21,6 +21,7 @@ import AdminOverviewPage from '../pages/admin/AdminOverviewPage';
 import AdminOrdersPage from '../pages/admin/AdminOrdersPage';
 import AdminInventoryPage from '../pages/admin/AdminInventoryPage';
 import AdminCatalogPage from '../pages/admin/AdminCatalogPage';
+import AdminCatalogFormPage from '../pages/admin/AdminCatalogFormPage';
 import AdminProductFormPage from '../pages/admin/AdminProductFormPage';
 import AdminLogisticsPage from '../pages/admin/AdminLogisticsPage';
 import AdminCustomersPage from '../pages/admin/AdminCustomersPage';
@@ -59,6 +60,9 @@ export default function AppRoutes() {
         <Route path="orders" element={<AdminOrdersPage />} />
         <Route path="inventory" element={<AdminInventoryPage />} />
         <Route path="catalog" element={<AdminCatalogPage />} />
+        <Route path="catalog/new" element={<AdminCatalogFormPage />} />
+        <Route path="catalog/:id" element={<AdminCatalogFormPage />} />
+        <Route path="catalog/:id/edit" element={<AdminCatalogFormPage />} />
         <Route path="inventory/new" element={<AdminProductFormPage />} />
         <Route path="inventory/:id" element={<AdminProductFormPage />} />
         <Route path="inventory/:id/edit" element={<AdminProductFormPage />} />

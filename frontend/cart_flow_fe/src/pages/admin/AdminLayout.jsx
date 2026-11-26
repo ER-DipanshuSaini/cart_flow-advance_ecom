@@ -31,6 +31,18 @@ export default function AdminLayout() {
   const getBreadcrumbs = () => {
     const p = location.pathname;
     if (p.includes('/admin/orders')) return [{ label: 'Orders & Fulfillment' }];
+    if (p.includes('/admin/catalog/new')) {
+      return [
+        { label: 'Catalog', to: '/admin/catalog' },
+        { label: 'Add Catalog' },
+      ];
+    }
+    if (p.includes('/admin/catalog/')) {
+      return [
+        { label: 'Catalog', to: '/admin/catalog' },
+        { label: 'Catalog Workspace' },
+      ];
+    }
     if (p.includes('/admin/catalog')) return [{ label: 'Catalog' }];
     if (p.includes('/admin/inventory/new')) {
       return [
