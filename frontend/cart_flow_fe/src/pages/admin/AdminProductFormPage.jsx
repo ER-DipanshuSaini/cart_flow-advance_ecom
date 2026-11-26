@@ -1820,6 +1820,16 @@ export default function AdminProductFormPage() {
                   keyField="id"
                   data={productOrders.slice((ordersPage - 1) * 4, ordersPage * 4)}
                   columns={[
+                    {
+                      key: 'srNo',
+                      label: 'Sr. No.',
+                      width: '74px',
+                      render: (_, __, rowIndex) => (
+                        <span className="cf-admin-inv-sub" style={{ fontWeight: 600 }}>
+                          {(ordersPage - 1) * 4 + rowIndex + 1}
+                        </span>
+                      ),
+                    },
                     { key: 'id', label: 'Order ID', render: (v) => <Badge variant="mono">{v}</Badge> },
                     { key: 'customer', label: 'Customer' },
                     { key: 'variant', label: 'Variant' },

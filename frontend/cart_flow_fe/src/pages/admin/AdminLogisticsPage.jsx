@@ -85,6 +85,16 @@ export default function AdminLogisticsPage() {
 
   const columns = [
     {
+      key: 'srNo',
+      label: 'Sr. No.',
+      width: '74px',
+      render: (_, __, rowIndex) => (
+        <span className="cf-admin-inv-sub" style={{ fontWeight: 600 }}>
+          {(currentPage - 1) * pageSize + rowIndex + 1}
+        </span>
+      ),
+    },
+    {
       key: 'waybill',
       label: 'Air Waybill (AWB)',
       render: (val) => <Badge variant="mono">{val}</Badge>,
