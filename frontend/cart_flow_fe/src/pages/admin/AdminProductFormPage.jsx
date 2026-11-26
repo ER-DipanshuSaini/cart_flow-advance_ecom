@@ -11,7 +11,6 @@ import {
   Tag,
   Clock,
   Link2,
-  Palette,
   HelpCircle,
   Sparkles,
   FileText,
@@ -101,7 +100,11 @@ function buildInitialForm(existingProduct, existingProducts) {
       supplier: existingProduct.supplier || 'CartFlow Atelier',
       description: existingProduct.description || '',
       price: String(existingProduct.price ?? ''),
-      originalPrice: existingProduct.originalPrice ? String(existingProduct.originalPrice) : '',
+      originalPrice: existingProduct.originalPrice
+        ? String(existingProduct.originalPrice)
+        : existingProduct.price
+          ? String(existingProduct.price)
+          : '',
       costPrice: existingProduct.costPrice ? String(existingProduct.costPrice) : '',
       reorderLevel: String(existingProduct.reorderLevel ?? 10),
       status: existingProduct.status || 'Active',
@@ -268,8 +271,12 @@ export default function AdminProductFormPage() {
 
   const updateField = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
-    if (errors[key]) {
-      setErrors((prev) => ({ ...prev, [key]: '' }));
+    if (errors[key] || (key === 'originalPrice' && errors.price)) {
+      setErrors((prev) => ({
+        ...prev,
+        [key]: '',
+        ...(key === 'originalPrice' ? { price: '' } : {}),
+      }));
     }
   };
 
@@ -588,9 +595,10 @@ export default function AdminProductFormPage() {
     mrpNum > sellingNum && sellingNum > 0
       ? Math.round(((mrpNum - sellingNum) / mrpNum) * 100)
       : 0;
-  const unitMargin = sellingNum > 0 && costNum > 0 ? sellingNum - costNum : 0;
-  const marginPct =
-    sellingNum > 0 && costNum > 0 ? Math.round((unitMargin / sellingNum) * 100) : 0;
+  const isSellingExceedingMrp = mrpNum > 0 && sellingNum > mrpNum;
+  const sellingPriceError =
+    errors.price ||
+    (isSellingExceedingMrp ? 'Selling price cannot be greater than MRP.' : '');
 
   const stockHealth = getStockStatus({
     stockCount: totalVariantStock,
@@ -690,7 +698,12 @@ export default function AdminProductFormPage() {
     const nextErrors = {};
     if (!form.title.trim()) nextErrors.title = 'Product title is required.';
     if (isEditMode && !form.sku.trim()) nextErrors.sku = 'SKU code is required.';
-    if (sellingNum <= 0) nextErrors.price = 'Enter a valid selling price.';
+    if (mrpNum <= 0) nextErrors.originalPrice = 'Enter a valid MRP.';
+    if (sellingNum <= 0) {
+      nextErrors.price = 'Enter a valid selling price.';
+    } else if (mrpNum > 0 && sellingNum > mrpNum) {
+      nextErrors.price = 'Selling price cannot be greater than MRP.';
+    }
     if (!stripHtmlTags(form.description)) {
       nextErrors.description = 'Add full details in Storefront Product Sections.';
       setDetailTab('specs');
@@ -1077,54 +1090,7 @@ export default function AdminProductFormPage() {
             </Card.Body>
           </Card>
 
-          {/* 3. Pricing */}
-          <Card>
-            <Card.Header title="Pricing" subtitle="Storefront selling price, MRP, and unit cost margin" />
-            <Card.Body>
-              <div className="cf-shopify-pricing-grid">
-                <Input
-                  label="Price (₹)"
-                  type="number"
-                  min={1}
-                  required
-                  placeholder="1899"
-                  value={form.price}
-                  onChange={(e) => updateField('price', e.target.value)}
-                  error={errors.price}
-                />
-                <Input
-                  label="Compare-at / MRP (₹)"
-                  type="number"
-                  min={0}
-                  placeholder="2499"
-                  value={form.originalPrice}
-                  onChange={(e) => updateField('originalPrice', e.target.value)}
-                />
-                <Input
-                  label="Cost per item (₹)"
-                  type="number"
-                  min={0}
-                  placeholder="820"
-                  value={form.costPrice}
-                  onChange={(e) => updateField('costPrice', e.target.value)}
-                />
-              </div>
-
-              <div className="cf-shopify-profit-bar">
-                <span>
-                  Store Discount: <strong>{discountPct > 0 ? `-${discountPct}% OFF` : 'None'}</strong>
-                </span>
-                <span>
-                  Unit Profit:{' '}
-                  <strong>
-                    {unitMargin > 0
-                      ? `₹${unitMargin.toLocaleString('en-IN')} (${marginPct}% margin)`
-                      : '-'}
-                  </strong>
-                </span>
-              </div>
-            </Card.Body>
-          </Card>
+          {/* 3. Pricing — moved to right sidebar */}
 
           {/* 4. Variants (Sizes -> Nested Colors -> Color Image + Qty) */}
           <Card>
@@ -1554,7 +1520,87 @@ export default function AdminProductFormPage() {
             </Card.Body>
           </Card>
 
-          {/* 2. Product Organization */}
+          {/* 2. Pricing */}
+          <Card>
+            <Card.Header title="Pricing" />
+            <Card.Body>
+              <div className="cf-admin-form-stack">
+                {/* Live Price Preview (appears as soon as MRP or Selling Price is entered) */}
+                {(mrpNum > 0 || sellingNum > 0) && (
+                  <div
+                    className={`cf-sidebar-price-preview ${
+                      isSellingExceedingMrp ? 'is-invalid' : ''
+                    }`}
+                  >
+                    <span className="cf-sidebar-price-label">Preview</span>
+                    <div className="cf-sidebar-price-display">
+                      <span
+                        className={`cf-sidebar-price-selling ${
+                          isSellingExceedingMrp ? 'is-error' : ''
+                        }`}
+                      >
+                        ₹{(sellingNum > 0 ? sellingNum : mrpNum).toLocaleString('en-IN')}
+                      </span>
+
+                      {sellingNum > 0 && mrpNum > 0 ? (
+                        isSellingExceedingMrp ? (
+                          <>
+                            <span className="cf-sidebar-price-hint">
+                              MRP ₹{mrpNum.toLocaleString('en-IN')}
+                            </span>
+                            <Badge variant="danger" size="sm">
+                              Exceeds MRP
+                            </Badge>
+                          </>
+                        ) : mrpNum > sellingNum ? (
+                          <>
+                            <span className="cf-sidebar-price-mrp">
+                              ₹{mrpNum.toLocaleString('en-IN')}
+                            </span>
+                            <Badge variant="success" size="sm">
+                              {discountPct}% OFF
+                            </Badge>
+                          </>
+                        ) : (
+                          <Badge variant="neutral" size="sm">
+                            At MRP
+                          </Badge>
+                        )
+                      ) : mrpNum > 0 ? (
+                        <span className="cf-sidebar-price-hint">MRP • Enter selling price</span>
+                      ) : (
+                        <span className="cf-sidebar-price-hint">Add MRP below</span>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <Input
+                  label="MRP (₹)"
+                  type="number"
+                  min={1}
+                  required
+                  placeholder="2499"
+                  value={form.originalPrice}
+                  onChange={(e) => updateField('originalPrice', e.target.value)}
+                  error={errors.originalPrice}
+                />
+                <Input
+                  label="Selling Price (₹)"
+                  type="number"
+                  min={1}
+                  max={mrpNum > 0 ? mrpNum : undefined}
+                  required
+                  placeholder="1899"
+                  value={form.price}
+                  onChange={(e) => updateField('price', e.target.value)}
+                  error={sellingPriceError}
+                />
+              </div>
+            </Card.Body>
+          </Card>
+
+          {/* 3. Product Organization */}
           <Card>
             <Card.Header title="Product organization" />
             <Card.Body>
@@ -1650,73 +1696,7 @@ export default function AdminProductFormPage() {
             </Card.Body>
           </Card>
 
-          {/* 3. Inventory, SKU & Color Images Quick Map */}
-          <Card>
-            <Card.Header title="Inventory & Color Photos" />
-            <Card.Body>
-              <div className="cf-admin-form-stack">
-                {isEditMode && (
-                  <Input
-                    label="Base SKU Code"
-                    required
-                    value={form.sku}
-                    onChange={(e) => updateField('sku', e.target.value)}
-                    error={errors.sku}
-                  />
-                )}
-                <Input
-                  label="Low Stock Alert Threshold"
-                  type="number"
-                  min={0}
-                  value={form.reorderLevel}
-                  onChange={(e) => updateField('reorderLevel', e.target.value)}
-                />
 
-                <div className="cf-admin-status-summary-row">
-                  <span>Combined Variant Stock</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                    <strong>{totalVariantStock} units</strong>
-                    <Badge dot size="sm" variant={stockHealth.variant}>
-                      {stockHealth.label}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="cf-shopify-side-color-section">
-                  <span className="cf-ui-label" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <Palette size={13} /> Color-Based Photos ({activeColors.length})
-                  </span>
-                  <div className="cf-shopify-side-color-list">
-                    {activeColors.map((hex) => {
-                      const img = form.colorImages?.[hex] || form.imageUrl || FALLBACK_IMAGE;
-                      const isCustom = Boolean(form.colorImages?.[hex]);
-                      return (
-                        <button
-                          key={hex}
-                          type="button"
-                          className={`cf-shopify-side-color-item ${isCustom ? 'has-custom' : ''}`}
-                          onClick={() => openColorImageModal(hex)}
-                        >
-                          <img src={img} alt={getColorLabel(hex)} />
-                          <div className="cf-shopify-side-color-meta">
-                            <span className="cf-admin-variant-color-cell">
-                              <span
-                                className="cf-admin-color-swatch"
-                                style={{ backgroundColor: hex }}
-                              />
-                              <strong>{getColorLabel(hex)}</strong>
-                            </span>
-                            <small>{isCustom ? 'Custom photo set' : 'Using cover image'}</small>
-                          </div>
-                          <span className="cf-shopify-side-edit-txt">Edit</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </Card.Body>
-          </Card>
         </div>
       </form>
 

@@ -1471,38 +1471,7 @@
   background-color: var(--cf-accent-primary-tint);
 }
 
-/* Pricing Row */
-.cf-shopify-pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem;
-}
-
-@media (max-width: 640px) {
-  .cf-shopify-pricing-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.cf-shopify-profit-bar {
-  margin-top: 0.85rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--cf-radius-md);
-  background-color: var(--cf-bg-elevated);
-  border: 1px solid var(--cf-border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  font-size: 0.78rem;
-  color: var(--cf-text-muted);
-}
-
-.cf-shopify-profit-bar strong {
-  color: var(--cf-text-main);
-}
-
+/* Sidebar Mini Input */
 .cf-shopify-mini-input {
   width: 170px;
   height: 32px;
@@ -1988,73 +1957,59 @@
   border-bottom-color: var(--cf-accent-primary);
 }
 
-.cf-shopify-side-color-section {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-top: 0.55rem;
-  border-top: 1px solid var(--cf-border-subtle);
-}
-
-.cf-shopify-side-color-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  max-height: 220px;
-  overflow-y: auto;
-  padding-right: 2px;
-}
-
-.cf-shopify-side-color-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.45rem 0.55rem;
+/* Sidebar Pricing Preview */
+.cf-sidebar-price-preview {
+  padding: 0.75rem;
   border-radius: var(--cf-radius-md);
-  border: 1px solid var(--cf-border-subtle);
   background-color: var(--cf-bg-elevated);
-  text-align: left;
-  cursor: pointer;
+  border: 1px solid var(--cf-border-subtle);
   transition: var(--cf-transition);
 }
 
-.cf-shopify-side-color-item:hover,
-.cf-shopify-side-color-item.has-custom {
-  border-color: var(--cf-accent-primary);
+.cf-sidebar-price-preview.is-invalid {
+  border-color: var(--cf-accent-danger);
+  background-color: rgba(239, 68, 68, 0.06);
 }
 
-.cf-shopify-side-color-item.has-custom {
-  background-color: var(--cf-accent-primary-tint);
-}
-
-.cf-shopify-side-color-item img {
-  width: 34px;
-  height: 40px;
-  border-radius: var(--cf-radius-sm);
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.cf-shopify-side-color-meta {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  font-size: 0.78rem;
-  color: var(--cf-text-main);
-}
-
-.cf-shopify-side-color-meta small {
+.cf-sidebar-price-label {
+  display: block;
   font-size: 0.7rem;
+  font-weight: 600;
   color: var(--cf-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.4rem;
 }
 
-.cf-shopify-side-edit-txt {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--cf-accent-primary-light);
+.cf-sidebar-price-display {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cf-sidebar-price-selling {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--cf-text-main);
+  letter-spacing: -0.02em;
+}
+
+.cf-sidebar-price-selling.is-error {
+  color: var(--cf-accent-danger);
+}
+
+.cf-sidebar-price-mrp {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--cf-text-muted);
+  text-decoration: line-through;
+}
+
+.cf-sidebar-price-hint {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--cf-text-muted);
 }
 
 .cf-shopify-tag-header-row {
