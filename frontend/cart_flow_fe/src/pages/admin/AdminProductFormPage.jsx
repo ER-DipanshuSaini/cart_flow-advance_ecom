@@ -17,6 +17,8 @@ import {
   FileText,
   CheckCircle2,
   Building2,
+  AlertTriangle,
+  Lock,
 } from 'lucide-react';
 import {
   Badge,
@@ -197,6 +199,11 @@ export default function AdminProductFormPage() {
   const [supplierForm, setSupplierForm] = useState({ name: '', contact: '', address: '' });
   const [supplierErrors, setSupplierErrors] = useState({});
 
+  // Persisted status lock (cannot revert back to Draft once active/non-draft) & confirmation modal
+  const [persistedStatus, setPersistedStatus] = useState(() => existingProduct?.status || 'Draft');
+  const [statusConfirmModal, setStatusConfirmModal] = useState(null);
+  const isDraftLocked = isEditMode && persistedStatus !== 'Draft';
+
   const { sizes: activeSizes, colors: activeColors } = useMemo(
     () => deriveSizesAndColors(form.variants, [], []),
     [form.variants]
@@ -217,6 +224,8 @@ export default function AdminProductFormPage() {
 
   useEffect(() => {
     setForm(buildInitialForm(existingProduct, existingProducts));
+    setPersistedStatus(existingProduct?.status || 'Draft');
+    setStatusConfirmModal(null);
     setSelectedSizeTab(existingProduct?.sizes?.[0] || 'S');
     setColorPickerSize(null);
     setPresetSizesOpen(false);
@@ -592,7 +601,90 @@ export default function AdminProductFormPage() {
   const statusMeta = getProductStatusMeta(form.status);
   const extraImages = form.galleryImages.filter((u) => u !== form.imageUrl);
 
-  const handleSubmit = (e, statusOverride = null) => {
+  const handleRequestStatusChange = (nextStatus) => {
+    if (nextStatus === form.status) return;
+    if (nextStatus === 'Draft' && isDraftLocked) {
+      addToast('warning', 'Draft Locked', 'Published products cannot be reverted back to Draft.');
+      return;
+    }
+
+    if (
+      nextStatus === 'Private' ||
+      nextStatus === 'Closed' ||
+      (form.status === 'Draft' && nextStatus === 'Active')
+    ) {
+      setStatusConfirmModal({ targetStatus: nextStatus, submitOnConfirm: false });
+      return;
+    }
+
+    updateField('status', nextStatus);
+  };
+
+  const handleConfirmStatusModal = () => {
+    if (!statusConfirmModal) return;
+    const { targetStatus, submitOnConfirm } = statusConfirmModal;
+    updateField('status', targetStatus);
+    setStatusConfirmModal(null);
+    if (submitOnConfirm) {
+      handleSubmit(null, targetStatus, true);
+    }
+  };
+
+  const handleSwitchToOutOfStockInstead = () => {
+    setForm((prev) => ({
+      ...prev,
+      status: 'Active',
+      variants: prev.variants.map((v) => ({ ...v, qty: 0 })),
+    }));
+    setStatusConfirmModal(null);
+    addToast(
+      'info',
+      'Set to Out of Stock',
+      'Status kept Active and all variant quantities set to 0.'
+    );
+  };
+
+  const getStatusModalMeta = (targetStatus) => {
+    if (targetStatus === 'Private') {
+      return {
+        title: 'Switch Product to Private?',
+        subtitle: 'Storefront visibility warning',
+        tone: 'warning',
+        message:
+          'Making this product Private will immediately stop it from showing to public shoppers on the storefront.',
+        tip: 'Better option: If stock is temporarily unavailable, keep the product Active and set variant quantities to 0 (Out of Stock) instead.',
+        confirmLabel: 'Yes, Make Private',
+        confirmVariant: 'primary',
+        allowOutOfStockAlt: true,
+      };
+    }
+    if (targetStatus === 'Closed') {
+      return {
+        title: 'Mark Product as Closed?',
+        subtitle: 'Permanent discontinuation warning',
+        tone: 'danger',
+        message:
+          'Closing this product will hide it from the public storefront. Only mark this product as Closed if you are completely sure it will never be sold again in the future.',
+        tip: 'If you might sell or restock this item later, set all variant quantities to 0 (Out of Stock) instead of closing it.',
+        confirmLabel: 'Yes, Mark as Closed',
+        confirmVariant: 'danger',
+        allowOutOfStockAlt: true,
+      };
+    }
+    return {
+      title: 'Publish Product to Storefront?',
+      subtitle: 'Draft status will be locked permanently',
+      tone: 'primary',
+      message:
+        'Publishing this product will make it Active and visible to everyone on the storefront.',
+      tip: 'Once published, you can always edit its details, pricing, stock, or move it to Private/Closed later — but you cannot move it back to Draft.',
+      confirmLabel: 'Yes, Publish Active',
+      confirmVariant: 'primary',
+      allowOutOfStockAlt: false,
+    };
+  };
+
+  const handleSubmit = (e, statusOverride = null, skipStatusConfirm = false) => {
     if (e && e.preventDefault) e.preventDefault();
 
     const nextErrors = {};
@@ -637,6 +729,16 @@ export default function AdminProductFormPage() {
     }
 
     const finalStatus = statusOverride || form.status || 'Draft';
+    if (isDraftLocked && finalStatus === 'Draft') {
+      addToast('warning', 'Draft Locked', 'Published products cannot be reverted back to Draft.');
+      return;
+    }
+
+    if (!skipStatusConfirm && finalStatus === 'Active' && form.status === 'Draft') {
+      setStatusConfirmModal({ targetStatus: 'Active', submitOnConfirm: true });
+      return;
+    }
+
     if (statusOverride && statusOverride !== form.status) {
       updateField('status', statusOverride);
     }
@@ -716,6 +818,9 @@ export default function AdminProductFormPage() {
       : [payload, ...existingProducts];
 
     saveInventoryProducts(nextList);
+    if (isEditMode) {
+      setPersistedStatus(finalStatus);
+    }
     addToast(
       'success',
       isEditMode
@@ -1390,18 +1495,62 @@ export default function AdminProductFormPage() {
         <div className="cf-shopify-side-col">
           {/* 1. Status */}
           <Card>
-            <Card.Header title="Status" />
+            <Card.Header
+              title="Status"
+              action={
+                <Badge dot variant={statusMeta.variant} size="sm">
+                  {statusMeta.label}
+                </Badge>
+              }
+            />
             <Card.Body>
-              <div className="cf-admin-form-stack">
-                <Select
-                  value={form.status}
-                  onChange={(e) => updateField('status', e.target.value)}
-                  options={PRODUCT_STATUSES.map((s) => ({
-                    value: s.value,
-                    label: s.label,
-                  }))}
-                />
-                <p className="cf-shopify-status-hint">{statusMeta.description}</p>
+              <div
+                className="cf-shopify-status-list"
+                role="radiogroup"
+                aria-label="Product status"
+              >
+                {PRODUCT_STATUSES.map((s) => {
+                  const isSelected = form.status === s.value;
+                  const isOptionLocked = s.value === 'Draft' && isDraftLocked;
+                  return (
+                    <button
+                      key={s.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={isSelected}
+                      disabled={isOptionLocked}
+                      title={
+                        isOptionLocked
+                          ? 'Published products cannot revert back to Draft'
+                          : s.description
+                      }
+                      className={`cf-shopify-status-row ${isSelected ? 'is-selected' : ''} ${
+                        isOptionLocked ? 'is-disabled' : ''
+                      }`}
+                      onClick={() => handleRequestStatusChange(s.value)}
+                    >
+                      <span className="cf-shopify-status-radio" aria-hidden="true" />
+                      <div className="cf-shopify-status-copy">
+                        <div className="cf-shopify-status-title-row">
+                          <span className="cf-shopify-status-name">
+                            {s.label}
+                            {isOptionLocked && (
+                              <span className="cf-shopify-status-locked-tag">
+                                <Lock size={10} /> Locked
+                              </span>
+                            )}
+                          </span>
+                          <span className={`cf-shopify-status-dot is-${s.variant}`} />
+                        </div>
+                        <span className="cf-shopify-status-desc">
+                          {isOptionLocked
+                            ? 'Cannot revert to Draft after product goes live'
+                            : s.description}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </Card.Body>
           </Card>
@@ -1770,6 +1919,63 @@ export default function AdminProductFormPage() {
           </div>
         </form>
       </Modal>
+
+      {/* Status Transition Confirmation / Warning Modal */}
+      {(() => {
+        const modalMeta = statusConfirmModal
+          ? getStatusModalMeta(statusConfirmModal.targetStatus)
+          : null;
+        return (
+          <Modal
+            isOpen={Boolean(statusConfirmModal)}
+            onClose={() => setStatusConfirmModal(null)}
+            icon={AlertTriangle}
+            title={modalMeta?.title || ''}
+            subtitle={modalMeta?.subtitle || ''}
+            maxWidth="490px"
+          >
+            {modalMeta && (
+              <div className="cf-admin-form-stack">
+                <div className={`cf-shopify-status-warn-box is-${modalMeta.tone}`}>
+                  <p className="cf-shopify-status-warn-main">{modalMeta.message}</p>
+                  <p className="cf-shopify-status-warn-tip">{modalMeta.tip}</p>
+                </div>
+
+                <div className="cf-shopify-status-modal-actions">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setStatusConfirmModal(null)}
+                  >
+                    Cancel
+                  </Button>
+                  <div className="cf-shopify-status-modal-right">
+                    {modalMeta.allowOutOfStockAlt && (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={handleSwitchToOutOfStockInstead}
+                      >
+                        Set Qty to 0 (Out of Stock)
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      variant={modalMeta.confirmVariant}
+                      size="sm"
+                      onClick={handleConfirmStatusModal}
+                    >
+                      {modalMeta.confirmLabel}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Modal>
+        );
+      })()}
     </div>
   );
 }

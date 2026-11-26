@@ -1613,12 +1613,201 @@
   color: var(--cf-text-muted);
 }
 
-/* Sidebar Tags & Helpers */
-.cf-shopify-status-hint {
+/* Sidebar Status List & Tags */
+.cf-shopify-status-list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--cf-border-subtle);
+  border-radius: var(--cf-radius-md);
+  overflow: hidden;
+  background-color: var(--cf-bg-surface);
+}
+
+.cf-shopify-status-row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  border-bottom: 1px solid var(--cf-border-subtle);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.cf-shopify-status-row:last-child {
+  border-bottom: none;
+}
+
+.cf-shopify-status-row:hover {
+  background-color: var(--cf-bg-elevated);
+}
+
+.cf-shopify-status-row.is-selected {
+  background-color: var(--cf-accent-primary-tint);
+}
+
+.cf-shopify-status-row.is-disabled {
+  opacity: 0.56;
+  cursor: not-allowed;
+}
+
+.cf-shopify-status-row.is-disabled:hover {
+  background-color: transparent;
+}
+
+.cf-shopify-status-locked-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: var(--cf-radius-pill);
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-elevated);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--cf-text-muted);
+  vertical-align: middle;
+}
+
+.cf-shopify-status-warn-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: var(--cf-radius-md);
+  border: 1px solid var(--cf-border-subtle);
+  background-color: var(--cf-bg-elevated);
+}
+
+.cf-shopify-status-warn-box.is-warning {
+  border-color: var(--cf-accent-warning);
+  background-color: var(--cf-accent-warning-tint);
+}
+
+.cf-shopify-status-warn-box.is-danger {
+  border-color: var(--cf-accent-danger);
+  background-color: var(--cf-accent-danger-tint);
+}
+
+.cf-shopify-status-warn-box.is-primary {
+  border-color: var(--cf-accent-primary);
+  background-color: var(--cf-accent-primary-tint);
+}
+
+.cf-shopify-status-warn-main {
   margin: 0;
-  font-size: 0.74rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cf-text-main);
+  line-height: 1.45;
+}
+
+.cf-shopify-status-warn-tip {
+  margin: 0;
+  font-size: 0.78rem;
   color: var(--cf-text-muted);
   line-height: 1.45;
+}
+
+.cf-shopify-status-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding-top: 0.25rem;
+}
+
+.cf-shopify-status-modal-right {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.cf-shopify-status-radio {
+  width: 15px;
+  height: 15px;
+  margin-top: 2px;
+  border-radius: 50%;
+  border: 1.5px solid var(--cf-border-hover);
+  background-color: var(--cf-bg-input);
+  flex-shrink: 0;
+  position: relative;
+  transition: var(--cf-transition);
+}
+
+.cf-shopify-status-row.is-selected .cf-shopify-status-radio {
+  border-color: var(--cf-accent-primary);
+  background-color: var(--cf-accent-primary);
+}
+
+.cf-shopify-status-row.is-selected .cf-shopify-status-radio::after {
+  content: '';
+  position: absolute;
+  inset: 3.5px;
+  border-radius: 50%;
+  background-color: #ffffff;
+}
+
+.cf-shopify-status-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cf-shopify-status-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cf-shopify-status-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cf-text-main);
+  line-height: 1.3;
+}
+
+.cf-shopify-status-row.is-selected .cf-shopify-status-name {
+  font-weight: 700;
+}
+
+.cf-shopify-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background-color: var(--cf-text-dim);
+}
+
+.cf-shopify-status-dot.is-completed {
+  background-color: var(--cf-accent-success);
+}
+
+.cf-shopify-status-dot.is-warning {
+  background-color: var(--cf-accent-warning);
+}
+
+.cf-shopify-status-dot.is-failed {
+  background-color: var(--cf-accent-danger);
+}
+
+.cf-shopify-status-dot.is-neutral {
+  background-color: var(--cf-text-muted);
+}
+
+.cf-shopify-status-desc {
+  font-size: 0.72rem;
+  color: var(--cf-text-muted);
+  line-height: 1.35;
 }
 
 .cf-shopify-tags-wrap {
