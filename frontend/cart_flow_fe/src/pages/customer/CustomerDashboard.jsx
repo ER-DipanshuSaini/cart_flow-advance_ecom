@@ -210,17 +210,17 @@ export default function CustomerDashboard() {
       prev.map((o) =>
         o.id === orderId
           ? {
-              ...o,
-              status: 'Cancelled',
-              cancelReason: reason,
-              cancelNote: note.trim(),
-              cancelledAt: new Date().toLocaleDateString('en-IN', {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric',
-              }),
-              courier: `Order cancelled (${reason})`,
-            }
+            ...o,
+            status: 'Cancelled',
+            cancelReason: reason,
+            cancelNote: note.trim(),
+            cancelledAt: new Date().toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            }),
+            courier: `Order cancelled (${reason})`,
+          }
           : o
       )
     );
@@ -305,7 +305,7 @@ export default function CustomerDashboard() {
           id: `log-${Date.now()}`,
           status: 'Open',
           actor: customer?.name || 'Customer',
-          message: `Ticket raised for Order ${orderId} — ${complaintForm.category}.`,
+          message: `Ticket raised for Order ${orderId} - ${complaintForm.category}.`,
           timestamp: nowStr,
           attachments: complaintForm.attachments || [],
         },

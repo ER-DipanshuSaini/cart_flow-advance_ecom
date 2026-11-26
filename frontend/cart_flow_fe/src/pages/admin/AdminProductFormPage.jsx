@@ -677,7 +677,7 @@ export default function AdminProductFormPage() {
       tone: 'primary',
       message:
         'Publishing this product will make it Active and visible to everyone on the storefront.',
-      tip: 'Once published, you can always edit its details, pricing, stock, or move it to Private/Closed later — but you cannot move it back to Draft.',
+      tip: 'Once published, you can always edit its details, pricing, stock, or move it to Private/Closed later - but you cannot move it back to Draft.',
       confirmLabel: 'Yes, Publish Active',
       confirmVariant: 'primary',
       allowOutOfStockAlt: false,
@@ -1119,7 +1119,7 @@ export default function AdminProductFormPage() {
                   <strong>
                     {unitMargin > 0
                       ? `₹${unitMargin.toLocaleString('en-IN')} (${marginPct}% margin)`
-                      : '—'}
+                      : '-'}
                   </strong>
                 </span>
               </div>
@@ -1476,7 +1476,7 @@ export default function AdminProductFormPage() {
                   titleKey="q"
                   descKey="a"
                   untitledLabel="Untitled question"
-                  emptyDescLabel="Required — click to add answer"
+                  emptyDescLabel="Required - click to add answer"
                   titlePlaceholder="Question * (e.g., How does the sizing run?)"
                   descPlaceholder="Answer * - Enter clear answer shown to shoppers..."
                   maxItems={MAX_FAQS}
@@ -1524,9 +1524,8 @@ export default function AdminProductFormPage() {
                           ? 'Published products cannot revert back to Draft'
                           : s.description
                       }
-                      className={`cf-shopify-status-row ${isSelected ? 'is-selected' : ''} ${
-                        isOptionLocked ? 'is-disabled' : ''
-                      }`}
+                      className={`cf-shopify-status-row ${isSelected ? 'is-selected' : ''} ${isOptionLocked ? 'is-disabled' : ''
+                        }`}
                       onClick={() => handleRequestStatusChange(s.value)}
                     >
                       <span className="cf-shopify-status-radio" aria-hidden="true" />

@@ -533,7 +533,7 @@ function computeTotals(customer) {
   const orders = Array.isArray(customer.orders) ? customer.orders : [];
   const validOrders = orders.filter((o) => o.status !== 'Cancelled');
   const totalSpent = validOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
-  const lastOrderDate = orders[0]?.date || customer.lastOrderDate || '—';
+  const lastOrderDate = orders[0]?.date || customer.lastOrderDate || '-';
   return {
     ...customer,
     ordersCount: orders.length,
@@ -560,13 +560,13 @@ function mergeLiveCustomer(list) {
     const mappedOrders =
       Array.isArray(savedOrders) && savedOrders.length > 0
         ? savedOrders.map((o) => ({
-            id: o.id,
-            date: o.date,
-            itemsSummary: (o.items || []).map((i) => `${i.title} (${i.qty})`).join(', '),
-            payment: o.gatewayResponse?.gateway || o.paymentMethod || 'Prepaid',
-            total: Number(o.total) || 0,
-            status: o.status,
-          }))
+          id: o.id,
+          date: o.date,
+          itemsSummary: (o.items || []).map((i) => `${i.title} (${i.qty})`).join(', '),
+          payment: o.gatewayResponse?.gateway || o.paymentMethod || 'Prepaid',
+          total: Number(o.total) || 0,
+          status: o.status,
+        }))
         : existing?.orders || [];
 
     const mappedAddresses =
@@ -580,8 +580,8 @@ function mergeLiveCustomer(list) {
       Array.isArray(savedComplaints) && savedComplaints.length > 0
         ? savedComplaints
         : existing?.tickets?.length > 0
-        ? existing.tickets
-        : DEFAULT_SAMPLE_COMPLAINTS;
+          ? existing.tickets
+          : DEFAULT_SAMPLE_COMPLAINTS;
 
     // Build rich combined timeline from live orders, complaints, and reviews
     const dynamicActivities = [];
@@ -609,7 +609,7 @@ function mergeLiveCustomer(list) {
       dynamicActivities.push({
         id: `ord-${o.id}`,
         type: o.status === 'Delivered' ? 'delivered' : o.status === 'Cancelled' ? 'blocked' : 'order',
-        title: `Order ${o.id} — ${o.status}`,
+        title: `Order ${o.id} - ${o.status}`,
         detail: `₹${Number(o.total).toLocaleString('en-IN')} via ${o.payment}`,
         timestamp: o.date,
       });
@@ -659,13 +659,13 @@ export function loadAdminCustomers() {
     const baseById = Object.fromEntries(BASE_CUSTOMERS.map((b) => [b.id, b]));
     const parsed = saved
       ? JSON.parse(saved).map((c) => {
-          const base = baseById[c.id];
-          return {
-            ...c,
-            tickets: Array.isArray(c.tickets) && c.tickets.length > 0 ? c.tickets : base?.tickets || [],
-            reviews: Array.isArray(c.reviews) && c.reviews.length > 0 ? c.reviews : base?.reviews || [],
-          };
-        })
+        const base = baseById[c.id];
+        return {
+          ...c,
+          tickets: Array.isArray(c.tickets) && c.tickets.length > 0 ? c.tickets : base?.tickets || [],
+          reviews: Array.isArray(c.reviews) && c.reviews.length > 0 ? c.reviews : base?.reviews || [],
+        };
+      })
       : BASE_CUSTOMERS.map(computeTotals);
     return mergeLiveCustomer(Array.isArray(parsed) && parsed.length > 0 ? parsed : BASE_CUSTOMERS.map(computeTotals));
   } catch {

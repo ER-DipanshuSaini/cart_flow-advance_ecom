@@ -58,7 +58,7 @@ export default function AdminLoginPage() {
             <h2 className="cf-side-banner-title">
               "Mastery in commerce operations, from bespoke cutting to courier dispatch."
             </h2>
-            <p className="cf-side-banner-author">— CartFlow RBAC Security Engine</p>
+            <p className="cf-side-banner-author">- CartFlow RBAC Security Engine</p>
 
             <div className="cf-side-perks-list">
               <div className="cf-side-perk-item">

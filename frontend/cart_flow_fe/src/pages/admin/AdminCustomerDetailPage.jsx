@@ -277,10 +277,10 @@ export default function AdminCustomerDetailPage() {
         tickets: (c.tickets || []).map((t) =>
           t.id === activeTicket.id
             ? {
-                ...t,
-                status: ticketStatusDraft,
-                timelogs: [...getTicketTimelogs(t), newLog],
-              }
+              ...t,
+              status: ticketStatusDraft,
+              timelogs: [...getTicketTimelogs(t), newLog],
+            }
             : t
         ),
       }),
@@ -739,7 +739,7 @@ export default function AdminCustomerDetailPage() {
         </div>
       </div>
 
-      {/* Edit Profile Modal — Name & Phone Number only */}
+      {/* Edit Profile Modal - Name & Phone Number only */}
       <Modal
         isOpen={profileModalOpen}
         onClose={() => setProfileModalOpen(false)}

@@ -17,7 +17,7 @@ export default function AccordionPointList({
   titleKey = 'title',
   descKey = 'description',
   untitledLabel = 'Untitled item',
-  emptyDescLabel = 'Required — click to add details',
+  emptyDescLabel = 'Required - click to add details',
   titlePlaceholder = 'Heading *',
   descPlaceholder = 'Description *',
   maxItems = 20,

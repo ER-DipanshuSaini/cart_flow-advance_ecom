@@ -80,7 +80,7 @@ export default function CatalogPage() {
         </div>
       </div>
 
-      {/* Catalog Cards Grid (Only Catalog Cards — 5:6 Ratio) */}
+      {/* Catalog Cards Grid (Only Catalog Cards - 5:6 Ratio) */}
       {filteredCatalogs.length === 0 ? (
         <div className="cf-shop-empty-state">
           <h3>No catalogs found</h3>

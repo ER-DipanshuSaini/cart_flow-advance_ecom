@@ -384,10 +384,21 @@
   display: inline-block;
 }
 
-.cf-bo-dot.is-green { background-color: #22c55e; }
-.cf-bo-dot.is-blue { background-color: #3b82f6; }
-.cf-bo-dot.is-red { background-color: #ef4444; }
-.cf-bo-dot.is-amber { background-color: #eab308; }
+.cf-bo-dot.is-green {
+  background-color: #22c55e;
+}
+
+.cf-bo-dot.is-blue {
+  background-color: #3b82f6;
+}
+
+.cf-bo-dot.is-red {
+  background-color: #ef4444;
+}
+
+.cf-bo-dot.is-amber {
+  background-color: #eab308;
+}
 
 .cf-bo-legend-num {
   font-weight: 700;
