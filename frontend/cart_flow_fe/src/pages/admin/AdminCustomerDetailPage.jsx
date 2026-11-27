@@ -440,7 +440,6 @@ export default function AdminCustomerDetailPage() {
           value={customer.ordersCount}
           subtext={`Last order: ${customer.lastOrderDate}`}
           icon={ShoppingBag}
-          highlighted
         />
         <MetricCard
           title="Lifetime Spend"

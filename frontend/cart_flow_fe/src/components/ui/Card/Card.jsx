@@ -6,18 +6,14 @@ export default function Card({
   children,
   className = '',
   hoverable = false,
-  highlighted = false,
   ...props
 }) {
   return (
     <div
-      className={`cf-ui-card ${hoverable ? 'is-hoverable' : ''} ${
-        highlighted ? 'is-highlighted' : ''
-      } ${className}`}
+      className={`cf-ui-card ${hoverable ? 'is-hoverable' : ''} ${className}`}
       {...props}
     >
       {children}
-      {highlighted && <div className="cf-card-gradient-indicator" />}
     </div>
   );
 }
@@ -55,11 +51,10 @@ export function MetricCard({
   subtext,
   icon: Icon,
   hasArrow = false,
-  highlighted = false,
   className = '',
 }) {
   return (
-    <Card highlighted={highlighted} className={`cf-metric-card-primitive ${className}`}>
+    <Card className={`cf-metric-card-primitive ${className}`}>
       <div className="cf-metric-primitive-top">
         <span className="cf-metric-primitive-title">{title}</span>
         {Icon && <Icon size={18} className="cf-metric-primitive-icon" />}

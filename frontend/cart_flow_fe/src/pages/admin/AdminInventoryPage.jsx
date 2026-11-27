@@ -263,7 +263,6 @@ export default function AdminInventoryPage() {
           value={metrics.total}
           subtext="Catalog SKUs tracked"
           icon={Boxes}
-          highlighted
         />
         <MetricCard
           title="Active on Store"

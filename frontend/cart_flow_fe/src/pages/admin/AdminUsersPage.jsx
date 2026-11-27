@@ -444,7 +444,6 @@ export default function AdminUsersPage() {
           value={metrics.total}
           subtext="Workspace team accounts"
           icon={Users}
-          highlighted
         />
         <MetricCard
           title="Active Accounts"

@@ -156,7 +156,6 @@ export default function AdminOverviewPage() {
           subtext="+14.2% growth this month"
           icon={IndianRupee}
           hasArrow
-          highlighted
         />
         <MetricCard
           title="Total Orders"

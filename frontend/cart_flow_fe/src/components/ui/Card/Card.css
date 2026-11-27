@@ -15,20 +15,6 @@
   transform: translateY(-1px);
 }
 
-.cf-ui-card.is-highlighted {
-  background-color: var(--cf-accent-primary-tint);
-  border-color: var(--cf-accent-primary);
-}
-
-.cf-card-gradient-indicator {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #22c55e 0%, #a855f7 50%, #ec4899 100%);
-}
-
 .cf-ui-card-header {
   padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--cf-border-subtle);

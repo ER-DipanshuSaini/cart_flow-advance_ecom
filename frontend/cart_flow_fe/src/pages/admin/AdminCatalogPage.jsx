@@ -228,7 +228,6 @@ export default function AdminCatalogPage() {
           value={metrics.total}
           subtext="Storefront collections"
           icon={FolderKanban}
-          highlighted
         />
         <MetricCard
           title="Active on Store"

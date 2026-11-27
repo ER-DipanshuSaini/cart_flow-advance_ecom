@@ -224,7 +224,6 @@ export default function AdminLogisticsPage() {
           value="4"
           subtext="Scheduled for 5:00 PM slot"
           icon={Truck}
-          highlighted
         />
         <MetricCard
           title="Avg Transit Time"

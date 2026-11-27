@@ -192,7 +192,6 @@ export default function AdminCustomersPage() {
           value={customers.length}
           subtext={`${metrics.repeatBuyers} repeat shoppers`}
           icon={Users}
-          highlighted
         />
         <MetricCard
           title="Active Accounts"

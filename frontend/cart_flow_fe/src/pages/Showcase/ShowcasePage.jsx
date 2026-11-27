@@ -366,7 +366,6 @@ export default function ShowcasePage() {
                 subtext="40 dispatched packages"
                 icon={Layers}
                 hasArrow={true}
-                highlighted={true}
               />
               <MetricCard
                 title="Customers"
