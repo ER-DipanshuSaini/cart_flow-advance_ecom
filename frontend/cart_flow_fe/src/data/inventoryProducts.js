@@ -655,6 +655,10 @@ export async function validateStorefrontImageFiles(
   }
 
   const urls = await readFilesAsDataUrls(validFiles);
+  if (!targetRatio) {
+    return { validUrls: urls, invalidTypeCount, oversizedCount, invalidRatioCount: 0 };
+  }
+
   const checks = await Promise.all(
     urls.map(async (url) => {
       const dims = await getImageDimensions(url);

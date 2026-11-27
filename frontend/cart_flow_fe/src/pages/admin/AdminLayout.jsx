@@ -17,7 +17,8 @@ import {
   PanelLeftOpen,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { ThemeToggle, Modal, Button, Badge } from '../../components/ui';
+import { ThemeToggle, Button } from '../../components/ui';
+import { getCurrentAdminUser } from '../../data/adminUsers';
 import './AdminConsole.css';
 
 export default function AdminLayout() {
@@ -25,8 +26,14 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [adminUsersModalOpen, setAdminUsersModalOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [currentAdmin, setCurrentAdmin] = useState(getCurrentAdminUser);
+
+  useEffect(() => {
+    const syncProfile = () => setCurrentAdmin(getCurrentAdminUser());
+    window.addEventListener('cf-admin-profile-updated', syncProfile);
+    return () => window.removeEventListener('cf-admin-profile-updated', syncProfile);
+  }, []);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
       return localStorage.getItem('cf_admin_sidebar_collapsed') === 'true';
@@ -93,6 +100,8 @@ export default function AdminLayout() {
       ];
     }
     if (p.includes('/admin/customers')) return [{ label: 'Customer Directory' }];
+    if (p.includes('/admin/users')) return [{ label: 'Admin Users' }];
+    if (p.includes('/admin/profile')) return [{ label: 'My Profile' }];
     return [{ label: 'Operations Overview' }];
   };
 
@@ -221,29 +230,41 @@ export default function AdminLayout() {
                 </div>
               </NavLink>
 
-              <button
-                type="button"
+              <NavLink
+                to="/admin/users"
                 title="Admin Users"
-                className="cf-bo-nav-item"
-                onClick={() => setAdminUsersModalOpen(true)}
+                className={({ isActive }) => `cf-bo-nav-item ${isActive ? 'is-active' : ''}`}
               >
                 <div className="cf-bo-item-left">
                   <ShieldCheck size={16} />
                   <span>Admin Users</span>
                 </div>
-              </button>
+              </NavLink>
             </div>
           </div>
         </div>
 
         {/* Sidebar Footer User Box */}
-        <div className="cf-bo-sidebar-footer">
-          <div className="cf-bo-avatar-badge">A</div>
-          <div className="cf-bo-user-text">
-            <span className="cf-bo-user-name">CartFlow Admin</span>
-            <span className="cf-bo-user-role">Workspace Administrator</span>
+        <button
+          type="button"
+          className="cf-bo-sidebar-footer is-clickable"
+          onClick={() => navigate('/admin/profile')}
+          title="Open My Profile & Security"
+        >
+          <div className="cf-bo-avatar-badge">
+            {currentAdmin.profilePic ? (
+              <img src={currentAdmin.profilePic} alt={currentAdmin.firstName} />
+            ) : (
+              `${currentAdmin.firstName?.charAt(0) || 'A'}${currentAdmin.lastName?.charAt(0) || ''}`.toUpperCase()
+            )}
           </div>
-        </div>
+          <div className="cf-bo-user-text">
+            <span className="cf-bo-user-name">
+              {currentAdmin.firstName} {currentAdmin.lastName}
+            </span>
+            <span className="cf-bo-user-role">{currentAdmin.role}</span>
+          </div>
+        </button>
       </aside>
 
       {/* 2. Main Workspace Body */}
@@ -295,9 +316,19 @@ export default function AdminLayout() {
             <ThemeToggle />
 
             {/* Profile Avatar */}
-            <div className="cf-bo-topbar-avatar" title="Logged in as CartFlow Operations Lead">
-              A
-            </div>
+            <button
+              type="button"
+              className="cf-bo-topbar-avatar is-clickable"
+              onClick={() => navigate('/admin/profile')}
+              title="Open My Profile & Security"
+              aria-label="Open My Profile"
+            >
+              {currentAdmin.profilePic ? (
+                <img src={currentAdmin.profilePic} alt={currentAdmin.firstName} />
+              ) : (
+                `${currentAdmin.firstName?.charAt(0) || 'A'}`
+              )}
+            </button>
 
             {/* Sign Out */}
             <Button
@@ -317,29 +348,6 @@ export default function AdminLayout() {
           <Outlet />
         </div>
       </div>
-
-      {/* Admin Users Modal */}
-      <Modal
-        isOpen={adminUsersModalOpen}
-        onClose={() => setAdminUsersModalOpen(false)}
-        title="Admin Users & Role Permissions"
-        subtitle="Role-Based Access Control (RBAC) & API Key Guard"
-        footer={
-          <Button variant="primary" onClick={() => setAdminUsersModalOpen(false)}>
-            Acknowledge
-          </Button>
-        }
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <Badge variant="warning" dot>Root Access: Secured</Badge>
-            <Badge variant="mono">JWT / PBKDF2</Badge>
-          </div>
-          <div style={{ fontSize: '0.82rem', color: 'var(--cf-text-muted)', lineHeight: 1.6 }}>
-            Super Admin, Supplier/Vendor, and Logistics Lead privileges are partitioned. Sensitive endpoints require valid workspace tokens.
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }
